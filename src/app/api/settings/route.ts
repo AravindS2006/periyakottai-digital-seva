@@ -15,6 +15,7 @@ const NO_CACHE_HEADERS = {
 
 export async function GET() {
   try {
+    await db.syncFromCloud();
     const settings = db.getSettings();
     return NextResponse.json(
       {

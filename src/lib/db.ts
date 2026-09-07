@@ -22,6 +22,11 @@ const SEED_FILE = path.join(process.cwd(), 'data', 'db.json');
 const DB_DIR = IS_VERCEL ? path.join('/tmp', 'pds-data') : path.join(process.cwd(), 'data');
 const DB_FILE = path.join(DB_DIR, 'db.json');
 
+// Optional Vercel KV / Upstash Redis Free Tier Cloud Persistence
+const KV_REST_API_URL = process.env.KV_REST_API_URL || process.env.UPSTASH_REDIS_REST_URL;
+const KV_REST_API_TOKEN = process.env.KV_REST_API_TOKEN || process.env.UPSTASH_REDIS_REST_TOKEN;
+const KV_STORAGE_KEY = 'periyakottai_db_v1';
+
 let memoryCache: DatabaseSchema | null = null;
 
 const INITIAL_REQUESTS: RequestTicket[] = [];
@@ -223,10 +228,59 @@ function saveDatabase(data: DatabaseSchema): boolean {
     }
   }
 
+  // Push to Vercel KV / Upstash Redis if configured (zero external dependencies)
+  if (KV_REST_API_URL && KV_REST_API_TOKEN) {
+    try {
+      fetch(`${KV_REST_API_URL}/set/${KV_STORAGE_KEY}`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${KV_REST_API_TOKEN}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data)
+      }).catch((err) => {
+        console.warn('Vercel KV background sync notice:', err);
+      });
+    } catch (err) {
+      console.warn('Vercel KV fetch trigger notice:', err);
+    }
+  }
+
   return true;
 }
 
 export const db = {
+  // Sync from Cloud KV on initial load or cold start if configured
+  syncFromCloud: async (): Promise<boolean> => {
+    if (!KV_REST_API_URL || !KV_REST_API_TOKEN) return false;
+    if (memoryCache && memoryCache.settings) return true;
+    try {
+      const res = await fetch(`${KV_REST_API_URL}/get/${KV_STORAGE_KEY}`, {
+        headers: { Authorization: `Bearer ${KV_REST_API_TOKEN}` },
+        cache: 'no-store'
+      });
+      if (res.ok) {
+        const json = await res.json();
+        if (json?.result) {
+          const raw = json.result;
+          const parsed = typeof raw === 'string' ? JSON.parse(raw) : raw;
+          if (parsed && parsed.settings) {
+            memoryCache = parsed;
+            try {
+              if (!fs.existsSync(DB_DIR)) fs.mkdirSync(DB_DIR, { recursive: true });
+              fs.writeFileSync(DB_FILE, JSON.stringify(parsed, null, 2), 'utf-8');
+              if (fs.existsSync(DB_FILE)) lastLoadedMtime = fs.statSync(DB_FILE).mtimeMs;
+            } catch {}
+            return true;
+          }
+        }
+      }
+    } catch (err) {
+      console.warn('Vercel KV initial load notice:', err);
+    }
+    return false;
+  },
+
   // Requests
   getRequests: (): RequestTicket[] => {
     const data = ensureDatabase();

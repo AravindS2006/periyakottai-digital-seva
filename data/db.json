@@ -148,6 +148,41 @@
       "action": "UPDATE_SETTINGS",
       "actor": "System Test Restore",
       "details": "Operator updated centre configuration and announcements"
+    },
+    {
+      "id": "log-1788804608473",
+      "timestamp": "2026-09-07T18:10:08.473Z",
+      "action": "UPDATE_SETTINGS",
+      "actor": "Audit Verification",
+      "details": "Operator updated centre configuration and announcements"
+    },
+    {
+      "id": "log-1788804697197",
+      "timestamp": "2026-09-07T18:11:37.197Z",
+      "action": "UPDATE_SETTINGS",
+      "actor": "Audit Verification",
+      "details": "Operator updated centre configuration and announcements"
+    },
+    {
+      "id": "log-1788804702299",
+      "timestamp": "2026-09-07T18:11:42.299Z",
+      "action": "UPDATE_SETTINGS",
+      "actor": "Operator Murugesan K",
+      "details": "Operator updated centre configuration and announcements"
+    },
+    {
+      "id": "log-1788804702498",
+      "timestamp": "2026-09-07T18:11:42.498Z",
+      "action": "UPDATE_SETTINGS",
+      "actor": "Audit Verification",
+      "details": "Operator updated centre configuration and announcements"
+    },
+    {
+      "id": "log-1788804702568",
+      "timestamp": "2026-09-07T18:11:42.568Z",
+      "action": "UPDATE_SETTINGS",
+      "actor": "System Test Restore",
+      "details": "Operator updated centre configuration and announcements"
     }
   ],
   "settings": {
@@ -177,6 +212,6 @@
       },
       "type": "info"
     },
-    "lastUpdated": "2026-09-07T18:01:26.938Z"
+    "lastUpdated": "2026-09-07T18:11:42.568Z"
   }
 }

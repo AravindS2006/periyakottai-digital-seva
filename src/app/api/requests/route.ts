@@ -3,6 +3,7 @@ import { db } from '@/lib/db';
 
 export async function GET(request: Request) {
   try {
+    await db.syncFromCloud();
     const { searchParams } = new URL(request.url);
     const phone = searchParams.get('phone');
 

@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useI18n } from '@/i18n/context';
@@ -13,93 +13,227 @@ import {
   Layers,
   Building2,
   Phone,
-  Search,
   CheckCircle,
   HelpCircle,
   Sparkles,
-  Newspaper
+  Newspaper,
+  ChevronDown,
+  BookOpen,
+  UserCheck
 } from 'lucide-react';
 
 export function Header() {
   const { language, t } = useI18n();
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [moreMenuOpen, setMoreMenuOpen] = useState(false);
+  const dropdownRef = useRef<HTMLDivElement>(null);
   const pathname = usePathname();
 
-  const navLinks = [
-    { href: '/', label: t('nav_home', 'முகப்பு'), icon: Sparkles },
+  // Primary desktop navigation links (essential everyday services)
+  const primaryNavLinks = [
     { href: '/services', label: t('nav_services', 'சேவைகள்'), icon: FileText },
     { href: '/schemes', label: t('nav_schemes', 'திட்டங்கள்'), icon: Layers },
-    { href: '/news', label: t('nav_news', 'செய்திகள்'), icon: Newspaper },
     { href: '/farmer-hub', label: t('nav_farmer', 'விவசாய மையம்'), icon: Sprout },
     { href: '/csc-centre', label: t('nav_centre', 'இ-சேவை மையம்'), icon: Building2 },
     { href: '/track', label: t('nav_track', 'நிலை அறிய'), icon: CheckCircle },
-    { href: '/panchayat', label: t('nav_panchayat', 'பஞ்சாயத்து & குறை'), icon: HelpCircle },
-    { href: '/contacts', label: t('nav_contacts', 'முக்கிய எண்கள்'), icon: Phone },
   ];
 
+  // Secondary links placed inside clean "More ▾" dropdown on desktop
+  const moreNavLinks = [
+    {
+      href: '/news',
+      label: t('nav_news', 'செய்திகள் & முகாம்கள்'),
+      desc: language === 'ta' ? 'அரசு அறிவிப்புகள் & சிறப்பு முகாம்கள்' : 'Govt news & camp alerts',
+      icon: Newspaper
+    },
+    {
+      href: '/panchayat',
+      label: t('nav_panchayat', 'பஞ்சாயத்து & குறைதீர்ப்பு'),
+      desc: language === 'ta' ? 'குடிநீர், தெருவிளக்கு & பொது மனுக்கள்' : 'Civic issues & complaints',
+      icon: HelpCircle
+    },
+    {
+      href: '/contacts',
+      label: t('nav_contacts', 'முக்கிய தொடர்பு எண்கள்'),
+      desc: language === 'ta' ? 'அவசர & வட்டார அரசு அலுவலர்கள்' : 'Emergency & directory',
+      icon: Phone
+    },
+    {
+      href: '/documents',
+      label: language === 'ta' ? 'ஆவண வழிகாட்டி' : 'Documents Guide',
+      desc: language === 'ta' ? 'தேவையான சான்றுகள் & படிவங்கள்' : 'Required docs & forms',
+      icon: BookOpen
+    },
+    {
+      href: '/operator',
+      label: language === 'ta' ? 'ஆபரேட்டர் போர்டல்' : 'Operator Portal',
+      desc: language === 'ta' ? 'மைய நிர்வாகம் & அமைப்புகள்' : 'Centre management',
+      icon: UserCheck
+    },
+  ];
+
+  // Combined links for mobile drawer
+  const mobileNavLinks = [
+    { href: '/', label: t('nav_home', 'முகப்பு'), icon: Sparkles },
+    ...primaryNavLinks,
+    ...moreNavLinks,
+  ];
+
+  const isMoreActive = moreNavLinks.some((link) => pathname === link.href);
+
+  // Close dropdown on click outside or escape key
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setMoreMenuOpen(false);
+      }
+    };
+    const handleEsc = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') setMoreMenuOpen(false);
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    document.addEventListener('keydown', handleEsc);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+      document.removeEventListener('keydown', handleEsc);
+    };
+  }, []);
+
+  // Close menus on page navigation
+  useEffect(() => {
+    setMoreMenuOpen(false);
+    setMobileMenuOpen(false);
+  }, [pathname]);
+
   return (
-    <header className="sticky top-0 z-40 bg-white border-b border-emerald-100 shadow-sm">
+    <header className="sticky top-0 z-40 bg-white border-b border-emerald-100 shadow-xs">
       <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-20 gap-2">
+        <div className="flex items-center justify-between h-18 lg:h-20 gap-3">
           {/* Logo and Brand */}
-          <Link href="/" className="flex items-center gap-2.5 sm:gap-3 group min-w-0 flex-1 sm:flex-initial">
+          <Link href="/" className="flex items-center gap-2.5 sm:gap-3 group min-w-0 shrink-0">
             <img
               src="/images/logo.png"
               alt="பெரியாக்கோட்டை அரசு இ-சேவை இலச்சினை"
-              className="w-11 h-11 sm:w-12 sm:h-12 rounded-full object-cover shadow-md border-2 border-emerald-600 group-hover:scale-105 transition-transform shrink-0"
+              className="w-10 h-10 sm:w-11 sm:h-11 rounded-full object-cover shadow-xs border-2 border-emerald-600 group-hover:scale-105 transition-transform shrink-0"
             />
             <div className="min-w-0">
-              <div className="font-extrabold text-xs sm:text-base lg:text-xl text-emerald-950 leading-tight whitespace-nowrap">
+              <div className="font-extrabold text-xs sm:text-base lg:text-lg xl:text-xl text-emerald-950 leading-tight whitespace-nowrap">
                 {language === 'ta' ? 'பெரியாக்கோட்டை டிஜிட்டல் சேவை' : 'Periyakottai Digital Seva'}
               </div>
-              <div className="text-[10px] sm:text-xs text-emerald-700 font-medium whitespace-nowrap">
+              <div className="text-[10px] xl:text-xs text-emerald-700 font-medium whitespace-nowrap">
                 {language === 'ta'
-                  ? 'ஒட்டன்சத்திரம் தாலுகா | நால்ரோடு மக்கள் இ-சேவை (624614)'
-                  : 'Oddanchatram Taluk | Nalroad e-Seva Centre (624614)'}
+                  ? 'நால்ரோடு மக்கள் இ-சேவை மையம் (624614)'
+                  : 'Nalroad Makkal e-Seva Centre (624614)'}
               </div>
             </div>
           </Link>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden lg:flex items-center gap-1 xl:gap-1.5 shrink min-w-0">
-            {navLinks.map((link) => {
+          {/* Desktop Navigation: Uncongested & Spacious */}
+          <nav className="hidden lg:flex items-center gap-1 xl:gap-2 shrink min-w-0">
+            {primaryNavLinks.map((link) => {
               const Icon = link.icon;
               const isActive = pathname === link.href;
               return (
                 <Link
                   key={link.href}
                   href={link.href}
-                  className={`flex items-center gap-1 px-2 py-1.5 xl:px-2.5 xl:py-2 rounded-lg text-xs xl:text-sm font-semibold transition-all whitespace-nowrap shrink-0 ${
+                  className={`flex items-center gap-1.5 px-2.5 py-1.5 xl:px-3 xl:py-2 rounded-xl text-xs xl:text-sm font-semibold transition-all whitespace-nowrap shrink-0 ${
                     isActive
-                      ? 'bg-emerald-50 text-emerald-800 border border-emerald-200 shadow-xs'
-                      : 'text-slate-700 hover:text-emerald-800 hover:bg-slate-50'
+                      ? 'bg-emerald-100 text-emerald-950 font-bold border border-emerald-300/80 shadow-2xs'
+                      : 'text-slate-700 hover:text-emerald-900 hover:bg-emerald-50/60'
                   }`}
                 >
-                  <Icon className={`w-3.5 h-3.5 xl:w-4 xl:h-4 ${isActive ? 'text-emerald-700' : 'text-slate-400'}`} />
+                  <Icon className={`w-3.5 h-3.5 xl:w-4 xl:h-4 ${isActive ? 'text-emerald-800' : 'text-slate-500'}`} />
                   <span>{link.label}</span>
                 </Link>
               );
             })}
+
+            {/* "More" Dropdown Menu */}
+            <div className="relative shrink-0" ref={dropdownRef}>
+              <button
+                type="button"
+                onClick={() => setMoreMenuOpen(!moreMenuOpen)}
+                className={`flex items-center gap-1.5 px-2.5 py-1.5 xl:px-3 xl:py-2 rounded-xl text-xs xl:text-sm font-semibold transition-all whitespace-nowrap ${
+                  isMoreActive
+                    ? 'bg-emerald-100 text-emerald-950 font-bold border border-emerald-300/80 shadow-2xs'
+                    : 'text-slate-700 hover:text-emerald-900 hover:bg-emerald-50/60'
+                }`}
+                aria-expanded={moreMenuOpen}
+                aria-label="More menu options"
+              >
+                <span>{language === 'ta' ? 'மேலும்' : 'More'}</span>
+                <ChevronDown
+                  className={`w-3.5 h-3.5 xl:w-4 xl:h-4 transition-transform duration-200 ${
+                    moreMenuOpen ? 'rotate-180 text-emerald-800' : 'text-slate-500'
+                  }`}
+                />
+                {isMoreActive && (
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-600"></span>
+                )}
+              </button>
+
+              {/* Dropdown Floating Panel */}
+              {moreMenuOpen && (
+                <div className="absolute right-0 top-full mt-2 w-72 bg-white rounded-2xl shadow-xl border border-slate-200/90 p-2 z-50 animate-in fade-in zoom-in-95 duration-150">
+                  <div className="px-3 py-1.5 text-[10px] font-extrabold uppercase tracking-wider text-slate-400 border-b border-slate-100 mb-1">
+                    {language === 'ta' ? 'கூடுதல் சேவைகள் & தகவல்கள்' : 'Additional Services & Info'}
+                  </div>
+                  <div className="space-y-0.5">
+                    {moreNavLinks.map((item) => {
+                      const Icon = item.icon;
+                      const isActive = pathname === item.href;
+                      return (
+                        <Link
+                          key={item.href}
+                          href={item.href}
+                          onClick={() => setMoreMenuOpen(false)}
+                          className={`flex items-start gap-3 p-2 rounded-xl transition-colors ${
+                            isActive
+                              ? 'bg-emerald-50 text-emerald-950 font-bold border border-emerald-200'
+                              : 'text-slate-700 hover:bg-slate-50 hover:text-emerald-900'
+                          }`}
+                        >
+                          <div
+                            className={`p-2 rounded-lg shrink-0 ${
+                              isActive ? 'bg-emerald-200/80 text-emerald-900' : 'bg-slate-100 text-slate-600'
+                            }`}
+                          >
+                            <Icon className="w-4 h-4" />
+                          </div>
+                          <div className="min-w-0">
+                            <div className="text-xs font-bold leading-tight">{item.label}</div>
+                            <div className="text-[11px] text-slate-500 font-normal truncate mt-0.5">
+                              {item.desc}
+                            </div>
+                          </div>
+                        </Link>
+                      );
+                    })}
+                  </div>
+                </div>
+              )}
+            </div>
           </nav>
 
-          {/* Call Murugesan Button */}
+          {/* Call Operator Button */}
           <div className="hidden sm:flex items-center gap-2 shrink-0">
             <a
               href="tel:9790382437"
-              className="flex items-center gap-2 bg-gradient-to-r from-emerald-700 to-emerald-800 hover:from-emerald-800 hover:to-emerald-900 text-white px-3 py-1.5 xl:px-3.5 xl:py-2 rounded-xl text-xs xl:text-sm font-bold shadow-sm transition-all hover:shadow shrink-0"
+              className="inline-flex items-center gap-2 bg-gradient-to-r from-emerald-700 to-emerald-800 hover:from-emerald-800 hover:to-emerald-900 text-white px-3 py-1.5 xl:px-4 xl:py-2 rounded-xl text-xs xl:text-sm font-bold shadow-xs hover:shadow transition-all shrink-0"
               title="முருகேசன் கே - நால்ரோடு இ-சேவை மையம்"
             >
-              <PhoneCall className="w-3.5 h-3.5 xl:w-4 xl:h-4 text-emerald-300 animate-pulse" />
+              <PhoneCall className="w-3.5 h-3.5 xl:w-4 xl:h-4 text-emerald-300 animate-pulse shrink-0" />
               <div className="text-left leading-tight">
-                <span className="block text-[9px] xl:text-[10px] text-emerald-200 uppercase tracking-wider">
-                  {language === 'ta' ? 'இ-சேவை மையம்' : 'e-Seva Centre'}
+                <span className="hidden xl:block text-[9px] text-emerald-200 uppercase tracking-wider font-semibold">
+                  {language === 'ta' ? 'இ-சேவை உதவி' : 'e-Seva Help'}
                 </span>
-                <span>97903 82437</span>
+                <span className="tracking-wide">97903 82437</span>
               </div>
             </a>
           </div>
 
-          {/* Mobile menu trigger */}
+          {/* Mobile Menu Trigger */}
           <div className="flex lg:hidden items-center gap-1.5 sm:gap-2 shrink-0">
             <a
               href="tel:9790382437"
@@ -109,7 +243,6 @@ export function Header() {
               <PhoneCall className="w-5 h-5 text-emerald-700" />
             </a>
 
-            {/* Clean, Non-blocking Accessible Mobile Menu Button */}
             <button
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
               className="p-2 rounded-xl text-slate-700 hover:text-emerald-800 hover:bg-emerald-50 active:bg-emerald-100 transition-colors flex items-center justify-center w-10 h-10 border border-slate-200 focus:outline-none focus:ring-2 focus:ring-emerald-600"
@@ -131,7 +264,7 @@ export function Header() {
         <>
           {/* Backdrop Overlay to close on tap */}
           <div
-            className="fixed inset-0 top-20 bg-slate-950/50 backdrop-blur-xs z-30 lg:hidden"
+            className="fixed inset-0 top-18 sm:top-20 bg-slate-950/50 backdrop-blur-xs z-30 lg:hidden"
             onClick={() => setMobileMenuOpen(false)}
             aria-hidden="true"
           />
@@ -170,7 +303,7 @@ export function Header() {
 
             {/* Navigation Links with Clean Dividers */}
             <nav className="p-3 space-y-1 divide-y divide-slate-100">
-              {navLinks.map((link) => {
+              {mobileNavLinks.map((link) => {
                 const Icon = link.icon;
                 const isActive = pathname === link.href;
                 return (
@@ -225,4 +358,5 @@ export function Header() {
     </header>
   );
 }
+
 

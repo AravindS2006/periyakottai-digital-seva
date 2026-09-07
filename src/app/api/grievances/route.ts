@@ -3,6 +3,7 @@ import { db } from '@/lib/db';
 
 export async function GET() {
   try {
+    await db.syncFromCloud();
     const grievances = db.getGrievances();
     return NextResponse.json(grievances);
   } catch (error) {
