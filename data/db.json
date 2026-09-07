@@ -1,0 +1,126 @@
+{
+  "requests": [],
+  "grievances": [],
+  "notices": [
+    {
+      "id": "notice-1",
+      "title": {
+        "ta": "PM கிசான் 19-வது தவணை e-KYC முகாம் நால்ரோடு மையத்தில் நடைபெறுகிறது",
+        "en": "PM-KISAN 19th Installment e-KYC Camp at Nalroad e-Seva Centre"
+      },
+      "content": {
+        "ta": "விவசாயிகள் தங்களின் ஆதார் எண் மற்றும் வங்கி கணக்கு இணைக்க நால்ரோடு இ-சேவை மையத்திற்கு வந்து கைரேகை மூலம் உடனடியாக e-KYC செய்து கொள்ளலாம். கடைசி தேதிக்கு முன் முடிக்கவும்.",
+        "en": "Farmers can complete biometric e-KYC for PM-KISAN 19th installment at Nalroad e-Seva Centre. Ensure completion before the cutoff."
+      },
+      "date": "2026-09-07",
+      "expiryDate": "2026-09-30",
+      "category": "camp",
+      "important": true,
+      "source": "வேளாண்மைத் துறை (Oddanchatram Agriculture Dept)"
+    },
+    {
+      "id": "notice-2",
+      "title": {
+        "ta": "சொட்டு நீர் பாசனம் 100% அரசு மானிய பதிவு தொடக்கம்",
+        "en": "Drip Irrigation 100% Subsidy Registration Open for Small Farmers"
+      },
+      "content": {
+        "ta": "சிறு மற்றும் குறு விவசாயிகளுக்கு (5 ஏக்கர் வரை) 100% மானியத்திலும், இதர விவசாயிகளுக்கு 75% மானியத்திலும் சொட்டு நீர் பாசன வசதி வழங்கப்படுகிறது. சிட்டா, அடங்கல், வரைபடம் கொண்டு வந்து பதிவு செய்யவும்.",
+        "en": "100% subsidy for micro-irrigation for small/marginal farmers (up to 5 acres) and 75% for other farmers. Register with Chitta, Adangal, and FMB sketch."
+      },
+      "date": "2026-09-05",
+      "expiryDate": "2026-10-15",
+      "category": "subsidy",
+      "important": true,
+      "source": "தோட்டக்கலைத் துறை (Horticulture Dept Oddanchatram)"
+    },
+    {
+      "id": "notice-3",
+      "title": {
+        "ta": "கலைஞர் கனவு இல்லம் திட்ட கள ஆய்வு அறிவிப்பு",
+        "en": "Kalaignar Kanavu Illam Field Verification Camp"
+      },
+      "content": {
+        "ta": "பெரியாக்கோட்டை கிராம பஞ்சாயத்தில் குடிசை வீடுகளில் வசிக்கும் தகுதியான குடும்பங்களை தேர்வு செய்ய ஊராட்சி அலுவலர்கள் ஆய்வு மேற்கொள்கின்றனர்.",
+        "en": "Field verification by panchayat officials for eligible rural households under Kalaignar Kanavu Illam pucca housing scheme."
+      },
+      "date": "2026-09-04",
+      "category": "panchayat",
+      "important": false,
+      "source": "பெரியாக்கோட்டை ஊராட்சி மன்றம்"
+    }
+  ],
+  "auditLogs": [
+    {
+      "id": "log-live-ready",
+      "timestamp": "2026-09-07T16:56:36.158Z",
+      "action": "PRODUCTION_READY",
+      "actor": "System",
+      "details": "All test and mock data cleared. Ready for live citizen applications and civic grievances."
+    },
+    {
+      "id": "log-1788800903453",
+      "timestamp": "2026-09-07T17:08:23.453Z",
+      "action": "UPDATE_SETTINGS",
+      "actor": "Audit Script",
+      "details": "Operator updated centre configuration and announcements"
+    },
+    {
+      "id": "log-1788800924192",
+      "timestamp": "2026-09-07T17:08:44.192Z",
+      "action": "UPDATE_SETTINGS",
+      "actor": "Audit Script",
+      "details": "Operator updated centre configuration and announcements"
+    },
+    {
+      "id": "log-1788801446701",
+      "timestamp": "2026-09-07T17:17:26.701Z",
+      "action": "UPDATE_SETTINGS",
+      "actor": "Murugesan K (Operator)",
+      "details": "Operator updated centre configuration and announcements"
+    },
+    {
+      "id": "log-1788801696511",
+      "timestamp": "2026-09-07T17:21:36.511Z",
+      "action": "UPDATE_SETTINGS",
+      "actor": "Audit Script",
+      "details": "Operator updated centre configuration and announcements"
+    },
+    {
+      "id": "log-1788802127305",
+      "timestamp": "2026-09-07T17:28:47.305Z",
+      "action": "UPDATE_SETTINGS",
+      "actor": "Audit Script",
+      "details": "Operator updated centre configuration and announcements"
+    }
+  ],
+  "settings": {
+    "centreStatus": "open",
+    "statusNote": {
+      "ta": "இன்று அரசு விடுமுறை / தற்காலிக விடுப்பு. நாளை மையம் இயங்கும்.",
+      "en": "Holiday today. Centre resumes tomorrow."
+    },
+    "operatingHours": {
+      "ta": "திங்கள் - சனி: காலை 9:30 முதல் மாலை 5:00 வரை | ஞாயிறு: விடுமுறை",
+      "en": "Mon - Sat: 9:30 AM - 5:00 PM | Sun: Holiday"
+    },
+    "primaryPhone": "9790382437",
+    "alternatePhone": "9790382437",
+    "email": "nalroadmakkalesevaimaiyam@gmail.com",
+    "googleMapUrl": "https://maps.app.goo.gl/kDxy1NXkBNCYcAZEA",
+    "marketWhatsAppUrl": "https://chat.whatsapp.com/invite-placeholder-oddanchatram",
+    "marketNotice": {
+      "ta": "ஒட்டன்சத்திரம் காந்தி மார்க்கெட் தினசரி காய்கறி விலை நிலவரங்கள் வாட்ஸ்அப் குழுவில் தினமும் காலை 8:00 மணிக்கு பதிவேற்றப்படும்.",
+      "en": "Daily Oddanchatram Gandhi Market vegetable price updates are posted in our WhatsApp community every morning at 8:00 AM."
+    },
+    "announcementBanner": {
+      "enabled": true,
+      "text": {
+        "ta": "நால்ரோடு மக்கள் இ-சேவை மையம்: PM கிசான் 19-வது தவணை e-KYC கைரேகை பதிவு & மகளிர் உரிமைத் தொகை ஆவண சரிபார்ப்பு நடைபெறுகிறது.",
+        "en": "Nalroad Makkal e-Seva Centre: PM-KISAN 19th installment e-KYC & Kalaignar Magalir Urimai verification active."
+      },
+      "type": "info"
+    },
+    "lastUpdated": "2026-09-07T17:28:47.305Z"
+  }
+}
