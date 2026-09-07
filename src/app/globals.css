@@ -100,3 +100,33 @@ a:focus-visible, button:focus-visible, input:focus-visible, select:focus-visible
 .font-tamil {
   font-family: 'Noto Sans Tamil', system-ui, sans-serif;
 }
+
+/* Print optimization: Hide shell chrome and eliminate multi-page print spill */
+@media print {
+  @page {
+    size: A4 portrait;
+    margin: 10mm 15mm;
+  }
+
+  header,
+  footer,
+  nav,
+  .accessibility-bar,
+  .network-status,
+  .floating-help,
+  .no-print,
+  button,
+  .btn,
+  a[href^="tel:"],
+  a[href^="https://wa.me"] {
+    display: none !important;
+  }
+
+  body {
+    background: #ffffff !important;
+    color: #000000 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+  }
+}
+

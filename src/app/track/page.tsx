@@ -100,8 +100,8 @@ function TrackContent() {
                 onChange={(e) => setSearchId(e.target.value)}
                 placeholder={
                   language === 'ta'
-                    ? 'மனு எண் (எ.கா: PDS-REQ-...) அல்லது 10 இலக்க செல்போன் எண்'
-                    : 'Application ID (PDS-REQ...) or 10-digit mobile number'
+                    ? 'மனு எண் (எ.கா: PDS-REQ-0001) அல்லது 10 இலக்க செல்போன் எண்'
+                    : 'Application ID (e.g. PDS-REQ-0001) or 10-digit mobile number'
                 }
                 className="w-full px-4 py-3.5 rounded-xl border-2 border-slate-300 focus:border-emerald-600 text-sm sm:text-base text-slate-900 focus:outline-none"
               />

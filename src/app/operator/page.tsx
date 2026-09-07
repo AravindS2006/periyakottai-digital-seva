@@ -6,6 +6,7 @@ import { useRouter } from 'next/navigation';
 import { useI18n } from '@/i18n/context';
 import { RequestTicket, GrievanceTicket, RequestStatus, GrievanceStatus, PlatformSettings, VillageNotice } from '@/types';
 import { SERVICES_DATA } from '@/data/servicesData';
+import { printAcknowledgmentReceipt } from '@/lib/printReceipt';
 import {
   LayoutDashboard,
   Inbox,
@@ -1782,7 +1783,7 @@ export default function OperatorPortalPage() {
 
               <div className="pt-2 flex justify-between gap-3">
                 <button
-                  onClick={() => window.print()}
+                  onClick={() => printAcknowledgmentReceipt(slipTicket)}
                   className="flex-1 bg-slate-950 hover:bg-slate-800 text-white font-black py-2.5 rounded-xl text-xs flex items-center justify-center gap-1.5 shadow"
                 >
                   <Printer className="w-4 h-4" />

@@ -289,7 +289,15 @@ export const db = {
 
   getRequestById: (id: string): RequestTicket | undefined => {
     const data = ensureDatabase();
-    return data.requests.find((r) => r.id.toLowerCase() === id.trim().toLowerCase());
+    const clean = id.trim().toLowerCase();
+    return data.requests.find((r) => {
+      const rid = r.id.toLowerCase();
+      return (
+        rid === clean ||
+        rid.replace('-624614', '') === clean.replace('-624614', '') ||
+        rid.replace('pds-req-', '') === clean.replace('pds-req-', '')
+      );
+    });
   },
 
   getRequestsByPhone: (phone: string): RequestTicket[] => {
@@ -304,7 +312,7 @@ export const db = {
       const match = r.id.match(/\d+$/);
       return match ? Math.max(max, parseInt(match[0], 10)) : max;
     }, 0) + 1;
-    const newId = `PDS-REQ-624614-${String(nextNum).padStart(4, '0')}`;
+    const newId = `PDS-REQ-${String(nextNum).padStart(4, '0')}`;
     const now = new Date().toISOString();
 
     const newTicket: RequestTicket = {
@@ -370,7 +378,15 @@ export const db = {
 
   getGrievanceById: (id: string): GrievanceTicket | undefined => {
     const data = ensureDatabase();
-    return data.grievances.find((g) => g.id.toLowerCase() === id.trim().toLowerCase());
+    const clean = id.trim().toLowerCase();
+    return data.grievances.find((g) => {
+      const gid = g.id.toLowerCase();
+      return (
+        gid === clean ||
+        gid.replace('-624614', '') === clean.replace('-624614', '') ||
+        gid.replace('pds-grv-', '') === clean.replace('pds-grv-', '')
+      );
+    });
   },
 
   createGrievance: (grievance: Omit<GrievanceTicket, 'id' | 'createdAt' | 'updatedAt' | 'timeline'>): GrievanceTicket => {
@@ -379,7 +395,7 @@ export const db = {
       const match = g.id.match(/\d+$/);
       return match ? Math.max(max, parseInt(match[0], 10)) : max;
     }, 0) + 1;
-    const newId = `PDS-GRV-624614-${String(nextNum).padStart(4, '0')}`;
+    const newId = `PDS-GRV-${String(nextNum).padStart(4, '0')}`;
     const now = new Date().toISOString();
 
     const newGrievance: GrievanceTicket = {

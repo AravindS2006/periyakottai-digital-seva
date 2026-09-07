@@ -183,6 +183,13 @@
       "action": "UPDATE_SETTINGS",
       "actor": "System Test Restore",
       "details": "Operator updated centre configuration and announcements"
+    },
+    {
+      "id": "log-1788805817685",
+      "timestamp": "2026-09-07T18:30:17.685Z",
+      "action": "UPDATE_SETTINGS",
+      "actor": "Audit Verification",
+      "details": "Operator updated centre configuration and announcements"
     }
   ],
   "settings": {
@@ -212,6 +219,6 @@
       },
       "type": "info"
     },
-    "lastUpdated": "2026-09-07T18:11:42.568Z"
+    "lastUpdated": "2026-09-07T18:30:17.685Z"
   }
 }

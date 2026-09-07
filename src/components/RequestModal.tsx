@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import { useI18n } from '@/i18n/context';
 import { X, CheckCircle2, PhoneCall, Copy, Check, MessageSquare, Printer } from 'lucide-react';
 import { RequestTicket } from '@/types';
+import { printAcknowledgmentReceipt } from '@/lib/printReceipt';
 
 interface RequestModalProps {
   isOpen: boolean;
@@ -158,7 +159,7 @@ export function RequestModal({
               </a>
 
               <button
-                onClick={() => window.print()}
+                onClick={() => printAcknowledgmentReceipt(createdTicket)}
                 className="w-full flex items-center justify-center gap-2 bg-slate-100 hover:bg-slate-200 text-slate-800 font-bold py-2.5 px-4 rounded-xl transition-colors text-xs sm:text-sm border border-slate-300"
               >
                 <Printer className="w-4 h-4 text-slate-700" />
