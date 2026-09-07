@@ -54,7 +54,7 @@ export default function HomePage() {
     VERIFIED_NEWS_DATA.filter((n) => n.featured || n.important).slice(0, 3)
   );
   const [platformSettings, setPlatformSettings] = useState<{
-    centreStatus?: 'open' | 'closed' | 'camp';
+    centreStatus?: 'open' | 'closed' | 'camp' | 'temp_closed';
     statusNote?: { ta: string; en: string };
     operatingHours?: { ta: string; en: string };
     primaryPhone?: string;
@@ -268,21 +268,32 @@ export default function HomePage() {
       {/* 2. HERO EXPERIENCE */}
       <section className="relative pt-4 sm:pt-8 px-4 sm:px-6 lg:px-8">
         <div className="max-w-5xl mx-auto text-center space-y-6">
-          {/* REAL-TIME CENTRE OPERATIONAL STATUS INDICATOR (OPERATOR CONTROLLED) */}
-          <div className="flex flex-wrap items-center justify-center gap-3">
-            <div
-              className={`inline-flex items-center gap-2 px-4 py-2 rounded-2xl text-xs sm:text-sm font-black border-2 shadow-xs transition-all ${
-                platformSettings?.centreStatus === 'camp'
-                  ? 'bg-amber-50 border-amber-400 text-amber-900'
+          {/* REAL-TIME CENTRE OPERATIONAL STATUS INDICATOR (CLICKABLE TO CSC CENTRE) */}
+          <div className="flex items-center justify-center">
+            <Link
+              href="/csc-centre"
+              title={
+                language === 'ta'
+                  ? 'மையத்தின் முழு விவரம், முகவரி & வழிகாட்டுதல் பார்க்க கிளிக் செய்யவும்'
+                  : 'Click to view full centre details, address & directions'
+              }
+              className={`group inline-flex flex-wrap items-center justify-center gap-2 sm:gap-3 px-4 py-2.5 sm:px-6 sm:py-3 rounded-2xl text-xs sm:text-sm font-black border-2 shadow-xs hover:shadow-md transition-all hover:scale-[1.02] cursor-pointer ${
+                platformSettings?.centreStatus === 'temp_closed'
+                  ? 'bg-orange-50 hover:bg-orange-100/90 border-orange-400 text-orange-950'
+                  : platformSettings?.centreStatus === 'camp'
+                  ? 'bg-amber-50 hover:bg-amber-100/90 border-amber-400 text-amber-950'
                   : platformSettings?.centreStatus === 'closed'
-                  ? 'bg-rose-50 border-rose-400 text-rose-900'
-                  : 'bg-emerald-50 border-emerald-500 text-emerald-950'
+                  ? 'bg-rose-50 hover:bg-rose-100/90 border-rose-400 text-rose-950'
+                  : 'bg-emerald-50 hover:bg-emerald-100/90 border-emerald-500 text-emerald-950'
               }`}
             >
-              <span className="relative flex h-3 w-3">
+              {/* Pulsing indicator dot */}
+              <span className="relative flex h-3 w-3 shrink-0">
                 <span
                   className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${
-                    platformSettings?.centreStatus === 'camp'
+                    platformSettings?.centreStatus === 'temp_closed'
+                      ? 'bg-orange-400'
+                      : platformSettings?.centreStatus === 'camp'
                       ? 'bg-amber-400'
                       : platformSettings?.centreStatus === 'closed'
                       ? 'bg-rose-400'
@@ -291,7 +302,9 @@ export default function HomePage() {
                 ></span>
                 <span
                   className={`relative inline-flex rounded-full h-3 w-3 ${
-                    platformSettings?.centreStatus === 'camp'
+                    platformSettings?.centreStatus === 'temp_closed'
+                      ? 'bg-orange-500'
+                      : platformSettings?.centreStatus === 'camp'
                       ? 'bg-amber-500'
                       : platformSettings?.centreStatus === 'closed'
                       ? 'bg-rose-500'
@@ -300,43 +313,52 @@ export default function HomePage() {
                 ></span>
               </span>
 
-              <span>
-                {platformSettings?.centreStatus === 'camp'
+              {/* Status Text */}
+              <span className="whitespace-nowrap">
+                {platformSettings?.centreStatus === 'temp_closed'
                   ? language === 'ta'
-                    ? '🟡 இன்று கிராம கள முகாம் (Field Camp Active)'
-                    : '🟡 In Village Field Camp Today'
+                    ? '🟠 தற்காலிகமாக வெளியே சென்றுள்ளார் (Temporarily Away)'
+                    : '🟠 Temporarily Stepped Out'
+                  : platformSettings?.centreStatus === 'camp'
+                  ? language === 'ta'
+                    ? '🟡 கிராம கள முகாமில் உள்ளார் (In Field Camp)'
+                    : '🟡 In Village Field Camp'
                   : platformSettings?.centreStatus === 'closed'
                   ? language === 'ta'
-                    ? '🔴 இன்று மையம் விடுமுறை (Centre Closed Today)'
-                    : '🔴 Centre is Closed Today'
+                    ? '🔴 மையம் மூடப்பட்டுள்ளது (Centre is Closed)'
+                    : '🔴 Centre is Closed'
                   : language === 'ta'
-                  ? '🟢 இன்று மையம் திறந்துள்ளது (Centre is OPEN)'
-                  : '🟢 Centre is OPEN Today'}
+                  ? '🟢 மையம் தற்போது திறந்துள்ளது (Centre is OPEN)'
+                  : '🟢 Centre is Currently OPEN'}
               </span>
 
-              <span className="hidden sm:inline text-slate-400">|</span>
+              <span className="hidden sm:inline text-slate-400 select-none">|</span>
 
-              <span className="text-[11px] sm:text-xs font-semibold">
-                {platformSettings?.centreStatus === 'camp'
-                  ? language === 'ta'
-                    ? 'அழைக்க: 97903 82437'
-                    : 'Call: 97903 82437'
-                  : platformSettings?.centreStatus === 'closed'
-                  ? language === 'ta'
-                    ? 'ஞாயிறு / அரசு விடுமுறை'
-                    : 'Sunday / Holiday'
-                  : language === 'ta'
-                  ? 'காலை 9:30 - மாலை 5:00'
-                  : '9:30 AM - 5:00 PM'}
+              {/* Note / Timing & Direct Call or Directions */}
+              <span className="text-[11px] sm:text-xs font-semibold whitespace-nowrap text-slate-700">
+                {platformSettings?.statusNote?.[language] ||
+                  (platformSettings?.centreStatus === 'temp_closed'
+                    ? language === 'ta'
+                      ? 'சிறிது நேரத்தில் திறக்கப்படும் | அழைக்க: 97903 82437'
+                      : 'Back shortly | Call 97903 82437'
+                    : platformSettings?.centreStatus === 'camp'
+                    ? language === 'ta'
+                      ? 'களப்பணி | அழைக்க: 97903 82437'
+                      : 'In field | Call: 97903 82437'
+                    : platformSettings?.centreStatus === 'closed'
+                    ? language === 'ta'
+                      ? 'விடுமுறை | நாளை காலை 9:30 மணிக்கு திறக்கப்படும்'
+                      : 'Closed | Resumes tomorrow 9:30 AM'
+                    : language === 'ta'
+                    ? 'காலை 9:30 - மாலை 5:00'
+                    : '9:30 AM - 5:00 PM')}
               </span>
-            </div>
 
-            <Link
-              href="/csc-centre"
-              className="inline-flex items-center gap-1.5 bg-white hover:bg-slate-50 text-slate-800 border border-slate-300 px-3.5 py-2 rounded-2xl text-xs font-bold transition-colors shadow-2xs"
-            >
-              <MapPin className="w-3.5 h-3.5 text-emerald-700" />
-              <span>{language === 'ta' ? 'நால்ரோடு சந்திப்பு, 624614' : 'Nalroad Junction, 624614'}</span>
+              {/* Clickable Cue */}
+              <span className="inline-flex items-center gap-1 text-[11px] font-bold text-emerald-800 bg-white/90 group-hover:bg-white px-2.5 py-1 rounded-xl border border-slate-200 shadow-2xs whitespace-nowrap ml-1">
+                <MapPin className="w-3.5 h-3.5 text-emerald-700 shrink-0" />
+                <span>{language === 'ta' ? 'நால்ரோடு மையம் ↗' : 'Nalroad Centre ↗'}</span>
+              </span>
             </Link>
           </div>
 
@@ -383,7 +405,7 @@ export default function HomePage() {
           <div className="pt-4 flex flex-wrap items-center justify-center gap-2.5 sm:gap-3">
             <Link
               href="/services"
-              className="inline-flex items-center gap-2 bg-emerald-800 hover:bg-emerald-900 text-white font-bold text-xs sm:text-sm px-4 py-2.5 rounded-xl shadow-sm transition-all hover:scale-105"
+              className="inline-flex items-center gap-2 bg-emerald-800 hover:bg-emerald-900 text-white font-bold text-xs sm:text-sm px-4 py-2.5 rounded-xl shadow-sm transition-all hover:scale-105 whitespace-nowrap"
             >
               <FileText className="w-4 h-4 text-emerald-300" />
               <span>{t('action_find_service', 'சேவையைத் தேடுங்கள்')}</span>
@@ -391,7 +413,7 @@ export default function HomePage() {
 
             <Link
               href="/schemes/eligibility"
-              className="inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs sm:text-sm px-4 py-2.5 rounded-xl shadow-sm transition-all hover:scale-105"
+              className="inline-flex items-center gap-2 bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold text-xs sm:text-sm px-4 py-2.5 rounded-xl shadow-sm transition-all hover:scale-105 whitespace-nowrap"
             >
               <Sparkles className="w-4 h-4 text-slate-950" />
               <span>{t('action_check_eligibility', 'திட்ட தகுதி பார்க்கவும்')}</span>
@@ -399,7 +421,7 @@ export default function HomePage() {
 
             <Link
               href="/farmer-hub"
-              className="inline-flex items-center gap-2 bg-white hover:bg-slate-50 text-slate-900 font-bold text-xs sm:text-sm px-4 py-2.5 rounded-xl border border-slate-300 shadow-2xs transition-all hover:scale-105"
+              className="inline-flex items-center gap-2 bg-white hover:bg-slate-50 text-slate-900 font-bold text-xs sm:text-sm px-4 py-2.5 rounded-xl border border-slate-300 shadow-2xs transition-all hover:scale-105 whitespace-nowrap"
             >
               <Sprout className="w-4 h-4 text-emerald-600" />
               <span>{t('action_farmer_corner', 'விவசாய மையம்')}</span>
@@ -407,7 +429,7 @@ export default function HomePage() {
 
             <Link
               href="/csc-centre"
-              className="inline-flex items-center gap-2 bg-emerald-100 hover:bg-emerald-200 text-emerald-950 font-bold text-xs sm:text-sm px-4 py-2.5 rounded-xl border border-emerald-300 shadow-2xs transition-all hover:scale-105"
+              className="inline-flex items-center gap-2 bg-emerald-100 hover:bg-emerald-200 text-emerald-950 font-bold text-xs sm:text-sm px-4 py-2.5 rounded-xl border border-emerald-300 shadow-2xs transition-all hover:scale-105 whitespace-nowrap"
             >
               <Building2 className="w-4 h-4 text-emerald-800" />
               <span>{t('action_contact_centre', 'இ-சேவை மைய உதவி')}</span>

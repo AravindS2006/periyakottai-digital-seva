@@ -49,10 +49,10 @@ export function Header() {
               className="w-11 h-11 sm:w-12 sm:h-12 rounded-full object-cover shadow-md border-2 border-emerald-600 group-hover:scale-105 transition-transform shrink-0"
             />
             <div className="min-w-0">
-              <div className="font-extrabold text-sm sm:text-lg lg:text-xl text-emerald-950 leading-tight truncate">
+              <div className="font-extrabold text-xs sm:text-base lg:text-xl text-emerald-950 leading-tight whitespace-nowrap">
                 {language === 'ta' ? 'பெரியாக்கோட்டை டிஜிட்டல் சேவை' : 'Periyakottai Digital Seva'}
               </div>
-              <div className="text-[10px] sm:text-xs text-emerald-700 font-medium truncate">
+              <div className="text-[10px] sm:text-xs text-emerald-700 font-medium whitespace-nowrap">
                 {language === 'ta'
                   ? 'ஒட்டன்சத்திரம் தாலுகா | நால்ரோடு மக்கள் இ-சேவை (624614)'
                   : 'Oddanchatram Taluk | Nalroad e-Seva Centre (624614)'}

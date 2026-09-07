@@ -86,7 +86,7 @@ export default function NewsPage() {
                 <Radio className="w-3.5 h-3.5 animate-pulse text-red-600" />
                 {language === 'ta' ? 'முக்கிய செய்தி' : 'Breaking News'}
               </span>
-              <p className="text-xs sm:text-sm font-bold truncate">
+              <p className="text-xs sm:text-sm font-bold break-words line-clamp-2 md:line-clamp-1">
                 {breakingNews.title[language] || breakingNews.title.ta}
               </p>
             </div>

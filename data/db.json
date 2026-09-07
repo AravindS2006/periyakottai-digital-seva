@@ -92,13 +92,41 @@
       "action": "UPDATE_SETTINGS",
       "actor": "Audit Script",
       "details": "Operator updated centre configuration and announcements"
+    },
+    {
+      "id": "log-1788803612392",
+      "timestamp": "2026-09-07T17:53:32.392Z",
+      "action": "UPDATE_SETTINGS",
+      "actor": "Audit Script",
+      "details": "Operator updated centre configuration and announcements"
+    },
+    {
+      "id": "log-1788803646929",
+      "timestamp": "2026-09-07T17:54:06.929Z",
+      "action": "UPDATE_SETTINGS",
+      "actor": "Murugesan K",
+      "details": "Operator updated centre configuration and announcements"
+    },
+    {
+      "id": "log-1788803657433",
+      "timestamp": "2026-09-07T17:54:17.433Z",
+      "action": "UPDATE_SETTINGS",
+      "actor": "Murugesan K",
+      "details": "Operator updated centre configuration and announcements"
+    },
+    {
+      "id": "log-1788803660848",
+      "timestamp": "2026-09-07T17:54:20.848Z",
+      "action": "UPDATE_SETTINGS",
+      "actor": "Audit Script",
+      "details": "Operator updated centre configuration and announcements"
     }
   ],
   "settings": {
     "centreStatus": "open",
     "statusNote": {
-      "ta": "இன்று அரசு விடுமுறை / தற்காலிக விடுப்பு. நாளை மையம் இயங்கும்.",
-      "en": "Holiday today. Centre resumes tomorrow."
+      "ta": "மையம் வழக்கம்போல் இயங்குகிறது. அசல் ஆவணங்களுடன் வரவும்.",
+      "en": "Centre is open normally. Please carry original documents."
     },
     "operatingHours": {
       "ta": "திங்கள் - சனி: காலை 9:30 முதல் மாலை 5:00 வரை | ஞாயிறு: விடுமுறை",
@@ -121,6 +149,6 @@
       },
       "type": "info"
     },
-    "lastUpdated": "2026-09-07T17:28:47.305Z"
+    "lastUpdated": "2026-09-07T17:54:20.848Z"
   }
 }

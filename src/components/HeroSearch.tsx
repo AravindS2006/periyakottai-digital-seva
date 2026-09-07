@@ -158,7 +158,7 @@ export function HeroSearch({ initialQuery = '', onSearch }: HeroSearchProps) {
               setQuery(tag.label);
               executeSearch(tag.q);
             }}
-            className="text-xs bg-emerald-50 hover:bg-emerald-100 text-emerald-900 px-2.5 py-1 rounded-full border border-emerald-200 font-medium transition-colors"
+            className="text-xs bg-emerald-50 hover:bg-emerald-100 text-emerald-900 px-2.5 py-1 rounded-full border border-emerald-200 font-medium transition-colors whitespace-nowrap"
           >
             {tag.label}
           </button>

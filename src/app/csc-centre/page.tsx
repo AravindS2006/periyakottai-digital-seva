@@ -119,9 +119,11 @@ export default function CSCCentrePage() {
               e-Sevai ID: EFADGL0636
             </span>
             <span
-              className={`text-xs font-black px-3 py-0.5 rounded-full border ${
+              className={`text-xs font-black px-3 py-0.5 rounded-full border whitespace-nowrap ${
                 centreStatus === 'open'
                   ? 'bg-emerald-500/20 text-emerald-200 border-emerald-400'
+                  : centreStatus === 'temp_closed'
+                  ? 'bg-orange-500/20 text-orange-200 border-orange-400'
                   : centreStatus === 'camp'
                   ? 'bg-amber-500/20 text-amber-200 border-amber-400'
                   : 'bg-rose-500/20 text-rose-200 border-rose-400'
@@ -129,6 +131,8 @@ export default function CSCCentrePage() {
             >
               {centreStatus === 'open'
                 ? '🟢 திறந்துள்ளது (Open)'
+                : centreStatus === 'temp_closed'
+                ? '🟠 வெளியே சென்றுள்ளார் (Away)'
                 : centreStatus === 'camp'
                 ? '🟡 கள முகாம் (Field Camp)'
                 : '🔴 மூடப்பட்டுள்ளது (Closed)'}

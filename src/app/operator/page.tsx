@@ -880,7 +880,8 @@ export default function OperatorPortalPage() {
                     <label className="block text-xs font-bold text-slate-700 mb-2">
                       மையத்தின் தற்போதைய நிலை (Current Status):
                     </label>
-                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+                      {/* 1. Open */}
                       <button
                         type="button"
                         onClick={() =>
@@ -910,6 +911,37 @@ export default function OperatorPortalPage() {
                         <p className="text-[11px] text-slate-500 mt-1 font-medium">வழக்கமான சேவைகள் இயங்குகிறது</p>
                       </button>
 
+                      {/* 2. Temporarily Away / Stepped Out */}
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setSettings((prev) =>
+                            prev
+                              ? {
+                                  ...prev,
+                                  centreStatus: 'temp_closed',
+                                  statusNote: {
+                                    ta: 'தற்காலிகமாக வெளியே சென்றுள்ளார். சிறிது நேரத்தில் திறக்கப்படும். அவசர தொடர்புக்கு: 97903 82437',
+                                    en: 'Temporarily away. Will reopen shortly. Urgent calls: 97903 82437'
+                                  }
+                                }
+                              : null
+                          )
+                        }
+                        className={`p-3.5 rounded-xl border-2 text-left transition-all ${
+                          settings?.centreStatus === 'temp_closed'
+                            ? 'border-orange-500 bg-orange-50/80 shadow-xs'
+                            : 'border-slate-200 bg-white hover:bg-slate-50'
+                        }`}
+                      >
+                        <div className="flex items-center gap-2 font-black text-xs sm:text-sm text-orange-800">
+                          <span className="w-2.5 h-2.5 rounded-full bg-orange-500 animate-pulse"></span>
+                          <span>🟠 வெளியே சென்றுள்ளார் (Away)</span>
+                        </div>
+                        <p className="text-[11px] text-slate-500 mt-1 font-medium">சிறிது நேரத்தில் திறக்கப்படும்</p>
+                      </button>
+
+                      {/* 3. Field Camp */}
                       <button
                         type="button"
                         onClick={() =>
@@ -919,8 +951,8 @@ export default function OperatorPortalPage() {
                                   ...prev,
                                   centreStatus: 'camp',
                                   statusNote: {
-                                    ta: 'இன்று கிராம கள ஆய்வு முகாமில் உள்ளோம். அவசர தொடர்புக்கு அழைக்கவும்.',
-                                    en: 'In field camp today. Call operator for urgent help.'
+                                    ta: 'இன்று கிராம கள ஆய்வு முகாமில் உள்ளோம். அவசர தொடர்புக்கு அழைக்கவும்: 97903 82437',
+                                    en: 'In field camp today. Call operator for urgent help: 97903 82437'
                                   }
                                 }
                               : null
@@ -939,6 +971,7 @@ export default function OperatorPortalPage() {
                         <p className="text-[11px] text-slate-500 mt-1 font-medium">ஊராட்சி/கள ஆய்வு முகாம்</p>
                       </button>
 
+                      {/* 4. Closed / Holiday */}
                       <button
                         type="button"
                         onClick={() =>
@@ -948,8 +981,8 @@ export default function OperatorPortalPage() {
                                   ...prev,
                                   centreStatus: 'closed',
                                   statusNote: {
-                                    ta: 'இன்று அரசு விடுமுறை / தற்காலிக விடுப்பு. நாளை மையம் இயங்கும்.',
-                                    en: 'Holiday today. Centre resumes tomorrow.'
+                                    ta: 'இன்று மையம் விடுமுறை. நாளை காலை 9:30 மணிக்கு திறக்கப்படும்.',
+                                    en: 'Holiday today. Centre resumes tomorrow 9:30 AM.'
                                   }
                                 }
                               : null
@@ -963,9 +996,114 @@ export default function OperatorPortalPage() {
                       >
                         <div className="flex items-center gap-2 font-black text-xs sm:text-sm text-rose-800">
                           <span className="w-2.5 h-2.5 rounded-full bg-rose-500"></span>
-                          <span>🔴 மூடப்பட்டுள்ளது (Closed)</span>
+                          <span>🔴 விடுமுறை / மூடல் (Closed)</span>
                         </div>
-                        <p className="text-[11px] text-slate-500 mt-1 font-medium">விடுமுறை அல்லது பராமரிப்பு</p>
+                        <p className="text-[11px] text-slate-500 mt-1 font-medium">ஞாயிறு அல்லது அரசு விடுமுறை</p>
+                      </button>
+                    </div>
+
+                    {/* Quick Preset Buttons */}
+                    <div className="mt-3 flex flex-wrap items-center gap-1.5 text-xs">
+                      <span className="text-slate-600 font-bold text-[11px]">விரைவு குறிப்புகள் (Quick Presets):</span>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setSettings((prev) =>
+                            prev
+                              ? {
+                                  ...prev,
+                                  centreStatus: 'temp_closed',
+                                  statusNote: {
+                                    ta: '30 நிமிடங்களில் திரும்புவார் | அழைக்க: 97903 82437',
+                                    en: 'Back in 30 mins | Call: 97903 82437'
+                                  }
+                                }
+                              : null
+                          )
+                        }
+                        className="px-2.5 py-1 bg-orange-100 hover:bg-orange-200 text-orange-900 rounded-lg transition-colors font-medium text-[11px]"
+                      >
+                        ⏱️ 30 நிமிடங்களில் திரும்புவார்
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setSettings((prev) =>
+                            prev
+                              ? {
+                                  ...prev,
+                                  centreStatus: 'temp_closed',
+                                  statusNote: {
+                                    ta: '1 மணி நேரத்தில் திறக்கப்படும் | அழைக்க: 97903 82437',
+                                    en: 'Reopens in 1 hour | Call: 97903 82437'
+                                  }
+                                }
+                              : null
+                          )
+                        }
+                        className="px-2.5 py-1 bg-orange-100 hover:bg-orange-200 text-orange-900 rounded-lg transition-colors font-medium text-[11px]"
+                      >
+                        ⏱️ 1 மணி நேரத்தில் திறக்கப்படும்
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setSettings((prev) =>
+                            prev
+                              ? {
+                                  ...prev,
+                                  centreStatus: 'temp_closed',
+                                  statusNote: {
+                                    ta: 'உணவு இடைவேளை (1:30 - 2:30) | அழைக்க: 97903 82437',
+                                    en: 'Lunch Break (1:30 - 2:30 PM) | Call: 97903 82437'
+                                  }
+                                }
+                              : null
+                          )
+                        }
+                        className="px-2.5 py-1 bg-orange-100 hover:bg-orange-200 text-orange-900 rounded-lg transition-colors font-medium text-[11px]"
+                      >
+                        🍱 உணவு இடைவேளை
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setSettings((prev) =>
+                            prev
+                              ? {
+                                  ...prev,
+                                  centreStatus: 'open',
+                                  statusNote: {
+                                    ta: 'காலை 9:30 - மாலை 5:00 வழக்கம்போல் இயங்குகிறது',
+                                    en: '9:30 AM - 5:00 PM operating normally'
+                                  }
+                                }
+                              : null
+                          )
+                        }
+                        className="px-2.5 py-1 bg-emerald-100 hover:bg-emerald-200 text-emerald-900 rounded-lg transition-colors font-medium text-[11px]"
+                      >
+                        🟢 வழக்கம்போல் திறந்துள்ளது
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() =>
+                          setSettings((prev) =>
+                            prev
+                              ? {
+                                  ...prev,
+                                  centreStatus: 'closed',
+                                  statusNote: {
+                                    ta: 'ஞாயிறு விடுமுறை | நாளை காலை 9:30 மணிக்கு திறக்கப்படும்',
+                                    en: 'Sunday Holiday | Reopens tomorrow 9:30 AM'
+                                  }
+                                }
+                              : null
+                          )
+                        }
+                        className="px-2.5 py-1 bg-rose-100 hover:bg-rose-200 text-rose-900 rounded-lg transition-colors font-medium text-[11px]"
+                      >
+                        🔴 ஞாயிறு விடுமுறை
                       </button>
                     </div>
                   </div>

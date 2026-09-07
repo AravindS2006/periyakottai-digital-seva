@@ -146,7 +146,7 @@ export interface ContactItem {
 }
 
 export interface PlatformSettings {
-  centreStatus: 'open' | 'closed' | 'camp';
+  centreStatus: 'open' | 'closed' | 'camp' | 'temp_closed';
   statusNote: LocalizedString;
   operatingHours: LocalizedString;
   primaryPhone: string;

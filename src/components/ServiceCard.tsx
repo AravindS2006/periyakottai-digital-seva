@@ -45,14 +45,16 @@ export function ServiceCard({ service }: ServiceCardProps) {
           </p>
 
           {/* Key Facts */}
-          <div className="mt-4 pt-3 border-t border-slate-100 grid grid-cols-2 gap-2 text-xs text-slate-500">
+          <div className="mt-4 pt-3 border-t border-slate-100 flex flex-wrap items-center justify-between gap-2 text-xs text-slate-500">
             <div className="flex items-center gap-1.5">
               <Clock className="w-3.5 h-3.5 text-amber-600 shrink-0" />
-              <span className="truncate">{service.timeEstimate[language]}</span>
+              <span className="whitespace-nowrap">{service.timeEstimate[language]}</span>
             </div>
             <div className="flex items-center gap-1.5">
               <FileCheck className="w-3.5 h-3.5 text-emerald-600 shrink-0" />
-              <span className="truncate">{service.documents[language].length} ஆவணங்கள்</span>
+              <span className="whitespace-nowrap">
+                {service.documents[language].length} {language === 'ta' ? 'ஆவணங்கள்' : 'Documents'}
+              </span>
             </div>
           </div>
         </div>

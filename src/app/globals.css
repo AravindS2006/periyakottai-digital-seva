@@ -10,14 +10,34 @@
   --font-scale: 1;
 }
 
+* {
+  overflow-wrap: break-word;
+}
+
+html, body {
+  word-break: normal;
+  overflow-wrap: break-word;
+  -webkit-hyphens: none;
+  -ms-hyphens: none;
+  hyphens: none;
+}
+
+p, h1, h2, h3, h4, h5, h6, span, a, button, label, li {
+  /* Prevent Tamil letters and syllables from splitting across lines */
+  word-break: keep-all;
+  overflow-wrap: break-word;
+  text-wrap: pretty;
+}
+
 body {
   background-color: var(--background);
   color: var(--foreground);
-  font-family: 'Inter', 'Noto Sans Tamil', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: 'Noto Sans Tamil', 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
   font-size: calc(1rem * var(--font-scale));
   line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
+  text-rendering: optimizeLegibility;
 }
 
 /* High Contrast Mode for outdoor bright sunlight usage */
