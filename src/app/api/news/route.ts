@@ -235,26 +235,40 @@ export async function GET(request: NextRequest) {
       });
     }
 
-    return NextResponse.json({
-      success: true,
-      category,
-      count: combined.length,
-      verifiedCount: verified.length,
-      liveCount: filteredLive.length,
-      lastUpdated: new Date().toISOString(),
-      items: combined
-    });
+    const headers = {
+      'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=600'
+    };
+
+    return NextResponse.json(
+      {
+        success: true,
+        category,
+        count: combined.length,
+        verifiedCount: verified.length,
+        liveCount: filteredLive.length,
+        lastUpdated: new Date().toISOString(),
+        items: combined
+      },
+      { headers }
+    );
   } catch (error: any) {
     console.error('Error in /api/news:', error);
     // Graceful fallback to verified news
-    return NextResponse.json({
-      success: true,
-      category: 'all',
-      count: VERIFIED_NEWS_DATA.length,
-      verifiedCount: VERIFIED_NEWS_DATA.length,
-      liveCount: 0,
-      lastUpdated: new Date().toISOString(),
-      items: VERIFIED_NEWS_DATA
-    });
+    return NextResponse.json(
+      {
+        success: true,
+        category: 'all',
+        count: VERIFIED_NEWS_DATA.length,
+        verifiedCount: VERIFIED_NEWS_DATA.length,
+        liveCount: 0,
+        lastUpdated: new Date().toISOString(),
+        items: VERIFIED_NEWS_DATA
+      },
+      {
+        headers: {
+          'Cache-Control': 'public, s-maxage=300, stale-while-revalidate=600'
+        }
+      }
+    );
   }
 }

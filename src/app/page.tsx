@@ -76,7 +76,9 @@ export default function HomePage() {
       })
       .catch((err) => console.error('Error fetching hot news:', err));
 
+    let lastFetched = Date.now();
     const loadSettings = () => {
+      lastFetched = Date.now();
       fetch('/api/settings', { cache: 'no-store' })
         .then((res) => res.json())
         .then((data) => {
@@ -89,18 +91,15 @@ export default function HomePage() {
 
     loadSettings();
 
-    // Re-check every 30s so citizens always see the live, un-cached centre status
-    const timer = setInterval(loadSettings, 30000);
-
+    // Re-check only when tab becomes visible after at least 2 minutes of inactivity (protects Vercel free limits)
     const onVisible = () => {
-      if (document.visibilityState === 'visible') {
+      if (document.visibilityState === 'visible' && Date.now() - lastFetched > 120000) {
         loadSettings();
       }
     };
     document.addEventListener('visibilitychange', onVisible);
 
     return () => {
-      clearInterval(timer);
       document.removeEventListener('visibilitychange', onVisible);
     };
   }, []);

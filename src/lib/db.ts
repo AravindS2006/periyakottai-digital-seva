@@ -345,7 +345,15 @@ export const db = {
 
   updateRequestStatus: (id: string, status: RequestTicket['status'], note: string, author = 'Murugesan K'): RequestTicket | null => {
     const data = ensureDatabase();
-    const ticket = data.requests.find((r) => r.id.toLowerCase() === id.toLowerCase());
+    const clean = id.trim().toLowerCase();
+    const ticket = data.requests.find((r) => {
+      const rid = r.id.toLowerCase();
+      return (
+        rid === clean ||
+        rid.replace('-624614', '') === clean.replace('-624614', '') ||
+        rid.replace('pds-req-', '') === clean.replace('pds-req-', '')
+      );
+    });
     if (!ticket) return null;
 
     const now = new Date().toISOString();
@@ -362,7 +370,7 @@ export const db = {
       timestamp: now,
       action: 'UPDATE_REQUEST_STATUS',
       actor: author,
-      targetId: id,
+      targetId: ticket.id,
       details: `Status updated to ${status}: ${note}`
     });
 
@@ -387,6 +395,12 @@ export const db = {
         gid.replace('pds-grv-', '') === clean.replace('pds-grv-', '')
       );
     });
+  },
+
+  getGrievancesByPhone: (phone: string): GrievanceTicket[] => {
+    const data = ensureDatabase();
+    const cleanPhone = phone.replace(/\D/g, '');
+    return data.grievances.filter((g) => g.phoneNumber.replace(/\D/g, '').includes(cleanPhone));
   },
 
   createGrievance: (grievance: Omit<GrievanceTicket, 'id' | 'createdAt' | 'updatedAt' | 'timeline'>): GrievanceTicket => {
@@ -428,7 +442,15 @@ export const db = {
 
   updateGrievanceStatus: (id: string, status: GrievanceTicket['status'], note: string, author = 'Admin'): GrievanceTicket | null => {
     const data = ensureDatabase();
-    const grievance = data.grievances.find((g) => g.id.toLowerCase() === id.toLowerCase());
+    const clean = id.trim().toLowerCase();
+    const grievance = data.grievances.find((g) => {
+      const gid = g.id.toLowerCase();
+      return (
+        gid === clean ||
+        gid.replace('-624614', '') === clean.replace('-624614', '') ||
+        gid.replace('pds-grv-', '') === clean.replace('pds-grv-', '')
+      );
+    });
     if (!grievance) return null;
 
     const now = new Date().toISOString();
@@ -445,7 +467,7 @@ export const db = {
       timestamp: now,
       action: 'UPDATE_GRIEVANCE_STATUS',
       actor: author,
-      targetId: id,
+      targetId: grievance.id,
       details: `Grievance status changed to ${status}: ${note}`
     });
 

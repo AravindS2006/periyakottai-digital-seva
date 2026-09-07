@@ -32,11 +32,19 @@ export function RequestTimeline({
     { key: 'Received', label: { ta: 'புகார் பெறப்பட்டது', en: 'Received' } },
     { key: 'Forwarded to Official', label: { ta: 'அதிகாரிக்கு அனுப்பப்பட்டது', en: 'Forwarded' } },
     { key: 'Action Pending', label: { ta: 'கள ஆய்வு / நடவடிக்கை', en: 'Action Pending' } },
-    { key: 'Resolved', label: { ta: 'தீர்வு காணப்பட்டது', en: 'Resolved' } }
+    { key: 'Resolved', label: { ta: 'தீர்வு காணப்பட்டது', en: 'Resolved' } },
+    { key: 'Closed', label: { ta: 'முடிவு செய்யப்பட்டது', en: 'Closed' } }
   ];
 
   const steps = type === 'request' ? requestSteps : grievanceSteps;
-  const currentIdx = steps.findIndex((s) => s.key === currentStatus);
+  let currentIdx = steps.findIndex((s) => s.key === currentStatus);
+  if (currentIdx === -1) {
+    if (currentStatus === 'Completed' || currentStatus === 'Closed' || currentStatus === 'Resolved') {
+      currentIdx = steps.length - 1;
+    } else {
+      currentIdx = 0;
+    }
+  }
 
   return (
     <div className="py-4">

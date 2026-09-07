@@ -190,6 +190,22 @@
       "action": "UPDATE_SETTINGS",
       "actor": "Audit Verification",
       "details": "Operator updated centre configuration and announcements"
+    },
+    {
+      "id": "log-1788807219915",
+      "timestamp": "2026-09-07T18:53:39.915Z",
+      "action": "CREATE_GRIEVANCE",
+      "actor": "முருகன் காளியப்பன் (Farmer)",
+      "targetId": "PDS-GRV-0001",
+      "details": "Grievance registered in category agriculture"
+    },
+    {
+      "id": "log-1788807219933",
+      "timestamp": "2026-09-07T18:53:39.933Z",
+      "action": "UPDATE_GRIEVANCE_STATUS",
+      "actor": "Murugesan K (Operator)",
+      "targetId": "PDS-GRV-0001",
+      "details": "Grievance status changed to Forwarded to Official: ஒட்டன்சத்திரம் வேளாண்மை உதவி அலுவலரிடம் மனு ஒப்படைக்கப்பட்டது."
     }
   ],
   "settings": {

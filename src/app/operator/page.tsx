@@ -64,6 +64,8 @@ export default function OperatorPortalPage() {
   // Filter state
   const [statusFilter, setStatusFilter] = useState<string>('All');
   const [priorityFilter, setPriorityFilter] = useState<string>('All');
+  const [grvStatusFilter, setGrvStatusFilter] = useState<string>('All');
+  const [grvCategoryFilter, setGrvCategoryFilter] = useState<string>('All');
   const [searchQuery, setSearchQuery] = useState('');
 
   // Settings & Notice management state
@@ -150,10 +152,10 @@ export default function OperatorPortalPage() {
     setLoading(true);
     try {
       const [reqRes, grvRes, setRes, notRes] = await Promise.all([
-        fetch('/api/requests'),
-        fetch('/api/grievances'),
-        fetch('/api/settings'),
-        fetch('/api/notices')
+        fetch('/api/requests', { cache: 'no-store' }),
+        fetch('/api/grievances', { cache: 'no-store' }),
+        fetch('/api/settings', { cache: 'no-store' }),
+        fetch('/api/notices', { cache: 'no-store' })
       ]);
       if (reqRes.ok) {
         const reqData = await reqRes.json();
@@ -359,6 +361,13 @@ export default function OperatorPortalPage() {
     return `https://wa.me/91${ticket.phoneNumber.replace(/\D/g, '')}?text=${text}`;
   };
 
+  const generateGrievanceWhatsAppUrl = (grv: GrievanceTicket) => {
+    const text = encodeURIComponent(
+      `வணக்கம் ${grv.citizenName} அவர்களே,\n\nநால்ரோடு மக்கள் இ-சேவை மையத்திலிருந்து (முருகேசன் கே EFADGL0636) இந்த செய்தி அனுப்பப்படுகிறது.\n\nதங்கள் குறைதீர்ப்பு மனு விவரம்:\n📋 மனு எண்: ${grv.id}\n📁 பிரிவு: ${grv.category === 'agriculture' ? 'விவசாயம் / உழவர் குறை' : grv.category}\n🚦 தற்போதைய நிலை: *${grv.status}*\n📍 இடம்: ${grv.location}\n\nகூடுதல் விவரங்களை அறிய நால்ரோடு மையத்தை 97903 82437 என்ற எண்ணில் தொடர்பு கொள்ளவும்.\n\nபெரியாக்கோட்டை டிஜிட்டல் சேவை`
+    );
+    return `https://wa.me/91${grv.phoneNumber.replace(/\D/g, '')}?text=${text}`;
+  };
+
   const filteredRequests = requests.filter((r) => {
     const matchesStatus = statusFilter === 'All' || r.status === statusFilter;
     const matchesPriority = priorityFilter === 'All' || r.priority === priorityFilter;
@@ -374,14 +383,17 @@ export default function OperatorPortalPage() {
   });
 
   const filteredGrievances = grievances.filter((g) => {
+    const matchesStatus = grvStatusFilter === 'All' || g.status === grvStatusFilter;
+    const matchesCategory = grvCategoryFilter === 'All' || g.category === grvCategoryFilter;
     const q = searchQuery.toLowerCase();
-    return (
+    const matchesQuery =
       !q ||
       g.id.toLowerCase().includes(q) ||
       g.citizenName.toLowerCase().includes(q) ||
       g.phoneNumber.includes(q) ||
-      g.description.toLowerCase().includes(q)
-    );
+      g.description.toLowerCase().includes(q) ||
+      g.location.toLowerCase().includes(q);
+    return matchesStatus && matchesCategory && matchesQuery;
   });
 
   // Calculate statistics
@@ -804,36 +816,103 @@ export default function OperatorPortalPage() {
 
           {/* GRIEVANCES LIST */}
           {activeTab === 'grievances' && (
-            <div className="space-y-3">
+            <div className="space-y-4">
+              {/* Grievance Filters */}
+              <div className="flex flex-wrap items-center justify-between gap-3 text-xs bg-purple-50/50 p-3 rounded-2xl border border-purple-100">
+                <div className="flex flex-wrap items-center gap-1.5">
+                  <span className="font-bold text-slate-500 mr-1 flex items-center gap-1">
+                    <Filter className="w-3.5 h-3.5 text-purple-700" />
+                    <span>நிலை:</span>
+                  </span>
+                  {['All', 'Received', 'Forwarded to Official', 'Action Pending', 'Resolved', 'Closed'].map((st) => (
+                    <button
+                      key={st}
+                      onClick={() => setGrvStatusFilter(st)}
+                      className={`px-3 py-1 rounded-lg font-bold transition-colors ${
+                        grvStatusFilter === st
+                          ? 'bg-purple-900 text-white shadow-xs'
+                          : 'bg-white text-slate-700 hover:bg-purple-100 border border-purple-200'
+                      }`}
+                    >
+                      {st === 'All' ? 'அனைத்தும்' : st}
+                    </button>
+                  ))}
+                </div>
+
+                <div className="flex flex-wrap items-center gap-1.5">
+                  <span className="font-bold text-slate-500">பிரிவு:</span>
+                  {[
+                    { id: 'All', label: 'அனைத்தும்' },
+                    { id: 'agriculture', label: '🌾 உழவர் குறை' },
+                    { id: 'drinking_water', label: '💧 குடிநீர்' },
+                    { id: 'street_light', label: '💡 தெருவிளக்கு' },
+                    { id: 'road_repair', label: '🛣️ சாலை' },
+                    { id: 'sanitation', label: '🧹 சுகாதாரம்' },
+                    { id: 'ration_shop', label: '🍚 ரேஷன்' },
+                    { id: 'other', label: 'மற்றவை' }
+                  ].map((c) => (
+                    <button
+                      key={c.id}
+                      onClick={() => setGrvCategoryFilter(c.id)}
+                      className={`px-2.5 py-1 rounded-lg font-bold transition-colors ${
+                        grvCategoryFilter === c.id
+                          ? 'bg-emerald-800 text-white shadow-xs'
+                          : 'bg-white text-slate-700 hover:bg-slate-100 border border-slate-200'
+                      }`}
+                    >
+                      {c.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+
               {filteredGrievances.length === 0 ? (
                 <div className="py-14 text-center bg-white rounded-2xl border border-dashed border-slate-200 p-6 space-y-2">
                   <div className="w-12 h-12 rounded-full bg-purple-50 text-purple-700 mx-auto flex items-center justify-center">
                     <AlertCircle className="w-6 h-6" />
                   </div>
                   <h4 className="font-bold text-sm text-slate-800">
-                    நிலுவையில் உள்ள பொது புகார்கள் எதுவும் இல்லை
+                    தேர்ந்தெடுக்கப்பட்ட பிரிவில் புகார்கள் எதுவும் இல்லை
                   </h4>
                   <p className="text-xs text-slate-500 max-w-md mx-auto">
-                    பெரியாக்கோட்டை கிராம மக்களிடமிருந்து பெறப்படும் குடிநீர், தெருவிளக்கு, சாலை பராமரிப்பு புகார்கள் இங்கே கண்காணிக்கப்படும்.
+                    விவசாயிகள் அல்லது பெரியாக்கோட்டை கிராம மக்களிடமிருந்து பெறப்படும் மனுக்கள் இங்கே காட்டப்படும்.
                   </p>
                 </div>
               ) : (
                 filteredGrievances.map((grv) => (
                   <div
                     key={grv.id}
-                    className="p-4 sm:p-5 rounded-2xl border border-slate-200 hover:border-purple-300 transition-all bg-white flex flex-col lg:flex-row lg:items-center justify-between gap-4 shadow-2xs"
+                    className={`p-4 sm:p-5 rounded-2xl border transition-all bg-white flex flex-col lg:flex-row lg:items-center justify-between gap-4 shadow-2xs ${
+                      grv.category === 'agriculture'
+                        ? 'border-emerald-200 hover:border-emerald-400 bg-emerald-50/20'
+                        : 'border-slate-200 hover:border-purple-300'
+                    }`}
                   >
                     <div className="space-y-1.5 flex-1">
                       <div className="flex flex-wrap items-center gap-2">
-                        <span className="font-black text-xs text-slate-900 bg-slate-100 px-2.5 py-0.5 rounded-md">
+                        <span className="font-mono font-black text-xs text-slate-900 bg-slate-100 px-2.5 py-0.5 rounded-md border border-slate-200">
                           {grv.id}
                         </span>
-                        <span className="text-[11px] font-extrabold px-2.5 py-0.5 rounded-full bg-purple-100 text-purple-900">
-                          {grv.status}
+                        <span className={`text-[11px] font-extrabold px-2.5 py-0.5 rounded-full border ${
+                          grv.status === 'Resolved' || grv.status === 'Closed'
+                            ? 'bg-emerald-100 text-emerald-900 border-emerald-300'
+                            : grv.status === 'Action Pending'
+                            ? 'bg-amber-100 text-amber-900 border-amber-300'
+                            : grv.status === 'Forwarded to Official'
+                            ? 'bg-blue-100 text-blue-900 border-blue-300'
+                            : 'bg-purple-100 text-purple-900 border-purple-300'
+                        }`}>
+                          ● {grv.status}
                         </span>
-                        <span className="text-[11px] font-bold text-slate-500 bg-slate-100 px-2 py-0.5 rounded">
-                          {grv.category}
-                        </span>
+                        {grv.category === 'agriculture' ? (
+                          <span className="text-[11px] font-black text-emerald-900 bg-emerald-100 border border-emerald-300 px-2 py-0.5 rounded">
+                            🌾 உழவர் குறை (Agriculture)
+                          </span>
+                        ) : (
+                          <span className="text-[11px] font-bold text-slate-600 bg-slate-100 border border-slate-200 px-2 py-0.5 rounded">
+                            {grv.category}
+                          </span>
+                        )}
                         <span className="text-[11px] text-slate-400">
                           {new Date(grv.createdAt).toLocaleDateString('ta-IN')}
                         </span>
@@ -858,9 +937,10 @@ export default function OperatorPortalPage() {
                             currentStatus: grv.status,
                             citizenName: grv.citizenName,
                             phoneNumber: grv.phoneNumber,
-                            serviceName: `கிராம புகார்: ${grv.category}`
+                            serviceName: grv.category === 'agriculture' ? 'உழவர் குறைதீர்ப்பு மனு (Agri Grievance)' : `கிராம புகார்: ${grv.category}`
                           });
                           setSelectedStatus(grv.status);
+                          setStatusNote('');
                         }}
                         className="px-3 py-2 bg-purple-50 hover:bg-purple-100 text-purple-900 border border-purple-200 font-bold rounded-xl text-xs flex items-center gap-1.5 transition-colors"
                       >
@@ -868,9 +948,39 @@ export default function OperatorPortalPage() {
                         <span>நிலை மாற்றம்</span>
                       </button>
 
+                      <button
+                        onClick={() =>
+                          printAcknowledgmentReceipt({
+                            id: grv.id,
+                            citizenName: grv.citizenName,
+                            phoneNumber: grv.phoneNumber,
+                            serviceName: grv.category === 'agriculture' ? 'உழவர் குறைதீர்ப்பு மனு (Agri Grievance)' : `கிராம பஞ்சாயத்து புகார் (${grv.category})`,
+                            village: grv.village || 'பெரியாக்கோட்டை',
+                            createdAt: grv.createdAt,
+                            status: grv.status,
+                            description: grv.description
+                          })
+                        }
+                        className="p-2 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl transition-colors border border-slate-200"
+                        title="1-பக்க ஒப்புதல் ரசீது அச்சிடுக"
+                      >
+                        <Printer className="w-4 h-4 text-slate-700" />
+                      </button>
+
+                      <a
+                        href={generateGrievanceWhatsAppUrl(grv)}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="p-2 bg-green-50 hover:bg-green-100 text-green-700 rounded-xl border border-green-200 transition-colors"
+                        title="வாட்ஸ்அப் தகவல் அனுப்புக"
+                      >
+                        <MessageCircle className="w-4 h-4 text-green-600" />
+                      </a>
+
                       <a
                         href={`tel:${grv.phoneNumber}`}
                         className="p-2 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl transition-colors"
+                        title="அழைக்க"
                       >
                         <PhoneCall className="w-4 h-4 text-purple-700" />
                       </a>
@@ -1503,18 +1613,32 @@ export default function OperatorPortalPage() {
                   <label className="block text-xs font-bold text-slate-700 mb-1.5">
                     புதிய நிலை (Status):
                   </label>
-                  <select
-                    value={selectedStatus}
-                    onChange={(e) => setSelectedStatus(e.target.value)}
-                    className="w-full p-3 rounded-xl border border-slate-300 font-bold text-sm outline-none focus:border-emerald-600"
-                  >
-                    <option value="Submitted">Submitted (பதிவு செய்யப்பட்டது)</option>
-                    <option value="Under Review">Under Review (ஆய்வில் உள்ளது)</option>
-                    <option value="In Progress">In Progress (செயலில் உள்ளது)</option>
-                    <option value="Ready for Citizen">Ready for Citizen (சான்றிதழ் தயார்)</option>
-                    <option value="Completed">Completed (நிறைவடைந்தது)</option>
-                    <option value="Cancelled">Cancelled (ரத்து செய்யப்பட்டது)</option>
-                  </select>
+                  {statusModalTicket.type === 'grievance' ? (
+                    <select
+                      value={selectedStatus}
+                      onChange={(e) => setSelectedStatus(e.target.value)}
+                      className="w-full p-3 rounded-xl border-2 border-purple-400 font-bold text-sm outline-none focus:border-purple-600 bg-purple-50/40 text-purple-950"
+                    >
+                      <option value="Received">Received (மனு பெறப்பட்டது)</option>
+                      <option value="Forwarded to Official">Forwarded to Official (அதிகாரிக்கு அனுப்பப்பட்டது)</option>
+                      <option value="Action Pending">Action Pending (கள ஆய்வு / நடவடிக்கை நிலுவையில்)</option>
+                      <option value="Resolved">Resolved (தீர்வு காணப்பட்டது)</option>
+                      <option value="Closed">Closed (முடிவு செய்யப்பட்டது)</option>
+                    </select>
+                  ) : (
+                    <select
+                      value={selectedStatus}
+                      onChange={(e) => setSelectedStatus(e.target.value)}
+                      className="w-full p-3 rounded-xl border border-slate-300 font-bold text-sm outline-none focus:border-emerald-600 text-slate-900"
+                    >
+                      <option value="Submitted">Submitted (பதிவு செய்யப்பட்டது)</option>
+                      <option value="Under Review">Under Review (ஆய்வில் உள்ளது)</option>
+                      <option value="In Progress">In Progress (செயலில் உள்ளது)</option>
+                      <option value="Ready for Citizen">Ready for Citizen (சான்றிதழ் தயார்)</option>
+                      <option value="Completed">Completed (நிறைவடைந்தது)</option>
+                      <option value="Cancelled">Cancelled (ரத்து செய்யப்பட்டது)</option>
+                    </select>
+                  )}
                 </div>
 
                 <div>
@@ -1525,7 +1649,11 @@ export default function OperatorPortalPage() {
                     rows={3}
                     value={statusNote}
                     onChange={(e) => setStatusNote(e.target.value)}
-                    placeholder="எ.கா: கிராம நிர்வாக அலுவலர் (VAO) சரிபார்த்துள்ளார், சான்றிதழ் அச்சிட தயார்."
+                    placeholder={
+                      statusModalTicket.type === 'grievance'
+                        ? 'எ.கா: ஒட்டன்சத்திரம் வேளாண்மை / ஊராட்சி அலுவலருக்கு அனுப்பப்பட்டுள்ளது. நடவடிக்கை எடுக்கப்படும்.'
+                        : 'எ.கா: கிராம நிர்வாக அலுவலர் (VAO) சரிபார்த்துள்ளார், சான்றிதழ் அச்சிட தயார்.'
+                    }
                     className="w-full p-3 rounded-xl border border-slate-300 text-xs outline-none focus:border-emerald-600"
                   ></textarea>
                 </div>

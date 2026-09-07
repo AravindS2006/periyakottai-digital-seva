@@ -11,6 +11,7 @@ import {
 } from '@/data/farmerAdvisoryData';
 import { VoiceAssistButton } from '@/components/VoiceAssistButton';
 import { RequestModal } from '@/components/RequestModal';
+import { FarmerGrievanceModal } from '@/components/FarmerGrievanceModal';
 import {
   Sprout,
   TrendingUp,
@@ -27,7 +28,10 @@ import {
   Calendar,
   MessageCircle,
   ExternalLink,
-  Radio
+  Radio,
+  AlertCircle,
+  FileText,
+  ArrowRight
 } from 'lucide-react';
 
 
@@ -35,8 +39,10 @@ export default function FarmerHubPage() {
   const { language } = useI18n();
   const [modalOpen, setModalOpen] = useState(false);
   const [selectedTopic, setSelectedTopic] = useState('விவசாய மானிய உதவி (Agri Subsidy Help)');
+  const [grievanceModalOpen, setGrievanceModalOpen] = useState(false);
+  const [selectedAgriTopic, setSelectedAgriTopic] = useState<string | undefined>(undefined);
   const [marketWhatsAppUrl, setMarketWhatsAppUrl] = useState(ODDANCHATRAM_MARKET_WHATSAPP_LINK);
-  const [customMarketNotice, setCustomMarketNotice] = useState<string | null>(null);
+  const [rawMarketNotice, setRawMarketNotice] = useState<{ ta: string; en: string } | null>(null);
 
   useEffect(() => {
     fetch('/api/settings')
@@ -46,13 +52,15 @@ export default function FarmerHubPage() {
           if (data.settings.marketWhatsAppUrl) {
             setMarketWhatsAppUrl(data.settings.marketWhatsAppUrl);
           }
-          if (data.settings.marketNotice?.[language]) {
-            setCustomMarketNotice(data.settings.marketNotice[language]);
+          if (data.settings.marketNotice) {
+            setRawMarketNotice(data.settings.marketNotice);
           }
         }
       })
       .catch((err) => console.error('Error fetching settings in farmer-hub:', err));
-  }, [language]);
+  }, []);
+
+  const customMarketNotice = rawMarketNotice ? rawMarketNotice[language] : null;
 
   const audioIntro =
     language === 'ta'
@@ -86,11 +94,22 @@ export default function FarmerHubPage() {
 
         {/* Action button */}
         <div className="pt-2 flex flex-wrap gap-3">
+          <button
+            onClick={() => {
+              setSelectedAgriTopic(undefined);
+              setGrievanceModalOpen(true);
+            }}
+            className="bg-amber-400 hover:bg-amber-500 text-slate-950 text-xs sm:text-sm font-black px-5 py-3 rounded-xl shadow transition-all flex items-center gap-2"
+          >
+            <AlertCircle className="w-4 h-4 text-emerald-950" />
+            <span>{language === 'ta' ? 'உழவர் குறைதீர்ப்பு மனு பதிவு' : 'Register Farmer Grievance'}</span>
+          </button>
+
           <a
             href="tel:9790382437"
-            className="bg-amber-400 hover:bg-amber-500 text-slate-950 text-xs sm:text-sm font-bold px-5 py-3 rounded-xl shadow transition-all flex items-center gap-2"
+            className="bg-emerald-700 hover:bg-emerald-600 text-white text-xs sm:text-sm font-bold px-5 py-3 rounded-xl shadow transition-all flex items-center gap-2 border border-emerald-500"
           >
-            <PhoneCall className="w-4 h-4" />
+            <PhoneCall className="w-4 h-4 text-amber-300" />
             <span>{language === 'ta' ? 'இ-சேவை மைய உழவர் உதவி: 97903 82437' : 'Call Farmer Desk: 97903 82437'}</span>
           </a>
 
@@ -99,7 +118,7 @@ export default function FarmerHubPage() {
             className="bg-emerald-900 hover:bg-emerald-800 text-emerald-100 text-xs sm:text-sm font-bold px-4 py-3 rounded-xl border border-emerald-700 transition-all flex items-center gap-2"
           >
             <Sprout className="w-4 h-4 text-amber-300" />
-            <span>{language === 'ta' ? 'கிசான் இலவச உதவி எண் (1800-180-1551)' : 'Kisan Call Centre (1800-180-1551)'}</span>
+            <span>{language === 'ta' ? 'கிசான் உதவி எண் (1800-180-1551)' : 'Kisan Call Centre (1800-180-1551)'}</span>
           </a>
         </div>
       </div>
@@ -313,6 +332,90 @@ export default function FarmerHubPage() {
         </div>
       </section>
 
+      {/* SECTION: FARMER CIVIC & AGRICULTURAL GRIEVANCE DESK */}
+      <section className="bg-gradient-to-br from-emerald-950 via-slate-900 to-slate-950 rounded-3xl p-6 sm:p-10 text-white space-y-6 border-2 border-emerald-600 shadow-xl">
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="space-y-2 max-w-2xl">
+            <div className="inline-flex items-center gap-2 bg-emerald-800 text-amber-300 text-xs font-black uppercase px-3 py-1 rounded-full border border-emerald-600">
+              <Sprout className="w-4 h-4" />
+              <span>{language === 'ta' ? 'உழவர் குறைதீர்ப்பு மையம்' : 'Farmer Grievance Desk'}</span>
+            </div>
+            <h2 className="text-xl sm:text-3xl font-black text-white">
+              {language === 'ta'
+                ? 'விவசாயிகள் பிரச்சனை & குறைதீர்ப்பு மையம்'
+                : 'Agricultural Grievance Resolution Desk'}
+            </h2>
+            <p className="text-xs sm:text-sm text-emerald-100 leading-relaxed">
+              {language === 'ta'
+                ? 'உரம் & யூரியா தட்டுப்பாடு, பயிர் இழப்பு நிவாரண விண்ணப்பம், பாசன வாய்க்கால் தூர்வாருதல், இலவச மின்சாரம் அல்லது PM-கிசான் தவணை சிக்கல்கள் உள்ளதா? உடனடியாக இணையதளத்தில் மனு பதிவு செய்யுங்கள். முருகேசன் கே (இ-சேவை) உரிய அதிகாரிகளுடன் ஒருங்கிணைத்து தீர்வு காண்பார்.'
+                : 'Facing fertilizer shortages, crop loss claims, irrigation canal blockage, agri power outage, or PM-KISAN issues? Register your grievance directly for prompt official follow-up.'}
+            </p>
+          </div>
+
+          <button
+            onClick={() => {
+              setSelectedAgriTopic(undefined);
+              setGrievanceModalOpen(true);
+            }}
+            className="shrink-0 bg-amber-400 hover:bg-amber-500 text-slate-950 font-black px-6 py-3.5 rounded-2xl shadow-lg transition-all text-xs sm:text-sm flex items-center gap-2"
+          >
+            <AlertCircle className="w-5 h-5 text-emerald-950" />
+            <span>{language === 'ta' ? '+ உழவர் மனு பதிவு செய்க' : '+ File Agri Grievance'}</span>
+          </button>
+        </div>
+
+        {/* Quick Issue Cards */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 pt-2">
+          {[
+            {
+              title: { ta: 'உரம் & யூரியா தட்டுப்பாடு', en: 'Fertilizer / Urea Shortage' },
+              desc: { ta: 'கூட்டுறவு சங்கம் மற்றும் கடைகளில் உரம் கிடைக்கவில்லை அல்லது கூடுதல் விலைக்கு விற்கப்பட்டால் புகார் செய்யலாம்.', en: 'Shortage or overpricing of urea, DAP, complex fertilizers at local centres.' },
+              topic: 'உரம் & யூரியா தட்டுப்பாடு / கூடுதல் விலை'
+            },
+            {
+              title: { ta: 'பயிர் இழப்பு & காப்பீடு நிவாரணம்', en: 'Crop Loss & Insurance Claim' },
+              desc: { ta: 'மழை, வறட்சி அல்லது காட்டு விலங்குகளால் பயிர் சேதம் அடைந்தால் உரிய அரசு நிவாரணம் கோரலாம்.', en: 'Claim compensation for flood, drought, or wildlife damage to crops.' },
+              topic: 'பயிர் இழப்பு & காப்பீட்டு இழப்பீடு கோரிக்கை'
+            },
+            {
+              title: { ta: 'பாசன கால்வாய் அடைப்பு', en: 'Irrigation Canal Blockage' },
+              desc: { ta: 'பாசன வாய்க்கால் தூர்வாருதல், ஆக்கிரமிப்பு மற்றும் கடைமடை வரை தண்ணீர் வராத பிரச்சனைகள்.', en: 'Canal dredging, encroachment, or irrigation water distribution issues.' },
+              topic: 'பாசன வாய்க்கால் தூர்வாருதல் / தண்ணீர் தடை'
+            },
+            {
+              title: { ta: 'PM கிசான் தவணை தடை', en: 'PM-KISAN Installment Stuck' },
+              desc: { ta: 'நில ஆவணம் பதிவு, e-KYC கைரேகை அல்லது வங்கி கணக்கு ஆதார் இணைப்பில் உள்ள குறைகள்.', en: 'Land seeding, e-KYC biometric, or DBT bank linkage issues.' },
+              topic: 'PM-கிசான் 19வது தவணை வரவில்லை / e-KYC சிக்கல்'
+            }
+          ].map((card, idx) => (
+            <div
+              key={idx}
+              className="bg-slate-800/80 hover:bg-slate-800 rounded-2xl p-4 border border-slate-700/80 flex flex-col justify-between space-y-3 transition-colors"
+            >
+              <div className="space-y-1.5">
+                <h3 className="font-bold text-sm text-amber-300">
+                  {card.title[language]}
+                </h3>
+                <p className="text-xs text-slate-300 leading-relaxed">
+                  {card.desc[language]}
+                </p>
+              </div>
+
+              <button
+                onClick={() => {
+                  setSelectedAgriTopic(card.topic);
+                  setGrievanceModalOpen(true);
+                }}
+                className="w-full py-2 px-3 rounded-xl bg-emerald-700/60 hover:bg-emerald-700 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition-colors border border-emerald-600/40"
+              >
+                <span>{language === 'ta' ? 'உடனடி மனு பதிவு' : 'Report Issue'}</span>
+                <ArrowRight className="w-3.5 h-3.5" />
+              </button>
+            </div>
+          ))}
+        </div>
+      </section>
+
       {/* SECTION 4: AGRICULTURAL OFFICIALS CONTACT STRIP */}
       <section className="bg-slate-900 rounded-3xl p-6 sm:p-8 text-white space-y-6 border border-slate-800">
         <div className="space-y-1">
@@ -373,6 +476,12 @@ export default function FarmerHubPage() {
         isOpen={modalOpen}
         onClose={() => setModalOpen(false)}
         serviceName={selectedTopic}
+      />
+
+      <FarmerGrievanceModal
+        isOpen={grievanceModalOpen}
+        onClose={() => setGrievanceModalOpen(false)}
+        initialTopic={selectedAgriTopic}
       />
     </div>
   );

@@ -16,9 +16,11 @@ import {
   Check,
   Send,
   Calendar,
-  MessageCircle
+  MessageCircle,
+  Printer
 } from 'lucide-react';
 import { GrievanceTicket, GrievanceCategory } from '@/types';
+import { printAcknowledgmentReceipt } from '@/lib/printReceipt';
 
 export default function PanchayatPage() {
   const { language } = useI18n();
@@ -221,10 +223,41 @@ export default function PanchayatPage() {
                   </button>
                 </div>
 
-                <div className="pt-2 flex flex-col gap-2">
+                <div className="pt-2 flex flex-col gap-2.5">
+                  <button
+                    onClick={() =>
+                      printAcknowledgmentReceipt({
+                        id: createdGrievance.id,
+                        citizenName: createdGrievance.citizenName,
+                        phoneNumber: createdGrievance.phoneNumber,
+                        serviceName: `கிராம பஞ்சாயத்து குறை (${createdGrievance.category})`,
+                        village: createdGrievance.village,
+                        createdAt: createdGrievance.createdAt,
+                        status: createdGrievance.status,
+                        description: createdGrievance.description
+                      })
+                    }
+                    className="w-full flex items-center justify-center gap-2 bg-slate-900 hover:bg-black text-white font-bold py-3 px-4 rounded-xl shadow transition-colors text-xs sm:text-sm"
+                  >
+                    <Printer className="w-4 h-4 text-amber-300" />
+                    <span>{language === 'ta' ? 'மனு ஒப்புதல் ரசீது அச்சிடுக (Print 1-Page Slip)' : 'Print Acknowledgment Slip'}</span>
+                  </button>
+
+                  <a
+                    href={`https://wa.me/919790382437?text=${encodeURIComponent(
+                      `வணக்கம் முருகேசன் அவர்களே,\nஎன் பெயர்: ${createdGrievance.citizenName}\nமனு எண்: ${createdGrievance.id}\nபுகார் வகை: ${createdGrievance.category}\nவிவரம்: ${createdGrievance.description}`
+                    )}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="w-full flex items-center justify-center gap-2 bg-green-600 hover:bg-green-700 text-white font-bold py-2.5 px-4 rounded-xl shadow transition-colors text-xs sm:text-sm"
+                  >
+                    <MessageCircle className="w-4 h-4" />
+                    <span>{language === 'ta' ? 'வாட்ஸ்அப்பில் முருகேசனுக்கு அனுப்ப' : 'Send via WhatsApp'}</span>
+                  </a>
+
                   <Link
                     href={`/track?id=${createdGrievance.id}`}
-                    className="w-full bg-emerald-700 hover:bg-emerald-800 text-white font-bold py-3 rounded-xl text-xs sm:text-sm shadow transition-colors"
+                    className="w-full bg-emerald-700 hover:bg-emerald-800 text-white font-bold py-2.5 rounded-xl text-xs sm:text-sm shadow transition-colors text-center"
                   >
                     {language === 'ta' ? 'புகாரின் நிலையை கண்காணிக்க' : 'Track Grievance Status'}
                   </Link>
@@ -236,7 +269,7 @@ export default function PanchayatPage() {
                       setPhone('');
                       setDescription('');
                     }}
-                    className="text-xs text-slate-500 hover:text-slate-800 font-semibold pt-2"
+                    className="text-xs text-slate-500 hover:text-slate-800 font-semibold pt-1"
                   >
                     {language === 'ta' ? 'மற்றொரு புகாரை பதிவு செய்ய' : 'Report another issue'}
                   </button>

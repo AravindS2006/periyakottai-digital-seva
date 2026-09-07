@@ -34,19 +34,24 @@ export default function CSCCentrePage() {
   const [copied, setCopied] = useState(false);
   const [error, setError] = useState('');
   const [centreStatus, setCentreStatus] = useState<string>('open');
-  const [statusNote, setStatusNote] = useState<string>('');
+  const [statusNoteData, setStatusNoteData] = useState<{ ta: string; en: string } | string>('');
+
+  const statusNote =
+    typeof statusNoteData === 'string'
+      ? statusNoteData
+      : statusNoteData?.[language] || '';
 
   useEffect(() => {
+    let lastFetched = Date.now();
     const loadSettings = () => {
+      lastFetched = Date.now();
       fetch('/api/settings', { cache: 'no-store' })
         .then((res) => res.json())
         .then((data) => {
           if (data.success && data.settings) {
             if (data.settings.centreStatus) setCentreStatus(data.settings.centreStatus);
-            if (typeof data.settings.statusNote === 'string') {
-              setStatusNote(data.settings.statusNote);
-            } else if (data.settings.statusNote?.[language]) {
-              setStatusNote(data.settings.statusNote[language]);
+            if (data.settings.statusNote) {
+              setStatusNoteData(data.settings.statusNote);
             }
           }
         })
@@ -54,17 +59,19 @@ export default function CSCCentrePage() {
     };
 
     loadSettings();
-    const interval = setInterval(loadSettings, 30000);
+
+    // Re-check only when tab becomes visible after at least 2 minutes of inactivity (protects Vercel free limits)
     const onVisible = () => {
-      if (document.visibilityState === 'visible') loadSettings();
+      if (document.visibilityState === 'visible' && Date.now() - lastFetched > 120000) {
+        loadSettings();
+      }
     };
     document.addEventListener('visibilitychange', onVisible);
 
     return () => {
-      clearInterval(interval);
       document.removeEventListener('visibilitychange', onVisible);
     };
-  }, [language]);
+  }, []);
 
   const audioIntro =
     language === 'ta'
