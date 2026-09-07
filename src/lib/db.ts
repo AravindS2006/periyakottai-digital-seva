@@ -108,71 +108,84 @@ const DEFAULT_SETTINGS: PlatformSettings = {
   lastUpdated: new Date().toISOString()
 };
 
-function ensureDatabase(): DatabaseSchema {
-  if (memoryCache) {
-    return memoryCache;
-  }
+let lastLoadedMtime = 0;
 
+function ensureDatabase(): DatabaseSchema {
   try {
+    // 1. If DB_FILE exists on disk, check if it was updated or if memory is fresh
+    if (fs.existsSync(DB_FILE)) {
+      const stats = fs.statSync(DB_FILE);
+      if (memoryCache && stats.mtimeMs <= lastLoadedMtime) {
+        return memoryCache;
+      }
+
+      const content = fs.readFileSync(DB_FILE, 'utf-8');
+      const data: DatabaseSchema = JSON.parse(content);
+      if (!data.settings) {
+        data.settings = DEFAULT_SETTINGS;
+      }
+      memoryCache = data;
+      lastLoadedMtime = stats.mtimeMs;
+      return memoryCache;
+    }
+
+    // 2. If memoryCache is already loaded in memory (e.g. serverless without disk persistence)
+    if (memoryCache) {
+      return memoryCache;
+    }
+
     if (!fs.existsSync(DB_DIR)) {
       fs.mkdirSync(DB_DIR, { recursive: true });
     }
 
-    // On Vercel / serverless: if DB_FILE doesn't exist yet, seed from SEED_FILE
-    if (!fs.existsSync(DB_FILE)) {
-      let initialData: DatabaseSchema;
-      if (fs.existsSync(SEED_FILE)) {
-        try {
-          initialData = JSON.parse(fs.readFileSync(SEED_FILE, 'utf-8'));
-          if (!initialData.settings) {
-            initialData.settings = DEFAULT_SETTINGS;
-          }
-        } catch {
-          initialData = {
-            requests: INITIAL_REQUESTS,
-            grievances: INITIAL_GRIEVANCES,
-            notices: INITIAL_NOTICES,
-            settings: DEFAULT_SETTINGS,
-            auditLogs: []
-          };
+    // 3. Seed from SEED_FILE if available
+    let initialData: DatabaseSchema;
+    if (fs.existsSync(SEED_FILE)) {
+      try {
+        initialData = JSON.parse(fs.readFileSync(SEED_FILE, 'utf-8'));
+        if (!initialData.settings) {
+          initialData.settings = DEFAULT_SETTINGS;
         }
-      } else {
+      } catch {
         initialData = {
           requests: INITIAL_REQUESTS,
           grievances: INITIAL_GRIEVANCES,
           notices: INITIAL_NOTICES,
           settings: DEFAULT_SETTINGS,
-          auditLogs: [
-            {
-              id: 'log-1',
-              timestamp: new Date().toISOString(),
-              action: 'INITIALIZE',
-              actor: 'System',
-              details: 'Initial database created with verified templates'
-            }
-          ]
+          auditLogs: []
         };
       }
+    } else {
+      initialData = {
+        requests: INITIAL_REQUESTS,
+        grievances: INITIAL_GRIEVANCES,
+        notices: INITIAL_NOTICES,
+        settings: DEFAULT_SETTINGS,
+        auditLogs: [
+          {
+            id: 'log-1',
+            timestamp: new Date().toISOString(),
+            action: 'INITIALIZE',
+            actor: 'System',
+            details: 'Initial database created with verified templates'
+          }
+        ]
+      };
+    }
 
-      try {
-        fs.writeFileSync(DB_FILE, JSON.stringify(initialData, null, 2), 'utf-8');
-      } catch (err) {
-        console.warn('Filesystem write warning (serverless readonly):', err);
+    try {
+      fs.writeFileSync(DB_FILE, JSON.stringify(initialData, null, 2), 'utf-8');
+      if (fs.existsSync(DB_FILE)) {
+        lastLoadedMtime = fs.statSync(DB_FILE).mtimeMs;
       }
-      memoryCache = initialData;
-      return initialData;
+    } catch (err) {
+      console.warn('Filesystem write warning (serverless readonly):', err);
     }
-
-    const content = fs.readFileSync(DB_FILE, 'utf-8');
-    const data: DatabaseSchema = JSON.parse(content);
-    if (!data.settings) {
-      data.settings = DEFAULT_SETTINGS;
-      saveDatabase(data);
-    }
-    memoryCache = data;
-    return data;
+    memoryCache = initialData;
+    return initialData;
   } catch (error) {
-    console.error('Error reading database file:', error);
+    console.error('Error in ensureDatabase:', error);
+    if (memoryCache) return memoryCache;
     const fallback: DatabaseSchema = {
       requests: INITIAL_REQUESTS,
       grievances: INITIAL_GRIEVANCES,
@@ -186,17 +199,31 @@ function ensureDatabase(): DatabaseSchema {
 }
 
 function saveDatabase(data: DatabaseSchema): boolean {
+  // Always update in-memory cache first for instant synchronous reads
   memoryCache = data;
+
   try {
     if (!fs.existsSync(DB_DIR)) {
       fs.mkdirSync(DB_DIR, { recursive: true });
     }
     fs.writeFileSync(DB_FILE, JSON.stringify(data, null, 2), 'utf-8');
-    return true;
+    if (fs.existsSync(DB_FILE)) {
+      lastLoadedMtime = fs.statSync(DB_FILE).mtimeMs;
+    }
   } catch (error) {
-    console.warn('Filesystem write warning, preserved in memory:', error);
-    return true;
+    console.warn('Filesystem write warning for DB_FILE, preserved in memory:', error);
   }
+
+  // If DB_FILE is different from SEED_FILE (e.g. in /tmp), also attempt to persist to SEED_FILE
+  if (DB_FILE !== SEED_FILE) {
+    try {
+      fs.writeFileSync(SEED_FILE, JSON.stringify(data, null, 2), 'utf-8');
+    } catch {
+      // Expected in read-only serverless lambdas
+    }
+  }
+
+  return true;
 }
 
 export const db = {

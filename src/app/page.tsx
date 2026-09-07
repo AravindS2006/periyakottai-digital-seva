@@ -76,14 +76,33 @@ export default function HomePage() {
       })
       .catch((err) => console.error('Error fetching hot news:', err));
 
-    fetch('/api/settings')
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.success && data.settings) {
-          setPlatformSettings(data.settings);
-        }
-      })
-      .catch((err) => console.error('Error fetching platform settings:', err));
+    const loadSettings = () => {
+      fetch('/api/settings', { cache: 'no-store' })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.success && data.settings) {
+            setPlatformSettings(data.settings);
+          }
+        })
+        .catch((err) => console.error('Error fetching platform settings:', err));
+    };
+
+    loadSettings();
+
+    // Re-check every 30s so citizens always see the live, un-cached centre status
+    const timer = setInterval(loadSettings, 30000);
+
+    const onVisible = () => {
+      if (document.visibilityState === 'visible') {
+        loadSettings();
+      }
+    };
+    document.addEventListener('visibilitychange', onVisible);
+
+    return () => {
+      clearInterval(timer);
+      document.removeEventListener('visibilitychange', onVisible);
+    };
   }, []);
 
 
@@ -336,7 +355,9 @@ export default function HomePage() {
 
               {/* Note / Timing & Direct Call or Directions */}
               <span className="text-[11px] sm:text-xs font-semibold whitespace-nowrap text-slate-700">
-                {platformSettings?.statusNote?.[language] ||
+                {(typeof platformSettings?.statusNote === 'string'
+                  ? platformSettings.statusNote
+                  : platformSettings?.statusNote?.[language]) ||
                   (platformSettings?.centreStatus === 'temp_closed'
                     ? language === 'ta'
                       ? 'சிறிது நேரத்தில் திறக்கப்படும் | அழைக்க: 97903 82437'

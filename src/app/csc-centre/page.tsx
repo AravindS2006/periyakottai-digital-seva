@@ -37,15 +37,33 @@ export default function CSCCentrePage() {
   const [statusNote, setStatusNote] = useState<string>('');
 
   useEffect(() => {
-    fetch('/api/settings')
-      .then((res) => res.json())
-      .then((data) => {
-        if (data.success && data.settings) {
-          if (data.settings.centreStatus) setCentreStatus(data.settings.centreStatus);
-          if (data.settings.statusNote?.[language]) setStatusNote(data.settings.statusNote[language]);
-        }
-      })
-      .catch((err) => console.error('Error fetching settings in csc-centre:', err));
+    const loadSettings = () => {
+      fetch('/api/settings', { cache: 'no-store' })
+        .then((res) => res.json())
+        .then((data) => {
+          if (data.success && data.settings) {
+            if (data.settings.centreStatus) setCentreStatus(data.settings.centreStatus);
+            if (typeof data.settings.statusNote === 'string') {
+              setStatusNote(data.settings.statusNote);
+            } else if (data.settings.statusNote?.[language]) {
+              setStatusNote(data.settings.statusNote[language]);
+            }
+          }
+        })
+        .catch((err) => console.error('Error fetching settings in csc-centre:', err));
+    };
+
+    loadSettings();
+    const interval = setInterval(loadSettings, 30000);
+    const onVisible = () => {
+      if (document.visibilityState === 'visible') loadSettings();
+    };
+    document.addEventListener('visibilitychange', onVisible);
+
+    return () => {
+      clearInterval(interval);
+      document.removeEventListener('visibilitychange', onVisible);
+    };
   }, [language]);
 
   const audioIntro =
@@ -137,6 +155,11 @@ export default function CSCCentrePage() {
                 ? '🟡 கள முகாம் (Field Camp)'
                 : '🔴 மூடப்பட்டுள்ளது (Closed)'}
             </span>
+            {statusNote && (
+              <span className="text-xs font-semibold bg-emerald-950/80 text-amber-200 border border-emerald-700/60 px-3 py-0.5 rounded-full">
+                📢 {statusNote}
+              </span>
+            )}
           </div>
 
           <VoiceAssistButton textToSpeak={audioIntro} size="sm" />

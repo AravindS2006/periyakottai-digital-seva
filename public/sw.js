@@ -1,4 +1,4 @@
-const CACHE_NAME = 'periyakottai-seva-v2';
+const CACHE_NAME = 'periyakottai-seva-v3';
 const OFFLINE_URLS = [
   '/',
   '/contacts',
@@ -41,6 +41,12 @@ self.addEventListener('activate', (event) => {
 
 self.addEventListener('fetch', (event) => {
   if (event.request.method !== 'GET') return;
+
+  const url = new URL(event.request.url);
+  // NEVER cache API requests - always network only for real-time memory!
+  if (url.pathname.startsWith('/api/')) {
+    return;
+  }
   
   event.respondWith(
     fetch(event.request)

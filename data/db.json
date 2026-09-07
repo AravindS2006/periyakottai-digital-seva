@@ -120,13 +120,41 @@
       "action": "UPDATE_SETTINGS",
       "actor": "Audit Script",
       "details": "Operator updated centre configuration and announcements"
+    },
+    {
+      "id": "log-1788804059488",
+      "timestamp": "2026-09-07T18:00:59.488Z",
+      "action": "UPDATE_SETTINGS",
+      "actor": "Audit Verification",
+      "details": "Operator updated centre configuration and announcements"
+    },
+    {
+      "id": "log-1788804086656",
+      "timestamp": "2026-09-07T18:01:26.656Z",
+      "action": "UPDATE_SETTINGS",
+      "actor": "Operator Murugesan K",
+      "details": "Operator updated centre configuration and announcements"
+    },
+    {
+      "id": "log-1788804086868",
+      "timestamp": "2026-09-07T18:01:26.868Z",
+      "action": "UPDATE_SETTINGS",
+      "actor": "Audit Verification",
+      "details": "Operator updated centre configuration and announcements"
+    },
+    {
+      "id": "log-1788804086938",
+      "timestamp": "2026-09-07T18:01:26.938Z",
+      "action": "UPDATE_SETTINGS",
+      "actor": "System Test Restore",
+      "details": "Operator updated centre configuration and announcements"
     }
   ],
   "settings": {
     "centreStatus": "open",
     "statusNote": {
       "ta": "மையம் வழக்கம்போல் இயங்குகிறது. அசல் ஆவணங்களுடன் வரவும்.",
-      "en": "Centre is open normally. Please carry original documents."
+      "en": "Centre is operating normally. Please carry original documents."
     },
     "operatingHours": {
       "ta": "திங்கள் - சனி: காலை 9:30 முதல் மாலை 5:00 வரை | ஞாயிறு: விடுமுறை",
@@ -149,6 +177,6 @@
       },
       "type": "info"
     },
-    "lastUpdated": "2026-09-07T17:54:20.848Z"
+    "lastUpdated": "2026-09-07T18:01:26.938Z"
   }
 }

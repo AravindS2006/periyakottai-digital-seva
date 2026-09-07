@@ -108,27 +108,34 @@ async function runAudit() {
   // 3. API ENDPOINTS
   console.log('\n--- Checking Backend API Endpoints ---');
 
+  let originalSettings = null;
   // GET /api/settings
   await check('API: GET /api/settings', async () => {
     const res = await request('/api/settings');
     const ok = res.statusCode === 200 && res.json && res.json.success && res.json.settings.googleMapUrl;
+    if (ok) {
+      originalSettings = res.json.settings;
+    }
     return { ok, msg: ok ? `Centre status: ${res.json.settings.centreStatus}` : 'Invalid response' };
   });
 
   // PUT /api/settings
-  await check('API: PUT /api/settings (Update Settings)', async () => {
+  await check('API: PUT /api/settings (Preserve Operator Status)', async () => {
+    const currentStatus = originalSettings?.centreStatus || 'open';
+    const currentNote = originalSettings?.statusNote || '';
     const res = await request('/api/settings', {
       method: 'PUT',
       headers: { 'Content-Type': 'application/json' },
       body: {
         settings: {
-          centreStatus: 'open',
-          marketWhatsAppUrl: 'https://chat.whatsapp.com/invite-placeholder-oddanchatram'
+          centreStatus: currentStatus,
+          statusNote: currentNote,
+          marketWhatsAppUrl: originalSettings?.marketWhatsAppUrl || 'https://chat.whatsapp.com/invite-placeholder-oddanchatram'
         },
-        actor: 'Audit Script'
+        actor: 'Audit Verification'
       }
     });
-    return { ok: res.statusCode === 200 && res.json && res.json.success };
+    return { ok: res.statusCode === 200 && res.json && res.json.success, msg: `Preserved operator status: ${currentStatus}` };
   });
 
   // GET /api/notices

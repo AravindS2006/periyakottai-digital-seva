@@ -204,6 +204,46 @@ export default function OperatorPortalPage() {
     }
   };
 
+  const handleQuickStatusChange = async (
+    newStatus: 'open' | 'closed' | 'camp' | 'temp_closed',
+    newNote?: { ta: string; en: string }
+  ) => {
+    if (!settings) return;
+    const updatedSettings: PlatformSettings = {
+      ...settings,
+      centreStatus: newStatus,
+      statusNote: newNote || settings.statusNote,
+      lastUpdated: new Date().toISOString()
+    };
+    setSettings(updatedSettings);
+    setSavingSettings(true);
+    setSaveSuccessMsg('');
+    try {
+      const res = await fetch('/api/settings', {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          settings: updatedSettings,
+          actor: 'Murugesan K (Operator)'
+        })
+      });
+      const data = await res.json();
+      if (data.success) {
+        setSettings(data.settings);
+        setSaveSuccessMsg(
+          language === 'ta'
+            ? '✅ நிலை உடனே மாற்றப்பட்டு சேமிக்கப்பட்டது!'
+            : '✅ Centre status saved & updated live immediately!'
+        );
+        setTimeout(() => setSaveSuccessMsg(''), 4000);
+      }
+    } catch (err) {
+      console.error('Error auto-saving status:', err);
+    } finally {
+      setSavingSettings(false);
+    }
+  };
+
   const handleCreateNotice = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!newNoticeTitleTa.trim()) return;
@@ -885,22 +925,14 @@ export default function OperatorPortalPage() {
                       <button
                         type="button"
                         onClick={() =>
-                          setSettings((prev) =>
-                            prev
-                              ? {
-                                  ...prev,
-                                  centreStatus: 'open',
-                                  statusNote: {
-                                    ta: 'மையம் வழக்கம்போல் இயங்குகிறது. அசல் ஆவணங்களுடன் வரவும்.',
-                                    en: 'Centre is open normally. Please carry original documents.'
-                                  }
-                                }
-                              : null
-                          )
+                          handleQuickStatusChange('open', {
+                            ta: 'மையம் வழக்கம்போல் இயங்குகிறது. அசல் ஆவணங்களுடன் வரவும்.',
+                            en: 'Centre is open normally. Please carry original documents.'
+                          })
                         }
                         className={`p-3.5 rounded-xl border-2 text-left transition-all ${
                           settings?.centreStatus === 'open'
-                            ? 'border-emerald-600 bg-emerald-50/80 shadow-xs'
+                            ? 'border-emerald-600 bg-emerald-50/80 shadow-xs ring-2 ring-emerald-400'
                             : 'border-slate-200 bg-white hover:bg-slate-50'
                         }`}
                       >
@@ -915,22 +947,14 @@ export default function OperatorPortalPage() {
                       <button
                         type="button"
                         onClick={() =>
-                          setSettings((prev) =>
-                            prev
-                              ? {
-                                  ...prev,
-                                  centreStatus: 'temp_closed',
-                                  statusNote: {
-                                    ta: 'தற்காலிகமாக வெளியே சென்றுள்ளார். சிறிது நேரத்தில் திறக்கப்படும். அவசர தொடர்புக்கு: 97903 82437',
-                                    en: 'Temporarily away. Will reopen shortly. Urgent calls: 97903 82437'
-                                  }
-                                }
-                              : null
-                          )
+                          handleQuickStatusChange('temp_closed', {
+                            ta: 'தற்காலிகமாக வெளியே சென்றுள்ளார். சிறிது நேரத்தில் திறக்கப்படும். அவசர தொடர்புக்கு: 97903 82437',
+                            en: 'Temporarily away. Will reopen shortly. Urgent calls: 97903 82437'
+                          })
                         }
                         className={`p-3.5 rounded-xl border-2 text-left transition-all ${
                           settings?.centreStatus === 'temp_closed'
-                            ? 'border-orange-500 bg-orange-50/80 shadow-xs'
+                            ? 'border-orange-500 bg-orange-50/80 shadow-xs ring-2 ring-orange-400'
                             : 'border-slate-200 bg-white hover:bg-slate-50'
                         }`}
                       >
@@ -945,22 +969,14 @@ export default function OperatorPortalPage() {
                       <button
                         type="button"
                         onClick={() =>
-                          setSettings((prev) =>
-                            prev
-                              ? {
-                                  ...prev,
-                                  centreStatus: 'camp',
-                                  statusNote: {
-                                    ta: 'இன்று கிராம கள ஆய்வு முகாமில் உள்ளோம். அவசர தொடர்புக்கு அழைக்கவும்: 97903 82437',
-                                    en: 'In field camp today. Call operator for urgent help: 97903 82437'
-                                  }
-                                }
-                              : null
-                          )
+                          handleQuickStatusChange('camp', {
+                            ta: 'இன்று கிராம கள ஆய்வு முகாமில் உள்ளோம். அவசர தொடர்புக்கு அழைக்கவும்: 97903 82437',
+                            en: 'In field camp today. Call operator for urgent help: 97903 82437'
+                          })
                         }
                         className={`p-3.5 rounded-xl border-2 text-left transition-all ${
                           settings?.centreStatus === 'camp'
-                            ? 'border-amber-500 bg-amber-50/80 shadow-xs'
+                            ? 'border-amber-500 bg-amber-50/80 shadow-xs ring-2 ring-amber-400'
                             : 'border-slate-200 bg-white hover:bg-slate-50'
                         }`}
                       >
@@ -975,22 +991,14 @@ export default function OperatorPortalPage() {
                       <button
                         type="button"
                         onClick={() =>
-                          setSettings((prev) =>
-                            prev
-                              ? {
-                                  ...prev,
-                                  centreStatus: 'closed',
-                                  statusNote: {
-                                    ta: 'இன்று மையம் விடுமுறை. நாளை காலை 9:30 மணிக்கு திறக்கப்படும்.',
-                                    en: 'Holiday today. Centre resumes tomorrow 9:30 AM.'
-                                  }
-                                }
-                              : null
-                          )
+                          handleQuickStatusChange('closed', {
+                            ta: 'இன்று மையம் விடுமுறை. நாளை காலை 9:30 மணிக்கு திறக்கப்படும்.',
+                            en: 'Holiday today. Centre resumes tomorrow 9:30 AM.'
+                          })
                         }
                         className={`p-3.5 rounded-xl border-2 text-left transition-all ${
                           settings?.centreStatus === 'closed'
-                            ? 'border-rose-600 bg-rose-50/80 shadow-xs'
+                            ? 'border-rose-600 bg-rose-50/80 shadow-xs ring-2 ring-rose-400'
                             : 'border-slate-200 bg-white hover:bg-slate-50'
                         }`}
                       >
@@ -1008,18 +1016,10 @@ export default function OperatorPortalPage() {
                       <button
                         type="button"
                         onClick={() =>
-                          setSettings((prev) =>
-                            prev
-                              ? {
-                                  ...prev,
-                                  centreStatus: 'temp_closed',
-                                  statusNote: {
-                                    ta: '30 நிமிடங்களில் திரும்புவார் | அழைக்க: 97903 82437',
-                                    en: 'Back in 30 mins | Call: 97903 82437'
-                                  }
-                                }
-                              : null
-                          )
+                          handleQuickStatusChange('temp_closed', {
+                            ta: '30 நிமிடங்களில் திரும்புவார் | அழைக்க: 97903 82437',
+                            en: 'Back in 30 mins | Call: 97903 82437'
+                          })
                         }
                         className="px-2.5 py-1 bg-orange-100 hover:bg-orange-200 text-orange-900 rounded-lg transition-colors font-medium text-[11px]"
                       >
@@ -1028,18 +1028,10 @@ export default function OperatorPortalPage() {
                       <button
                         type="button"
                         onClick={() =>
-                          setSettings((prev) =>
-                            prev
-                              ? {
-                                  ...prev,
-                                  centreStatus: 'temp_closed',
-                                  statusNote: {
-                                    ta: '1 மணி நேரத்தில் திறக்கப்படும் | அழைக்க: 97903 82437',
-                                    en: 'Reopens in 1 hour | Call: 97903 82437'
-                                  }
-                                }
-                              : null
-                          )
+                          handleQuickStatusChange('temp_closed', {
+                            ta: '1 மணி நேரத்தில் திறக்கப்படும் | அழைக்க: 97903 82437',
+                            en: 'Reopens in 1 hour | Call: 97903 82437'
+                          })
                         }
                         className="px-2.5 py-1 bg-orange-100 hover:bg-orange-200 text-orange-900 rounded-lg transition-colors font-medium text-[11px]"
                       >
@@ -1048,18 +1040,10 @@ export default function OperatorPortalPage() {
                       <button
                         type="button"
                         onClick={() =>
-                          setSettings((prev) =>
-                            prev
-                              ? {
-                                  ...prev,
-                                  centreStatus: 'temp_closed',
-                                  statusNote: {
-                                    ta: 'உணவு இடைவேளை (1:30 - 2:30) | அழைக்க: 97903 82437',
-                                    en: 'Lunch Break (1:30 - 2:30 PM) | Call: 97903 82437'
-                                  }
-                                }
-                              : null
-                          )
+                          handleQuickStatusChange('temp_closed', {
+                            ta: 'உணவு இடைவேளை (1:30 - 2:30) | அழைக்க: 97903 82437',
+                            en: 'Lunch Break (1:30 - 2:30 PM) | Call: 97903 82437'
+                          })
                         }
                         className="px-2.5 py-1 bg-orange-100 hover:bg-orange-200 text-orange-900 rounded-lg transition-colors font-medium text-[11px]"
                       >
@@ -1068,18 +1052,10 @@ export default function OperatorPortalPage() {
                       <button
                         type="button"
                         onClick={() =>
-                          setSettings((prev) =>
-                            prev
-                              ? {
-                                  ...prev,
-                                  centreStatus: 'open',
-                                  statusNote: {
-                                    ta: 'காலை 9:30 - மாலை 5:00 வழக்கம்போல் இயங்குகிறது',
-                                    en: '9:30 AM - 5:00 PM operating normally'
-                                  }
-                                }
-                              : null
-                          )
+                          handleQuickStatusChange('open', {
+                            ta: 'காலை 9:30 - மாலை 5:00 வழக்கம்போல் இயங்குகிறது',
+                            en: '9:30 AM - 5:00 PM operating normally'
+                          })
                         }
                         className="px-2.5 py-1 bg-emerald-100 hover:bg-emerald-200 text-emerald-900 rounded-lg transition-colors font-medium text-[11px]"
                       >
@@ -1088,18 +1064,10 @@ export default function OperatorPortalPage() {
                       <button
                         type="button"
                         onClick={() =>
-                          setSettings((prev) =>
-                            prev
-                              ? {
-                                  ...prev,
-                                  centreStatus: 'closed',
-                                  statusNote: {
-                                    ta: 'ஞாயிறு விடுமுறை | நாளை காலை 9:30 மணிக்கு திறக்கப்படும்',
-                                    en: 'Sunday Holiday | Reopens tomorrow 9:30 AM'
-                                  }
-                                }
-                              : null
-                          )
+                          handleQuickStatusChange('closed', {
+                            ta: 'ஞாயிறு விடுமுறை | நாளை காலை 9:30 மணிக்கு திறக்கப்படும்',
+                            en: 'Sunday Holiday | Reopens tomorrow 9:30 AM'
+                          })
                         }
                         className="px-2.5 py-1 bg-rose-100 hover:bg-rose-200 text-rose-900 rounded-lg transition-colors font-medium text-[11px]"
                       >
