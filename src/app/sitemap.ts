@@ -1,7 +1,7 @@
 import type { MetadataRoute } from 'next';
 
 export default function sitemap(): MetadataRoute.Sitemap {
-  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://periyakottai-digital-seva.vercel.app';
+  const baseUrl = process.env.NEXT_PUBLIC_SITE_URL || 'https://periyakottai.vercel.app';
   const currentDate = new Date();
 
   const routes = [

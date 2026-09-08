@@ -7,7 +7,7 @@ import { FloatingHelpButton } from '@/components/FloatingHelpButton';
 import { NetworkStatus } from '@/components/NetworkStatus';
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://periyakottai-digital-seva.vercel.app'),
+  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://periyakottai.vercel.app'),
   title: 'பெரியகோட்டை டிஜிட்டல் சேவை | Periyakottai Digital Seva',
   description:
     'பெரியகோட்டை கிராம மக்களுக்கான அரசு சேவைகள், விவசாய உதவிகள், நலத்திட்டங்கள் மற்றும் நால்ரோடு மக்கள் இ-சேவை மையத்தின் (முருகேசன் கு) நேரடி உதவி தளம். ஒட்டன்சத்திரம் தாலுகா, திண்டுக்கல் மாவட்டம் - 624614.',

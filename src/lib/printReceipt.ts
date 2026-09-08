@@ -399,7 +399,7 @@ export function printAcknowledgmentReceipt(ticket: ReceiptData): void {
           <div class="notice-box">
             <h4>📌 விண்ணப்பதாரருக்கான முக்கிய வழிகாட்டுதல்கள்:</h4>
             <ul>
-              <li>உங்கள் மனுவின் தற்போதைய நிலையை அறிய <strong>www.periyakottai.in/track</strong> தளத்தில் <strong>${ticket.id}</strong> எண்ணை உள்ளிடவும்.</li>
+              <li>உங்கள் மனுவின் தற்போதைய நிலையை அறிய <strong>periyakottai.vercel.app/track</strong> தளத்தில் <strong>${ticket.id}</strong> எண்ணை உள்ளிடவும்.</li>
               <li>சான்றிதழ் மற்றும் ஆவண சரிபார்ப்பிற்கு நால்ரோடு இ-சேவை மையத்திற்கு அசல் சான்றிதழ்களுடன் வரவும்.</li>
               <li>அரசு நிர்ணயித்த சேவை கட்டணம் மட்டுமே செலுத்த வேண்டும். கூடுதல் உதவிக்கு ஆபரேட்டரை <strong>97903 82437</strong> என்ற எண்ணில் அழைக்கலாம்.</li>
             </ul>
