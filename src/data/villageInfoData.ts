@@ -1,6 +1,6 @@
 export const VILLAGE_INFO = {
   name: {
-    ta: 'பெரியாக்கோட்டை கிராம ஊராட்சி',
+    ta: 'பெரியகோட்டை கிராம ஊராட்சி',
     en: 'Periyakottai Gram Panchayat'
   },
   pincode: '624614',
@@ -29,7 +29,7 @@ export const VILLAGE_INFO = {
     en: 'Dindigul Parliamentary Constituency (PC 22)'
   },
   postOffice: {
-    ta: 'பெரியாக்கோட்டை கிளை அஞ்சலகம் (விநியோகம்) / சத்திரப்பட்டி துணை அஞ்சலகம் - 624614',
+    ta: 'பெரியகோட்டை கிளை அஞ்சலகம் (விநியோகம்) / சத்திரப்பட்டி துணை அஞ்சலகம் - 624614',
     en: 'Periyakottai Branch Post Office (Delivery) / Chatrapatti Sub Post Office - 624614'
   },
   hamlets: [
@@ -52,7 +52,7 @@ export const VILLAGE_INFO = {
     },
     {
       title: { ta: 'ரேஷன் கடை (நியாயவிலைக் கடை)', en: 'Fair Price Ration Shop' },
-      desc: { ta: 'பெரியாக்கோட்டை முழு நேர நியாயவிலைக் கடை (பஞ்சாயத்து அலுவலகம் அருகில்)', en: 'Periyakottai Fair Price Shop (Near Panchayat Office)' }
+      desc: { ta: 'பெரியகோட்டை முழு நேர நியாயவிலைக் கடை (பஞ்சாயத்து அலுவலகம் அருகில்)', en: 'Periyakottai Fair Price Shop (Near Panchayat Office)' }
     },
     {
       title: { ta: 'மருத்துவ வசதி', en: 'Health Services' },
@@ -60,11 +60,11 @@ export const VILLAGE_INFO = {
     },
     {
       title: { ta: 'வங்கிகள் & ஏடிஎம்', en: 'Banks & ATMs' },
-      desc: { ta: 'கனரா வங்கி சத்திரப்பட்டி கிளை (~3 கி.மீ), தொடக்க வேளாண்மை கூட்டுறவு வங்கி பெரியாக்கோட்டை', en: 'Canara Bank Chatrapatti Branch (~3 km), PACCS Bank Periyakottai' }
+      desc: { ta: 'கனரா வங்கி சத்திரப்பட்டி கிளை (~3 கி.மீ), தொடக்க வேளாண்மை கூட்டுறவு வங்கி பெரியகோட்டை', en: 'Canara Bank Chatrapatti Branch (~3 km), PACCS Bank Periyakottai' }
     },
     {
       title: { ta: 'பள்ளி & கல்வி', en: 'Schools & Education' },
-      desc: { ta: 'ஊராட்சி ஒன்றிய தொடக்கப்பள்ளி பெரியாக்கோட்டை & அரசு மேல்நிலைப்பள்ளி சத்திரப்பட்டி', en: 'Panchayat Union Primary School Periyakottai & Govt Higher Secondary School Chatrapatti' }
+      desc: { ta: 'ஊராட்சி ஒன்றிய தொடக்கப்பள்ளி பெரியகோட்டை & அரசு மேல்நிலைப்பள்ளி சத்திரப்பட்டி', en: 'Panchayat Union Primary School Periyakottai & Govt Higher Secondary School Chatrapatti' }
     }
   ],
   administrationDirectory: [
@@ -72,14 +72,14 @@ export const VILLAGE_INFO = {
       role: { ta: 'கிராம ஊராட்சி அலுவலகம்', en: 'Panchayat Office' },
       person: { ta: 'ஊராட்சி மன்ற தலைவர் & செயலாளர்', en: 'President & Panchayat Secretary' },
       phone: '7402608105',
-      address: { ta: 'கிராம ஊராட்சி மன்ற அலுவலகம், பெரியாக்கோட்டை - 624614', en: 'Gram Panchayat Office, Periyakottai - 624614' },
+      address: { ta: 'கிராம ஊராட்சி மன்ற அலுவலகம், பெரியகோட்டை - 624614', en: 'Gram Panchayat Office, Periyakottai - 624614' },
       badge: { ta: 'உள்ளாட்சி', en: 'Civic Body' }
     },
     {
       role: { ta: 'கிராம நிர்வாக அலுவலர் (VAO)', en: 'Village Administrative Officer' },
-      person: { ta: 'VAO அலுவலகம், பெரியாக்கோட்டை குரூப்', en: 'VAO Office, Periyakottai Group' },
+      person: { ta: 'VAO அலுவலகம், பெரியகோட்டை குரூப்', en: 'VAO Office, Periyakottai Group' },
       phone: '04553-241100',
-      address: { ta: 'வருவாய் அலுவலகம், பெரியாக்கோட்டை', en: 'Revenue Office, Periyakottai' },
+      address: { ta: 'வருவாய் அலுவலகம், பெரியகோட்டை', en: 'Revenue Office, Periyakottai' },
       badge: { ta: 'வருவாய்த்துறை', en: 'Revenue' }
     },
     {
@@ -114,7 +114,7 @@ export const VILLAGE_INFO = {
       role: { ta: 'மக்கள் இ-சேவை மையம் (CSC)', en: 'CSC e-Seva Centre' },
       person: { ta: 'முருகேசன் கு (நால்ரோடு மையம்)', en: 'Murugesan K (Nalroad Centre)' },
       phone: '9790382437',
-      address: { ta: 'நால்ரோடு சந்திப்பு, பெரியாக்கோட்டை - 624614', en: 'Nalroad Junction, Periyakottai - 624614' },
+      address: { ta: 'நால்ரோடு சந்திப்பு, பெரியகோட்டை - 624614', en: 'Nalroad Junction, Periyakottai - 624614' },
       badge: { ta: 'இ-சேவை ஆபரேட்டர்', en: 'Operator' }
     }
   ],
