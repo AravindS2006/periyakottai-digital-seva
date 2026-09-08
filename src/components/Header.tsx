@@ -221,7 +221,7 @@ export function Header() {
             <a
               href="tel:9790382437"
               className="inline-flex items-center gap-2 bg-gradient-to-r from-emerald-700 to-emerald-800 hover:from-emerald-800 hover:to-emerald-900 text-white px-3 py-1.5 xl:px-4 xl:py-2 rounded-xl text-xs xl:text-sm font-bold shadow-xs hover:shadow transition-all shrink-0"
-              title="முருகேசன் கே - நால்ரோடு இ-சேவை மையம்"
+              title="முருகேசன் கு - நால்ரோடு இ-சேவை மையம்"
             >
               <PhoneCall className="w-3.5 h-3.5 xl:w-4 xl:h-4 text-emerald-300 animate-pulse shrink-0" />
               <div className="text-left leading-tight">
@@ -276,12 +276,12 @@ export function Header() {
               <div className="flex items-center gap-3">
                 <img
                   src="/images/murugesan.jpg"
-                  alt="முருகேசன் கே"
+                  alt="முருகேசன் கு"
                   className="w-12 h-12 rounded-xl object-cover border-2 border-amber-400 shadow-md shrink-0"
                 />
                 <div>
                   <div className="flex items-center gap-1.5">
-                    <span className="font-bold text-sm text-white">முருகேசன் கே</span>
+                    <span className="font-bold text-sm text-white">முருகேசன் கு</span>
                     <span className="text-[10px] bg-amber-400 text-slate-950 font-black px-1.5 py-0.2 rounded">
                       EFADGL0636
                     </span>

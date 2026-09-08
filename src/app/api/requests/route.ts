@@ -51,7 +51,7 @@ export async function POST(request: Request) {
       description: body.description || '',
       priority: body.priority || 'Normal',
       status: 'Submitted',
-      assignedTo: 'முருகேசன் கே (Murugesan K)'
+      assignedTo: 'முருகேசன் கு (Murugesan K)'
     });
 
     return NextResponse.json(newTicket, { status: 201, headers: NO_CACHE_HEADERS });

@@ -3,6 +3,21 @@
   "grievances": [],
   "notices": [
     {
+      "title": {
+        "ta": "கிராம சபை கூட்டம் & குடிநீர் தொட்டி சுத்தம் செய்யும் பணி",
+        "en": "Grama Sabha Meeting & Water Tank Cleaning"
+      },
+      "content": {
+        "ta": "பெரியாக்கோட்டை கிராமத்தில் வரும் ஞாயிறு அன்று மேல்நிலை நீர் தேக்க தொட்டி தூய்மைப்படுத்தப்பட உள்ளது.",
+        "en": "Overhead drinking water tank cleaning scheduled this Sunday."
+      },
+      "date": "2026-09-08",
+      "category": "panchayat",
+      "important": true,
+      "source": "பெரியாக்கோட்டை ஊராட்சி மன்றம்",
+      "id": "notice-1788832979873"
+    },
+    {
       "id": "notice-1",
       "title": {
         "ta": "PM கிசான் 19-வது தவணை e-KYC முகாம் நால்ரோடு மையத்தில் நடைபெறுகிறது",
@@ -206,6 +221,22 @@
       "actor": "Murugesan K (Operator)",
       "targetId": "PDS-GRV-0001",
       "details": "Grievance status changed to Forwarded to Official: ஒட்டன்சத்திரம் வேளாண்மை உதவி அலுவலரிடம் மனு ஒப்படைக்கப்பட்டது."
+    },
+    {
+      "id": "log-1788832979876",
+      "timestamp": "2026-09-08T02:02:59.876Z",
+      "action": "CREATE_GRIEVANCE",
+      "actor": "சுப்பிரமணி (Subramani)",
+      "targetId": "PDS-GRV-0001",
+      "details": "Grievance registered in category drinking_water"
+    },
+    {
+      "id": "log-1788832979886",
+      "timestamp": "2026-09-08T02:02:59.886Z",
+      "action": "UPDATE_GRIEVANCE_STATUS",
+      "actor": "Admin",
+      "targetId": "PDS-GRV-0001",
+      "details": "Grievance status changed to Forwarded to Official: ஒட்டன்சத்திரம் BDO அலுவலகம் மற்றும் ஊராட்சி குடிநீர் பராமரிப்பு பணியாளருக்கு அனுப்பப்பட்டுள்ளது. - முருகேசன் கு"
     }
   ],
   "settings": {

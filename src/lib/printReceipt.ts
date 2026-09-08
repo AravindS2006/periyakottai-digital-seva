@@ -264,7 +264,7 @@ export function printAcknowledgmentReceipt(ticket: ReceiptData): void {
             </div>
             <div class="header-right">
               <span class="badge">EFADGL0636</span>
-              <p class="operator-info">ஆபரேட்டர்: முருகேசன் கே</p>
+              <p class="operator-info">ஆபரேட்டர்: முருகேசன் கு</p>
               <p class="operator-info">அழைக்க: 97903 82437</p>
             </div>
           </div>

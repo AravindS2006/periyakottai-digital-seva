@@ -193,7 +193,7 @@ export default function HomePage() {
         en: 'How do I get help if I cannot use this website myself?'
       },
       a: {
-        ta: 'கவலை வேண்டாம்! திரையின் வலது கீழ் மூலையில் உள்ள தொலைபேசி பொத்தானை அழுத்தி நால்ரோடு மைய ஆபரேட்டர் முருகேசன் கே (9790382437) அவர்களை நேரடியாக அழைக்கலாம் அல்லது மையத்திற்கு நேரில் வரலாம்.',
+        ta: 'கவலை வேண்டாம்! திரையின் வலது கீழ் மூலையில் உள்ள தொலைபேசி பொத்தானை அழுத்தி நால்ரோடு மைய ஆபரேட்டர் முருகேசன் கு (9790382437) அவர்களை நேரடியாக அழைக்கலாம் அல்லது மையத்திற்கு நேரில் வரலாம்.',
         en: 'No worries! Click the green call button at bottom right to reach centre operator Murugesan K directly at 9790382437 or visit the centre in person.'
       }
     }
@@ -762,12 +762,12 @@ export default function HomePage() {
               <div className="flex items-center gap-4">
                 <img
                   src="/images/murugesan.jpg"
-                  alt="முருகேசன் கே - நால்ரோடு மக்கள் இ-சேவை மையம்"
+                  alt="முருகேசன் கு - நால்ரோடு மக்கள் இ-சேவை மையம்"
                   className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl object-cover border-2 border-emerald-500 shadow-md shrink-0"
                 />
                 <div>
                   <h2 className="text-2xl sm:text-3xl font-black text-slate-950">
-                    {language === 'ta' ? 'முருகேசன் கே' : 'Murugesan K'}
+                    {language === 'ta' ? 'முருகேசன் கு' : 'Murugesan K'}
                   </h2>
                   <p className="text-xs sm:text-sm font-bold text-emerald-800">
                     {language === 'ta'

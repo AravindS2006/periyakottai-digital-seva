@@ -51,7 +51,7 @@ export default function AdminLoginPage() {
           </h1>
           <p className="text-xs text-slate-500">
             {language === 'ta'
-              ? 'நால்ரோடு மக்கள் இ-சேவை மையம் (முருகேசன் கே)'
+              ? 'நால்ரோடு மக்கள் இ-சேவை மையம் (முருகேசன் கு)'
               : 'Nalroad Makkal e-Seva Maiyam (Murugesan K)'}
           </p>
         </div>

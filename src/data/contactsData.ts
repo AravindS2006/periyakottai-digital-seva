@@ -5,7 +5,7 @@ export const CONTACTS_DATA: ContactItem[] = [
   {
     id: 'csc_centre_murugesan',
     title: {
-      ta: 'நால்ரோடு மக்கள் இ-சேவை மையம் (முருகேசன் கே)',
+      ta: 'நால்ரோடு மக்கள் இ-சேவை மையம் (முருகேசன் கு)',
       en: 'Nalroad Makkal e-Seva Centre (Murugesan K)'
     },
     category: 'centre',

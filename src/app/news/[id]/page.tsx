@@ -243,7 +243,7 @@ export default function NewsDetailPage({ params }: { params: Promise<{ id: strin
                 <span>நால்ரோடு சந்திப்பு, பெரியாக்கோட்டை</span>
               </span>
               <span>•</span>
-              <span className="font-semibold text-white">முருகேசன் கே: 97903 82437</span>
+              <span className="font-semibold text-white">முருகேசன் கு: 97903 82437</span>
             </div>
           </div>
 

@@ -75,7 +75,7 @@ export default function CSCCentrePage() {
 
   const audioIntro =
     language === 'ta'
-      ? 'நால்ரோடு மக்கள் இ-சேவை மையம், பெரியாக்கோட்டை. ஆபரேட்டர் முருகேசன் கே. செல்போன்: 97903 82437. பட்டா, சான்றிதழ்கள், குடும்ப அட்டை மற்றும் அனைத்து அரசு ஆன்லைன் சேவைகளும் அரசு நிர்ணயித்த கட்டணத்தில் செய்து தரப்படும்.'
+      ? 'நால்ரோடு மக்கள் இ-சேவை மையம், பெரியாக்கோட்டை. ஆபரேட்டர் முருகேசன் கு. செல்போன்: 97903 82437. பட்டா, சான்றிதழ்கள், குடும்ப அட்டை மற்றும் அனைத்து அரசு ஆன்லைன் சேவைகளும் அரசு நிர்ணயித்த கட்டணத்தில் செய்து தரப்படும்.'
       : 'Nalroad Makkal e-Seva Centre, Periyakottai. Operated by Murugesan K. Phone: 9790382437. All government certificates, patta transfer, and Aadhaar services assisted at transparent rates.';
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -177,7 +177,7 @@ export default function CSCCentrePage() {
           <div className="relative shrink-0">
             <img
               src="/images/murugesan.jpg"
-              alt="முருகேசன் கே - நால்ரோடு மக்கள் இ-சேவை மையம்"
+              alt="முருகேசன் கு - நால்ரோடு மக்கள் இ-சேவை மையம்"
               className="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl object-cover border-4 border-amber-400 shadow-xl"
             />
           </div>
@@ -188,7 +188,7 @@ export default function CSCCentrePage() {
             </h1>
             <p className="text-sm sm:text-base text-emerald-200 font-bold">
               {language === 'ta'
-                ? 'மைய நிறுவனர் & ஆபரேட்டர்: முருகேசன் குப்புசாமி (முருகேசன் கே)'
+                ? 'மைய நிறுவனர் & ஆபரேட்டர்: முருகேசன் குப்புசாமி (முருகேசன் கு)'
                 : 'Founder & Centre Operator: Murugesan Kuppusamy (Murugesan K)'}
             </p>
             <p className="text-xs sm:text-sm text-emerald-100/90 max-w-3xl leading-relaxed">
@@ -348,7 +348,7 @@ export default function CSCCentrePage() {
               </h2>
               <p className="text-xs sm:text-sm text-slate-600 mt-1">
                 {language === 'ta'
-                  ? 'விவரங்களை பதிவு செய்தால், தேவையான ஆவணங்களை முன்கூட்டியே சரிபார்த்து முருகேசன் கே உங்களை தொடர்புகொள்வார்.'
+                  ? 'விவரங்களை பதிவு செய்தால், தேவையான ஆவணங்களை முன்கூட்டியே சரிபார்த்து முருகேசன் கு உங்களை தொடர்புகொள்வார்.'
                   : 'Submit your request and Murugesan K will review your documents before your visit.'}
               </p>
             </div>
@@ -366,7 +366,7 @@ export default function CSCCentrePage() {
 
                 <p className="text-xs sm:text-sm text-slate-600">
                   {language === 'ta'
-                    ? 'உங்கள் விண்ணப்பம் நால்ரோடு மையத்திற்கு வந்துள்ளது. முருகேசன் கே விரைவில் அழைப்பார்.'
+                    ? 'உங்கள் விண்ணப்பம் நால்ரோடு மையத்திற்கு வந்துள்ளது. முருகேசன் கு விரைவில் அழைப்பார்.'
                     : 'Your appointment is confirmed. Murugesan K will call you shortly.'}
                 </p>
 
@@ -524,7 +524,7 @@ export default function CSCCentrePage() {
                     </span>
                     <span>
                       {language === 'ta'
-                        ? 'மையத்திற்கு வர இயலாவிட்டால் இதைத் தேர்ந்தெடுக்கவும். முருகேசன் கே இல்லம் தேடி வருவார்.'
+                        ? 'மையத்திற்கு வர இயலாவிட்டால் இதைத் தேர்ந்தெடுக்கவும். முருகேசன் கு இல்லம் தேடி வருவார்.'
                         : 'Select if you cannot travel to the centre due to physical difficulties.'}
                     </span>
                   </label>

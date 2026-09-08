@@ -33,11 +33,11 @@ export const VILLAGE_INFO = {
     en: 'Periyakottai Branch Post Office (Delivery) / Chatrapatti Sub Post Office - 624614'
   },
   hamlets: [
-    { ta: 'பெரியாக்கோட்டை கிராமம்', en: 'Periyakottai Village' },
-    { ta: 'நால்ரோடு சந்திப்பு', en: 'Nalroad Junction' },
-    { ta: 'பெரியாக்கோட்டை புதுார்', en: 'Periyakottai Pudur' },
-    { ta: 'கோட்டைமேடு', en: 'Kottaimedu' },
-    { ta: 'மேற்கு தெரு & காலனி', en: 'West Street & Colony' }
+    { ta: 'பெரியாக்கோட்டை', en: 'Periyakottai' },
+    { ta: 'கருங்கல்பட்டி', en: 'Karungalpatti' },
+    { ta: 'கந்தப்ப கவுண்டன் வலசு', en: 'Kandhappa Goundan Valasu' },
+    { ta: '19 புதூர்', en: '19 Pudur' },
+    { ta: 'மற்றவை (Others)', en: 'Others' }
   ],
   nearbyTowns: [
     { name: { ta: 'ஒட்டன்சத்திரம்', en: 'Oddanchatram' }, distance: '10 கி.மீ', route: 'ஒட்டன்சத்திரம் - சத்திரப்பட்டி சாலை' },
@@ -48,7 +48,7 @@ export const VILLAGE_INFO = {
   amenities: [
     {
       title: { ta: 'இ-சேவை & டிஜிட்டல் மையம்', en: 'e-Seva & CSC Centre' },
-      desc: { ta: 'நால்ரோடு மக்கள் இ-சேவை மையம் (முருகேசன் கே - 9790382437)', en: 'Nalroad Makkal e-Seva Centre (Murugesan K - 9790382437)' }
+      desc: { ta: 'நால்ரோடு மக்கள் இ-சேவை மையம் (முருகேசன் கு - 9790382437)', en: 'Nalroad Makkal e-Seva Centre (Murugesan K - 9790382437)' }
     },
     {
       title: { ta: 'ரேஷன் கடை (நியாயவிலைக் கடை)', en: 'Fair Price Ration Shop' },
@@ -66,5 +66,64 @@ export const VILLAGE_INFO = {
       title: { ta: 'பள்ளி & கல்வி', en: 'Schools & Education' },
       desc: { ta: 'ஊராட்சி ஒன்றிய தொடக்கப்பள்ளி பெரியாக்கோட்டை & அரசு மேல்நிலைப்பள்ளி சத்திரப்பட்டி', en: 'Panchayat Union Primary School Periyakottai & Govt Higher Secondary School Chatrapatti' }
     }
+  ],
+  administrationDirectory: [
+    {
+      role: { ta: 'கிராம ஊராட்சி அலுவலகம்', en: 'Panchayat Office' },
+      person: { ta: 'ஊராட்சி மன்ற தலைவர் & செயலாளர்', en: 'President & Panchayat Secretary' },
+      phone: '7402608105',
+      address: { ta: 'கிராம ஊராட்சி மன்ற அலுவலகம், பெரியாக்கோட்டை - 624614', en: 'Gram Panchayat Office, Periyakottai - 624614' },
+      badge: { ta: 'உள்ளாட்சி', en: 'Civic Body' }
+    },
+    {
+      role: { ta: 'கிராம நிர்வாக அலுவலர் (VAO)', en: 'Village Administrative Officer' },
+      person: { ta: 'VAO அலுவலகம், பெரியாக்கோட்டை குரூப்', en: 'VAO Office, Periyakottai Group' },
+      phone: '04553-241100',
+      address: { ta: 'வருவாய் அலுவலகம், பெரியாக்கோட்டை', en: 'Revenue Office, Periyakottai' },
+      badge: { ta: 'வருவாய்த்துறை', en: 'Revenue' }
+    },
+    {
+      role: { ta: 'ஊராட்சி ஒன்றிய ஆணையர் (BDO)', en: 'Block Development Officer (BDO)' },
+      person: { ta: 'ஒட்டன்சத்திரம் ஊராட்சி ஒன்றியம்', en: 'Oddanchatram Panchayat Union' },
+      phone: '7402608105',
+      address: { ta: 'ஊராட்சி ஒன்றிய அலுவலகம், ஒட்டன்சத்திரம்', en: 'Panchayat Union Office, Oddanchatram' },
+      badge: { ta: 'வளர்ச்சி நிர்வாகம்', en: 'Block Admin' }
+    },
+    {
+      role: { ta: 'மின்வாரிய உதவி பொறியாளர் (EB)', en: 'TANGEDCO Electricity Board' },
+      person: { ta: 'சத்திரப்பட்டி பிரிவு & மின்னகம் (24 மணி நேரம்)', en: 'Chatrapatti AE & Minnagam (24x7)' },
+      phone: '9498794987',
+      address: { ta: 'மின் தடை புகார்களுக்கு 94987 94987 / 04553-242700', en: 'Power cut hotline 94987 94987 / 04553-242700' },
+      badge: { ta: 'மின்சாரம்', en: 'Electricity' }
+    },
+    {
+      role: { ta: 'அரசு ஆரம்ப சுகாதார நிலையம் (PHC)', en: 'Primary Health Centre' },
+      person: { ta: 'தேவத்தூர் ஆரம்ப சுகாதார நிலையம் (அவசரம் 24x7)', en: 'Devathur PHC (24x7 Emergency)' },
+      phone: '04553-240668',
+      address: { ta: 'தேவத்தூர் - 624614 (~4 கி.மீ)', en: 'Devathur - 624614 (~4 km)' },
+      badge: { ta: 'சுகாதாரம்', en: 'Health' }
+    },
+    {
+      role: { ta: 'காவல் நிலையம்', en: 'Police Station' },
+      person: { ta: 'ஒட்டன்சத்திரம் காவல் நிலையம்', en: 'Oddanchatram Police Station' },
+      phone: '04553-240223',
+      address: { ta: 'மெயின் ரோடு, ஒட்டன்சத்திரம் (அவசர உதவி 100)', en: 'Main Road, Oddanchatram (Emergency 100)' },
+      badge: { ta: 'காவல்துறை', en: 'Police' }
+    },
+    {
+      role: { ta: 'மக்கள் இ-சேவை மையம் (CSC)', en: 'CSC e-Seva Centre' },
+      person: { ta: 'முருகேசன் கு (நால்ரோடு மையம்)', en: 'Murugesan K (Nalroad Centre)' },
+      phone: '9790382437',
+      address: { ta: 'நால்ரோடு சந்திப்பு, பெரியாக்கோட்டை - 624614', en: 'Nalroad Junction, Periyakottai - 624614' },
+      badge: { ta: 'இ-சேவை ஆபரேட்டர்', en: 'Operator' }
+    }
+  ],
+  gramaSabhaDates: [
+    { date: 'ஜனவரி 26', occasion: { ta: 'குடியரசு தினம்', en: 'Republic Day' } },
+    { date: 'மார்ச் 22', occasion: { ta: 'உலக தண்ணீர் தினம்', en: 'World Water Day' } },
+    { date: 'மே 1', occasion: { ta: 'தொழிலாளர் தினம்', en: 'May Day' } },
+    { date: 'ஆகஸ்ட் 15', occasion: { ta: 'சுதந்திர தினம்', en: 'Independence Day' } },
+    { date: 'அக்டோபர் 2', occasion: { ta: 'காந்தி ஜெயந்தி', en: 'Gandhi Jayanti' } },
+    { date: 'நவம்பர் 1', occasion: { ta: 'உள்ளாட்சிகள் தினம்', en: 'Local Governance Day' } }
   ]
 };

@@ -356,14 +356,14 @@ export default function OperatorPortalPage() {
 
   const generateCitizenWhatsAppUrl = (ticket: RequestTicket) => {
     const text = encodeURIComponent(
-      `வணக்கம் ${ticket.citizenName} அவர்களே,\n\nநால்ரோடு மக்கள் இ-சேவை மையத்திலிருந்து (முருகேசன் கே EFADGL0636) இந்த செய்தி அனுப்பப்படுகிறது.\n\nதங்கள் விண்ணப்பம்:\n📋 மனு எண்: ${ticket.id}\n📁 சேவை: ${ticket.serviceName}\n🚦 தற்போதைய நிலை: *${ticket.status}*\n\nதங்கள் ஆவணங்கள் குறித்த விவரங்களை அறிய மையத்தை 97903 82437 என்ற எண்ணில் தொடர்பு கொள்ளவும்.\n\nபெரியாக்கோட்டை டிஜிட்டல் சேவை`
+      `வணக்கம் ${ticket.citizenName} அவர்களே,\n\nநால்ரோடு மக்கள் இ-சேவை மையத்திலிருந்து (முருகேசன் கு EFADGL0636) இந்த செய்தி அனுப்பப்படுகிறது.\n\nதங்கள் விண்ணப்பம்:\n📋 மனு எண்: ${ticket.id}\n📁 சேவை: ${ticket.serviceName}\n🚦 தற்போதைய நிலை: *${ticket.status}*\n\nதங்கள் ஆவணங்கள் குறித்த விவரங்களை அறிய மையத்தை 97903 82437 என்ற எண்ணில் தொடர்பு கொள்ளவும்.\n\nபெரியாக்கோட்டை டிஜிட்டல் சேவை`
     );
     return `https://wa.me/91${ticket.phoneNumber.replace(/\D/g, '')}?text=${text}`;
   };
 
   const generateGrievanceWhatsAppUrl = (grv: GrievanceTicket) => {
     const text = encodeURIComponent(
-      `வணக்கம் ${grv.citizenName} அவர்களே,\n\nநால்ரோடு மக்கள் இ-சேவை மையத்திலிருந்து (முருகேசன் கே EFADGL0636) இந்த செய்தி அனுப்பப்படுகிறது.\n\nதங்கள் குறைதீர்ப்பு மனு விவரம்:\n📋 மனு எண்: ${grv.id}\n📁 பிரிவு: ${grv.category === 'agriculture' ? 'விவசாயம் / உழவர் குறை' : grv.category}\n🚦 தற்போதைய நிலை: *${grv.status}*\n📍 இடம்: ${grv.location}\n\nகூடுதல் விவரங்களை அறிய நால்ரோடு மையத்தை 97903 82437 என்ற எண்ணில் தொடர்பு கொள்ளவும்.\n\nபெரியாக்கோட்டை டிஜிட்டல் சேவை`
+      `வணக்கம் ${grv.citizenName} அவர்களே,\n\nநால்ரோடு மக்கள் இ-சேவை மையத்திலிருந்து (முருகேசன் கு EFADGL0636) இந்த செய்தி அனுப்பப்படுகிறது.\n\nதங்கள் குறைதீர்ப்பு மனு விவரம்:\n📋 மனு எண்: ${grv.id}\n📁 பிரிவு: ${grv.category === 'agriculture' ? 'விவசாயம் / உழவர் குறை' : grv.category}\n🚦 தற்போதைய நிலை: *${grv.status}*\n📍 இடம்: ${grv.location}\n\nகூடுதல் விவரங்களை அறிய நால்ரோடு மையத்தை 97903 82437 என்ற எண்ணில் தொடர்பு கொள்ளவும்.\n\nபெரியாக்கோட்டை டிஜிட்டல் சேவை`
     );
     return `https://wa.me/91${grv.phoneNumber.replace(/\D/g, '')}?text=${text}`;
   };
@@ -411,7 +411,7 @@ export default function OperatorPortalPage() {
           <div className="w-24 h-24 mx-auto rounded-3xl overflow-hidden border-4 border-emerald-600 shadow-lg">
             <img
               src="/images/murugesan.jpg"
-              alt="முருகேசன் கே"
+              alt="முருகேசன் கு"
               className="w-full h-full object-cover"
             />
           </div>
@@ -424,7 +424,7 @@ export default function OperatorPortalPage() {
               ஆபரேட்டர் மேலாண்மை தளம்
             </h1>
             <p className="text-xs text-slate-500 mt-1">
-              நால்ரோடு மக்கள் இ-சேவை மையம் | முருகேசன் கே
+              நால்ரோடு மக்கள் இ-சேவை மையம் | முருகேசன் கு
             </p>
           </div>
 
@@ -483,13 +483,13 @@ export default function OperatorPortalPage() {
           <div className="flex items-center gap-4">
             <img
               src="/images/murugesan.jpg"
-              alt="முருகேசன் கே"
+              alt="முருகேசன் கு"
               className="w-16 h-16 rounded-2xl object-cover border-2 border-emerald-600 shadow-md shrink-0"
             />
             <div>
               <div className="flex items-center gap-2">
                 <h1 className="text-xl sm:text-2xl font-black text-slate-950">
-                  முருகேசன் கே (Murugesan K)
+                  முருகேசன் கு (Murugesan K)
                 </h1>
                 <span className="bg-amber-400 text-slate-950 text-[10px] font-black px-2 py-0.5 rounded-full">
                   EFADGL0636
@@ -1339,11 +1339,16 @@ export default function OperatorPortalPage() {
                 {/* Sub-section 2: Flash Announcement Banner Controls */}
                 <div className="border border-slate-200 rounded-2xl p-5 sm:p-6 bg-amber-50/30 space-y-4">
                   <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <Megaphone className="w-5 h-5 text-amber-700" />
-                      <h3 className="text-sm sm:text-base font-black text-slate-900">
-                        அவசர அறிவிப்பு பட்டை (Flash Announcement Banner)
-                      </h3>
+                    <div>
+                      <div className="flex items-center gap-2">
+                        <Megaphone className="w-5 h-5 text-amber-700" />
+                        <h3 className="text-sm sm:text-base font-black text-slate-900">
+                          அவசர அறிவிப்பு பட்டை (Flash Announcement Banner)
+                        </h3>
+                      </div>
+                      <p className="text-[11px] text-slate-500 mt-0.5">
+                        முகப்புப் பக்கம் மற்றும் /panchayat பக்கத்தின் தலைப்பில் உடனடியாக தோன்றும் நேரலை செய்தி
+                      </p>
                     </div>
 
                     <label className="relative inline-flex items-center cursor-pointer">
@@ -1512,7 +1517,7 @@ export default function OperatorPortalPage() {
                       <span>கிராம அறிவிப்பு பலகை மேலாண்மை ({notices.length})</span>
                     </h3>
                     <p className="text-xs text-slate-500">
-                      பொதுமக்களுக்கான அரசு முகாம்கள், மானிய அறிவிப்புகள் மற்றும் ஊராட்சி செய்திகள்
+                      பொதுமக்களுக்கான அரசு முகாம்கள், மானிய அறிவிப்புகள் மற்றும் ஊராட்சி செய்திகள் (முகப்பு மற்றும் /panchayat பக்கத்தில் நேரலையாக தோன்றும்)
                     </p>
                   </div>
 
@@ -1870,7 +1875,7 @@ export default function OperatorPortalPage() {
                   பெரியாக்கோட்டை சந்திப்பு, ஒட்டன்சத்திரம் தாலுகா - 624614
                 </p>
                 <p className="text-[11px] font-bold text-slate-800">
-                  ஆபரேட்டர்: முருகேசன் கே | 97903 82437
+                  ஆபரேட்டர்: முருகேசன் கு | 97903 82437
                 </p>
               </div>
 

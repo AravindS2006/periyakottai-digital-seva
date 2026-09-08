@@ -53,7 +53,7 @@ export async function POST(request: Request) {
       const s = matchedServices[0];
       const isTa = language === 'ta';
       const answer = isTa
-        ? `**${s.name.ta}**\n\n${s.description.ta}\n\n**தேவையான முக்கிய ஆவணங்கள்:**\n${s.documents.ta.slice(0, 4).map((d) => `• ${d}`).join('\n')}\n\n**கட்டணம் & காலம்:** ${s.fee.ta} (${s.timeEstimate.ta}).\n\nநால்ரோடு மக்கள் இ-சேவை மையத்தில் (முருகேசன் கே: 97903 82437) உடனடியாக விண்ணப்பிக்கலாம்.`
+        ? `**${s.name.ta}**\n\n${s.description.ta}\n\n**தேவையான முக்கிய ஆவணங்கள்:**\n${s.documents.ta.slice(0, 4).map((d) => `• ${d}`).join('\n')}\n\n**கட்டணம் & காலம்:** ${s.fee.ta} (${s.timeEstimate.ta}).\n\nநால்ரோடு மக்கள் இ-சேவை மையத்தில் (முருகேசன் கு: 97903 82437) உடனடியாக விண்ணப்பிக்கலாம்.`
         : `**${s.name.en}**\n\n${s.description.en}\n\n**Key Documents Required:**\n${s.documents.en.slice(0, 4).map((d) => `• ${d}`).join('\n')}\n\n**Fee & Turnaround:** ${s.fee.en} (${s.timeEstimate.en}).\n\nApply directly with assistance from Nalroad Makkal e-Seva Centre (Murugesan K: 97903 82437).`;
 
       return NextResponse.json({
@@ -99,7 +99,7 @@ export async function POST(request: Request) {
 
     // Fallback response with Murugesan K
     const fallbackAnswer = language === 'ta'
-      ? 'மன்னிக்கவும், உங்கள் கேள்விக்கான சரியான அரசு வழிகாட்டுதல் தரவுத்தளத்தில் நேரடியாக கிடைக்கவில்லை.\n\nதயவுசெய்து நால்ரோடு மக்கள் இ-சேவை மைய ஆபரேட்டர் **முருகேசன் கே** அவர்களை **97903 82437** என்ற எண்ணில் நேரடியாக தொடர்பு கொள்ளவும். அவர் உங்களுக்கு வழிகாட்டுவார்.'
+      ? 'மன்னிக்கவும், உங்கள் கேள்விக்கான சரியான அரசு வழிகாட்டுதல் தரவுத்தளத்தில் நேரடியாக கிடைக்கவில்லை.\n\nதயவுசெய்து நால்ரோடு மக்கள் இ-சேவை மைய ஆபரேட்டர் **முருகேசன் கு** அவர்களை **97903 82437** என்ற எண்ணில் நேரடியாக தொடர்பு கொள்ளவும். அவர் உங்களுக்கு வழிகாட்டுவார்.'
       : 'This specific information could not be verified automatically in the public directory.\n\nPlease contact Nalroad Makkal e-Seva operator **Murugesan K** directly at **97903 82437** for personal assistance.';
 
     return NextResponse.json({

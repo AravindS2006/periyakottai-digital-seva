@@ -35,7 +35,7 @@ export function FloatingHelpButton() {
             {/* Operator Info */}
             <div className="p-2.5 bg-emerald-50 rounded-xl border border-emerald-100 text-xs">
               <p className="font-bold text-emerald-900">
-                {language === 'ta' ? 'முருகேசன் கே (ஆபரேட்டர்)' : 'Murugesan K (Operator)'}
+                {language === 'ta' ? 'முருகேசன் கு (ஆபரேட்டர்)' : 'Murugesan K (Operator)'}
               </p>
               <p className="text-emerald-700">
                 {language === 'ta' ? 'நேரம்: காலை 9:30 - மாலை 5:00 (ஞாயிறு விடுமுறை)' : 'Hours: 9:30 AM - 5:00 PM (Sun Holiday)'}

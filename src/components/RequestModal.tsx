@@ -115,7 +115,7 @@ export function RequestModal({
 
             <p className="text-sm text-slate-600">
               {language === 'ta'
-                ? 'உங்கள் கோரிக்கை நால்ரோடு மக்கள் இ-சேவை மையத்திற்கு அனுப்பப்பட்டுள்ளது. முருகேசன் கே உங்களை விரைவில் தொடர்புகொள்வார்.'
+                ? 'உங்கள் கோரிக்கை நால்ரோடு மக்கள் இ-சேவை மையத்திற்கு அனுப்பப்பட்டுள்ளது. முருகேசன் கு உங்களை விரைவில் தொடர்புகொள்வார்.'
                 : 'Your request has been routed to Nalroad Makkal e-Seva Centre. Murugesan K will review it shortly.'}
             </p>
 
