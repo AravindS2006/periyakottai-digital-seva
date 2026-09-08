@@ -109,7 +109,7 @@ export default function MurugesanProfilePage() {
                 <Building2 className="w-3.5 h-3.5 text-emerald-700" />
                 <span>
                   {language === 'ta'
-                    ? 'நால்ரோடு மக்கள் இ-சேவை மையம் — பெரியாக்கோட்டை'
+                    ? 'நால்ரோடு மக்கள் இ-சேவை மையம் — பெரியகோட்டை'
                     : 'Nalroad Makkal e-Seva Centre — Periyakottai'}
                 </span>
               </div>
@@ -126,7 +126,7 @@ export default function MurugesanProfilePage() {
 
               <p className="text-xs sm:text-sm text-slate-600 leading-relaxed max-w-2xl">
                 {language === 'ta'
-                  ? 'பெரியாக்கோட்டை, நால்ரோடு, தேவத்தூர் மற்றும் ஒட்டன்சத்திரம் வட்டார பொதுமக்களுக்கும், விவசாயிகளுக்கும் அரசு சேவைகளை துல்லியமாகவும், குறைந்த செலவிலும், இடைத்தரகர்கள் இன்றியும் பெற்றுத்தரும் மக்கள் சேவை.'
+                  ? 'பெரியகோட்டை, நால்ரோடு, தேவத்தூர் மற்றும் ஒட்டன்சத்திரம் வட்டார பொதுமக்களுக்கும், விவசாயிகளுக்கும் அரசு சேவைகளை துல்லியமாகவும், குறைந்த செலவிலும், இடைத்தரகர்கள் இன்றியும் பெற்றுத்தரும் மக்கள் சேவை.'
                   : 'Dedicated to serving the citizens and farming community of Periyakottai, Nalroad, and Oddanchatram taluk by providing transparent, error-free digital government services without middlemen.'}
               </p>
 
@@ -178,7 +178,7 @@ export default function MurugesanProfilePage() {
                 </a>
 
                 <a
-                  href="https://wa.me/919790382437?text=வணக்கம்%20முருகேசன்%20அவர்களே,%20பெரியாக்கோட்டை%20டிஜிட்டல்%20சேவை%20வழியாக%20தொடர்பு%20கொள்கிறேன்."
+                  href="https://wa.me/919790382437?text=வணக்கம்%20முருகேசன்%20அவர்களே,%20பெரியகோட்டை%20டிஜிட்டல்%20சேவை%20வழியாக%20தொடர்பு%20கொள்கிறேன்."
                   target="_blank"
                   rel="noopener noreferrer"
                   className="bg-green-600 hover:bg-green-700 text-white font-bold text-xs sm:text-sm px-5 py-3 rounded-xl shadow-md transition-all flex items-center gap-2"
@@ -283,12 +283,12 @@ export default function MurugesanProfilePage() {
             </h3>
             <p className="text-xs sm:text-sm text-emerald-200 max-w-xl leading-relaxed">
               {language === 'ta'
-                ? 'நால்ரோடு பேருந்து நிறுத்தம் மற்றும் பெரியாக்கோட்டை சந்திப்பு அருகில் நமது மையம் அமைந்துள்ளது. அசல் ஆவணங்களுடன் (ஆதார், குடும்ப அட்டை, நிலப் பத்திரம்) வரவும்.'
+                ? 'நால்ரோடு பேருந்து நிறுத்தம் மற்றும் பெரியகோட்டை சந்திப்பு அருகில் நமது மையம் அமைந்துள்ளது. அசல் ஆவணங்களுடன் (ஆதார், குடும்ப அட்டை, நிலப் பத்திரம்) வரவும்.'
                 : 'Conveniently situated next to Nalroad bus stop & Periyakottai junction. Bring original documents (Aadhaar, ration card, land deed) for instant processing.'}
             </p>
             <p className="text-xs font-semibold text-amber-300 flex items-center justify-center md:justify-start gap-1 pt-1">
               <MapPin className="w-3.5 h-3.5" />
-              <span>நால்ரோடு சந்திப்பு, பெரியாக்கோட்டை அஞ்சல், ஒட்டன்சத்திரம் தாலுகா, திண்டுக்கல் மாவட்டம் - 624614</span>
+              <span>நால்ரோடு சந்திப்பு, பெரியகோட்டை அஞ்சல், ஒட்டன்சத்திரம் தாலுகா, திண்டுக்கல் மாவட்டம் - 624614</span>
             </p>
           </div>
 

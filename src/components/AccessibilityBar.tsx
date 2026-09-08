@@ -10,7 +10,7 @@ export function AccessibilityBar() {
 
   const handleAudioGuide = () => {
     const text = language === 'ta'
-      ? 'பெரியாக்கோட்டை டிஜிட்டல் சேவை தளத்திற்கு உங்களை வரவேற்கிறோம். அரசு சான்றிதழ்கள், விவசாய உதவிகள் மற்றும் நால்ரோடு மக்கள் இ-சேவை மையத்தின் நேரடி உதவிகளை நீங்கள் இங்கே எளிதாக பெறலாம்.'
+      ? 'பெரியகோட்டை டிஜிட்டல் சேவை தளத்திற்கு உங்களை வரவேற்கிறோம். அரசு சான்றிதழ்கள், விவசாய உதவிகள் மற்றும் நால்ரோடு மக்கள் இ-சேவை மையத்தின் நேரடி உதவிகளை நீங்கள் இங்கே எளிதாக பெறலாம்.'
       : 'Welcome to Periyakottai Digital Seva Platform. Discover government certificates, agricultural subsidies, and direct assistance from Nalroad Makkal e-Seva Centre.';
     speakText(text, language);
   };

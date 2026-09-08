@@ -1,4 +1,4 @@
-# பெரியாக்கோட்டை டிஜிட்டல் சேவை — Periyakottai Digital Seva
+# பெரியகோட்டை டிஜிட்டல் சேவை — Periyakottai Digital Seva
 ### Smart Village Digital Public Service Platform (Pincode: 624614)
 
 A production-grade, bilingual (**Tamil** as default and **English**), mobile-first civic-tech gateway for the village of **Periyakottai**, Oddanchatram Taluk, Dindigul District, Tamil Nadu. Designed specifically for agricultural households, farmers, senior citizens, women, students, and rural citizens of varying literacy levels.
@@ -9,7 +9,7 @@ Connected directly to the local Digital Seva / CSC Centre operated by **Murugesa
 
 ## 🌾 Project Overview
 
-*   **Village & Gram Panchayat**: Periyakottai (பெரியாக்கோட்டை)
+*   **Village & Gram Panchayat**: Periyakottai (பெரியகோட்டை)
 *   **Block / Panchayat Union**: Oddanchatram (ஒட்டன்சத்திரம்)
 *   **Taluk**: Oddanchatram Taluk
 *   **District**: Dindigul (திண்டுக்கல்), Tamil Nadu

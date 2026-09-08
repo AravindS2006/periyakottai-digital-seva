@@ -70,7 +70,7 @@ function ServicesContent() {
         </h1>
         <p className="text-xs sm:text-base text-slate-600 max-w-3xl">
           {language === 'ta'
-            ? 'பெரியாக்கோட்டை கிராம மக்கள் பெறக்கூடிய அனைத்து அரசு சான்றிதழ்கள், நில ஆவணங்கள், குடும்ப அட்டை மற்றும் நலத்திட்ட சேவைகளின் முழு விவரம்.'
+            ? 'பெரியகோட்டை கிராம மக்கள் பெறக்கூடிய அனைத்து அரசு சான்றிதழ்கள், நில ஆவணங்கள், குடும்ப அட்டை மற்றும் நலத்திட்ட சேவைகளின் முழு விவரம்.'
             : 'Comprehensive directory of verified Tamil Nadu e-Sevai, revenue, land, and citizen documentation services.'}
         </p>
       </div>

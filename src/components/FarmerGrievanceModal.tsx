@@ -32,7 +32,7 @@ export function FarmerGrievanceModal({
   const { language } = useI18n();
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
-  const [village, setVillage] = useState('பெரியாக்கோட்டை (Periyakottai)');
+  const [village, setVillage] = useState('பெரியகோட்டை (Periyakottai)');
   const [selectedType, setSelectedType] = useState(initialTopic || AGRI_GRIEVANCE_TYPES[0].ta);
   const [surveyNo, setSurveyNo] = useState('');
   const [description, setDescription] = useState('');
@@ -261,7 +261,7 @@ export function FarmerGrievanceModal({
                   onChange={(e) => setVillage(e.target.value)}
                   className="w-full px-3 py-2 rounded-xl border border-slate-300 focus:border-emerald-600 text-sm text-slate-900 bg-white"
                 >
-                  <option value="பெரியாக்கோட்டை (Periyakottai)">பெரியாக்கோட்டை (Periyakottai)</option>
+                  <option value="பெரியகோட்டை (Periyakottai)">பெரியகோட்டை (Periyakottai)</option>
                   <option value="நால்ரோடு (Nalroad)">நால்ரோடு (Nalroad)</option>
                   <option value="சத்திரப்பட்டி (Chatrapatti)">சத்திரப்பட்டி (Chatrapatti)</option>
                   <option value="தேவத்தூர் (Devathur)">தேவத்தூர் (Devathur)</option>

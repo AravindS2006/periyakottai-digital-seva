@@ -46,8 +46,8 @@ export async function POST(request: Request) {
     const newGrievance = db.createGrievance({
       citizenName: body.citizenName,
       phoneNumber: body.phoneNumber,
-      village: body.village || 'பெரியாக்கோட்டை',
-      location: body.location || 'பெரியாக்கோட்டை',
+      village: body.village || 'பெரியகோட்டை',
+      location: body.location || 'பெரியகோட்டை',
       category: body.category || 'other',
       description: body.description,
       status: 'Received'

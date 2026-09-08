@@ -29,7 +29,7 @@ export default function AssistantPage() {
       sender: 'assistant',
       text:
         language === 'ta'
-          ? 'வணக்கம்! நான் பெரியாக்கோட்டை டிஜிட்டல் உதவி வழிகாட்டி. அரசு சான்றிதழ்கள், விவசாய மானியங்கள், அல்லது நால்ரோடு இ-சேவை மைய உதவிகள் குறித்து உங்கள் கேள்வியைக் கேளுங்கள்.'
+          ? 'வணக்கம்! நான் பெரியகோட்டை டிஜிட்டல் உதவி வழிகாட்டி. அரசு சான்றிதழ்கள், விவசாய மானியங்கள், அல்லது நால்ரோடு இ-சேவை மைய உதவிகள் குறித்து உங்கள் கேள்வியைக் கேளுங்கள்.'
           : 'Welcome! I am the Periyakottai Digital Public Assistant. Ask questions about government certificates, farmer subsidies, or e-Seva centre procedures.',
       source: 'அரசு சரிபார்க்கப்பட்ட வழிகாட்டி',
       verified: true
@@ -135,7 +135,7 @@ export default function AssistantPage() {
           <span>{language === 'ta' ? 'உதவி வழிகாட்டி' : 'Knowledge Assistant'}</span>
         </div>
         <h1 className="text-2xl sm:text-4xl font-extrabold text-slate-950">
-          {language === 'ta' ? 'பெரியாக்கோட்டை டிஜிட்டல் உதவி AI' : 'Bilingual Public Service Assistant'}
+          {language === 'ta' ? 'பெரியகோட்டை டிஜிட்டல் உதவி AI' : 'Bilingual Public Service Assistant'}
         </h1>
         <p className="text-xs sm:text-sm text-slate-600 max-w-xl mx-auto">
           {language === 'ta'

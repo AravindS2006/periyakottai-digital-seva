@@ -82,7 +82,7 @@ export default function FarmerHubPage() {
 
         <h1 className="text-2xl sm:text-4xl font-black text-white leading-tight">
           {language === 'ta'
-            ? 'பெரியாக்கோட்டை & ஒட்டன்சத்திரம் உழவர் தகவல் மையம்'
+            ? 'பெரியகோட்டை & ஒட்டன்சத்திரம் உழவர் தகவல் மையம்'
             : 'Periyakottai & Oddanchatram Farmer Information Hub'}
         </h1>
 
@@ -313,7 +313,7 @@ export default function FarmerHubPage() {
           </h2>
           <p className="text-xs text-slate-600">
             {language === 'ta'
-              ? 'பெரியாக்கோட்டை கிராம விவசாயிகள் கூட்டுறவு கடன் சங்கம் மூலம் பெறக்கூடிய நன்மைகள்'
+              ? 'பெரியகோட்டை கிராம விவசாயிகள் கூட்டுறவு கடன் சங்கம் மூலம் பெறக்கூடிய நன்மைகள்'
               : 'Services and credit facilities provided to local farmers through PACCS'}
           </p>
         </div>
@@ -464,7 +464,7 @@ export default function FarmerHubPage() {
             <span className="text-emerald-300 font-bold block">
               {language === 'ta' ? 'நால்ரோடு மக்கள் இ-சேவை மையம்' : 'Nalroad e-Seva Centre'}
             </span>
-            <span className="text-white font-medium">முருகேசன் கு (பெரியாக்கோட்டை)</span>
+            <span className="text-white font-medium">முருகேசன் கு (பெரியகோட்டை)</span>
             <a href="tel:9790382437" className="block text-amber-300 font-bold text-sm pt-1">
               97903 82437
             </a>

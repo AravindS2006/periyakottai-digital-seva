@@ -98,7 +98,7 @@ export default function OperatorPortalPage() {
   const [walkinModalOpen, setWalkinModalOpen] = useState(false);
   const [walkinName, setWalkinName] = useState('');
   const [walkinPhone, setWalkinPhone] = useState('');
-  const [walkinVillage, setWalkinVillage] = useState('பெரியாக்கோட்டை (Periyakottai)');
+  const [walkinVillage, setWalkinVillage] = useState('பெரியகோட்டை (Periyakottai)');
   const [walkinServiceId, setWalkinServiceId] = useState('patta_transfer');
   const [walkinServiceName, setWalkinServiceName] = useState('பட்டா பெயர் மாற்றம் (Patta Transfer)');
   const [walkinPriority, setWalkinPriority] = useState<'Normal' | 'Urgent'>('Normal');
@@ -356,14 +356,14 @@ export default function OperatorPortalPage() {
 
   const generateCitizenWhatsAppUrl = (ticket: RequestTicket) => {
     const text = encodeURIComponent(
-      `வணக்கம் ${ticket.citizenName} அவர்களே,\n\nநால்ரோடு மக்கள் இ-சேவை மையத்திலிருந்து (முருகேசன் கு EFADGL0636) இந்த செய்தி அனுப்பப்படுகிறது.\n\nதங்கள் விண்ணப்பம்:\n📋 மனு எண்: ${ticket.id}\n📁 சேவை: ${ticket.serviceName}\n🚦 தற்போதைய நிலை: *${ticket.status}*\n\nதங்கள் ஆவணங்கள் குறித்த விவரங்களை அறிய மையத்தை 97903 82437 என்ற எண்ணில் தொடர்பு கொள்ளவும்.\n\nபெரியாக்கோட்டை டிஜிட்டல் சேவை`
+      `வணக்கம் ${ticket.citizenName} அவர்களே,\n\nநால்ரோடு மக்கள் இ-சேவை மையத்திலிருந்து (முருகேசன் கு EFADGL0636) இந்த செய்தி அனுப்பப்படுகிறது.\n\nதங்கள் விண்ணப்பம்:\n📋 மனு எண்: ${ticket.id}\n📁 சேவை: ${ticket.serviceName}\n🚦 தற்போதைய நிலை: *${ticket.status}*\n\nதங்கள் ஆவணங்கள் குறித்த விவரங்களை அறிய மையத்தை 97903 82437 என்ற எண்ணில் தொடர்பு கொள்ளவும்.\n\nபெரியகோட்டை டிஜிட்டல் சேவை`
     );
     return `https://wa.me/91${ticket.phoneNumber.replace(/\D/g, '')}?text=${text}`;
   };
 
   const generateGrievanceWhatsAppUrl = (grv: GrievanceTicket) => {
     const text = encodeURIComponent(
-      `வணக்கம் ${grv.citizenName} அவர்களே,\n\nநால்ரோடு மக்கள் இ-சேவை மையத்திலிருந்து (முருகேசன் கு EFADGL0636) இந்த செய்தி அனுப்பப்படுகிறது.\n\nதங்கள் குறைதீர்ப்பு மனு விவரம்:\n📋 மனு எண்: ${grv.id}\n📁 பிரிவு: ${grv.category === 'agriculture' ? 'விவசாயம் / உழவர் குறை' : grv.category}\n🚦 தற்போதைய நிலை: *${grv.status}*\n📍 இடம்: ${grv.location}\n\nகூடுதல் விவரங்களை அறிய நால்ரோடு மையத்தை 97903 82437 என்ற எண்ணில் தொடர்பு கொள்ளவும்.\n\nபெரியாக்கோட்டை டிஜிட்டல் சேவை`
+      `வணக்கம் ${grv.citizenName} அவர்களே,\n\nநால்ரோடு மக்கள் இ-சேவை மையத்திலிருந்து (முருகேசன் கு EFADGL0636) இந்த செய்தி அனுப்பப்படுகிறது.\n\nதங்கள் குறைதீர்ப்பு மனு விவரம்:\n📋 மனு எண்: ${grv.id}\n📁 பிரிவு: ${grv.category === 'agriculture' ? 'விவசாயம் / உழவர் குறை' : grv.category}\n🚦 தற்போதைய நிலை: *${grv.status}*\n📍 இடம்: ${grv.location}\n\nகூடுதல் விவரங்களை அறிய நால்ரோடு மையத்தை 97903 82437 என்ற எண்ணில் தொடர்பு கொள்ளவும்.\n\nபெரியகோட்டை டிஜிட்டல் சேவை`
     );
     return `https://wa.me/91${grv.phoneNumber.replace(/\D/g, '')}?text=${text}`;
   };
@@ -496,7 +496,7 @@ export default function OperatorPortalPage() {
                 </span>
               </div>
               <p className="text-xs text-slate-600">
-                நால்ரோடு மக்கள் இ-சேவை மையம் | பெரியாக்கோட்டை - 624614
+                நால்ரோடு மக்கள் இ-சேவை மையம் | பெரியகோட்டை - 624614
               </p>
               <p className="text-[11px] text-emerald-800 font-bold flex items-center gap-1 mt-0.5">
                 <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
@@ -875,7 +875,7 @@ export default function OperatorPortalPage() {
                     தேர்ந்தெடுக்கப்பட்ட பிரிவில் புகார்கள் எதுவும் இல்லை
                   </h4>
                   <p className="text-xs text-slate-500 max-w-md mx-auto">
-                    விவசாயிகள் அல்லது பெரியாக்கோட்டை கிராம மக்களிடமிருந்து பெறப்படும் மனுக்கள் இங்கே காட்டப்படும்.
+                    விவசாயிகள் அல்லது பெரியகோட்டை கிராம மக்களிடமிருந்து பெறப்படும் மனுக்கள் இங்கே காட்டப்படும்.
                   </p>
                 </div>
               ) : (
@@ -955,7 +955,7 @@ export default function OperatorPortalPage() {
                             citizenName: grv.citizenName,
                             phoneNumber: grv.phoneNumber,
                             serviceName: grv.category === 'agriculture' ? 'உழவர் குறைதீர்ப்பு மனு (Agri Grievance)' : `கிராம பஞ்சாயத்து புகார் (${grv.category})`,
-                            village: grv.village || 'பெரியாக்கோட்டை',
+                            village: grv.village || 'பெரியகோட்டை',
                             createdAt: grv.createdAt,
                             status: grv.status,
                             description: grv.description
@@ -1780,7 +1780,7 @@ export default function OperatorPortalPage() {
                       onChange={(e) => setWalkinVillage(e.target.value)}
                       className="w-full p-2.5 text-xs rounded-xl border border-slate-300 outline-none focus:border-emerald-600"
                     >
-                      <option value="பெரியாக்கோட்டை (Periyakottai)">பெரியாக்கோட்டை (Periyakottai)</option>
+                      <option value="பெரியகோட்டை (Periyakottai)">பெரியகோட்டை (Periyakottai)</option>
                       <option value="நால்ரோடு (Nalroad)">நால்ரோடு (Nalroad)</option>
                       <option value="தேவத்தூர் (Devathur)">தேவத்தூர் (Devathur)</option>
                       <option value="சத்திரப்பட்டி (Chatrapatti)">சத்திரப்பட்டி (Chatrapatti)</option>
@@ -1872,7 +1872,7 @@ export default function OperatorPortalPage() {
                   நால்ரோடு மக்கள் இ-சேவை மையம்
                 </h3>
                 <p className="text-[11px] text-slate-600">
-                  பெரியாக்கோட்டை சந்திப்பு, ஒட்டன்சத்திரம் தாலுகா - 624614
+                  பெரியகோட்டை சந்திப்பு, ஒட்டன்சத்திரம் தாலுகா - 624614
                 </p>
                 <p className="text-[11px] font-bold text-slate-800">
                   ஆபரேட்டர்: முருகேசன் கு | 97903 82437
@@ -1911,7 +1911,7 @@ export default function OperatorPortalPage() {
               </div>
 
               <div className="bg-slate-50 p-2.5 rounded-xl text-[10px] text-slate-500 text-center leading-relaxed">
-                உங்கள் மனு நிலையை பெரியாக்கோட்டை டிஜிட்டல் சேவை இணையதளத்தில் (Track Portal) அறிந்து கொள்ளலாம்.
+                உங்கள் மனு நிலையை பெரியகோட்டை டிஜிட்டல் சேவை இணையதளத்தில் (Track Portal) அறிந்து கொள்ளலாம்.
               </div>
 
               <div className="pt-2 flex justify-between gap-3">
@@ -1943,7 +1943,7 @@ export default function OperatorPortalPage() {
                     புதிய கிராம அறிவிப்பு வெளியிடு
                   </h3>
                   <p className="text-xs text-slate-500">
-                    நால்ரோடு & பெரியாக்கோட்டை மக்கள் பார்க்கும் அறிவிப்பு பலகை
+                    நால்ரோடு & பெரியகோட்டை மக்கள் பார்க்கும் அறிவிப்பு பலகை
                   </p>
                 </div>
                 <button

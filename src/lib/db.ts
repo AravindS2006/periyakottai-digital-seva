@@ -73,13 +73,13 @@ const INITIAL_NOTICES: VillageNotice[] = [
       en: 'Kalaignar Kanavu Illam Field Verification Camp'
     },
     content: {
-      ta: 'பெரியாக்கோட்டை கிராம பஞ்சாயத்தில் குடிசை வீடுகளில் வசிக்கும் தகுதியான குடும்பங்களை தேர்வு செய்ய ஊராட்சி அலுவலர்கள் ஆய்வு மேற்கொள்கின்றனர்.',
+      ta: 'பெரியகோட்டை கிராம பஞ்சாயத்தில் குடிசை வீடுகளில் வசிக்கும் தகுதியான குடும்பங்களை தேர்வு செய்ய ஊராட்சி அலுவலர்கள் ஆய்வு மேற்கொள்கின்றனர்.',
       en: 'Field verification by panchayat officials for eligible rural households under Kalaignar Kanavu Illam pucca housing scheme.'
     },
     date: '2026-09-04',
     category: 'panchayat',
     important: false,
-    source: 'பெரியாக்கோட்டை ஊராட்சி மன்றம்'
+    source: 'பெரியகோட்டை ஊராட்சி மன்றம்'
   }
 ];
 

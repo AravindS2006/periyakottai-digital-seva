@@ -62,7 +62,7 @@ export function NewsCard({ news, variant = 'full' }: NewsCardProps) {
   };
 
   const shareText = encodeURIComponent(
-    `*${title}*\n\n${summary}\n\n👉 மேலும் விவரங்களுக்கு: பெரியாக்கோட்டை டிஜிட்டல் சேவை & நால்ரோடு இ-சேவை மையம் (9790382437)`
+    `*${title}*\n\n${summary}\n\n👉 மேலும் விவரங்களுக்கு: பெரியகோட்டை டிஜிட்டல் சேவை & நால்ரோடு இ-சேவை மையம் (9790382437)`
   );
   const whatsappUrl = `https://api.whatsapp.com/send?text=${shareText}`;
 

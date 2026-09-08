@@ -199,7 +199,7 @@ export const AGRI_SUBSIDIES: AgriSubsidySummary[] = [
 
 export const PACCS_GUIDE = {
   name: {
-    ta: 'சத்திரப்பட்டி & பெரியாக்கோட்டை தொடக்க வேளாண்மை கூட்டுறவு கடன் சங்கம் (PACCS)',
+    ta: 'சத்திரப்பட்டி & பெரியகோட்டை தொடக்க வேளாண்மை கூட்டுறவு கடன் சங்கம் (PACCS)',
     en: 'Chatrapatti & Periyakottai Primary Agricultural Co-operative Credit Society (PACCS)'
   },
   services: [

@@ -9,12 +9,12 @@ import { NetworkStatus } from '@/components/NetworkStatus';
 
 export const metadata: Metadata = {
   metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL || 'https://periyakottai-digital-seva.vercel.app'),
-  title: 'பெரியாக்கோட்டை டிஜிட்டல் சேவை | Periyakottai Digital Seva',
+  title: 'பெரியகோட்டை டிஜிட்டல் சேவை | Periyakottai Digital Seva',
   description:
-    'பெரியாக்கோட்டை கிராம மக்களுக்கான அரசு சேவைகள், விவசாய உதவிகள், நலத்திட்டங்கள் மற்றும் நால்ரோடு மக்கள் இ-சேவை மையத்தின் (முருகேசன் கு) நேரடி உதவி தளம். ஒட்டன்சத்திரம் தாலுகா, திண்டுக்கல் மாவட்டம் - 624614.',
+    'பெரியகோட்டை கிராம மக்களுக்கான அரசு சேவைகள், விவசாய உதவிகள், நலத்திட்டங்கள் மற்றும் நால்ரோடு மக்கள் இ-சேவை மையத்தின் (முருகேசன் கு) நேரடி உதவி தளம். ஒட்டன்சத்திரம் தாலுகா, திண்டுக்கல் மாவட்டம் - 624614.',
   keywords: [
     'Periyakottai',
-    'பெரியாக்கோட்டை',
+    'பெரியகோட்டை',
     'Oddanchatram',
     'ஒட்டன்சத்திரம்',
     'Dindigul',
@@ -48,7 +48,7 @@ export const metadata: Metadata = {
     shortcut: ['/favicon.ico'],
   },
   openGraph: {
-    title: 'பெரியாக்கோட்டை டிஜிட்டல் சேவை - Periyakottai Digital Seva (624614)',
+    title: 'பெரியகோட்டை டிஜிட்டல் சேவை - Periyakottai Digital Seva (624614)',
     description: 'அரசு சான்றிதழ்கள், விவசாய மானியங்கள் மற்றும் இ-சேவை மைய உதவி தளம்.',
     type: 'website',
     locale: 'ta_IN',
@@ -57,7 +57,7 @@ export const metadata: Metadata = {
         url: '/images/logo.png',
         width: 256,
         height: 256,
-        alt: 'பெரியாக்கோட்டை டிஜிட்டல் சேவை இலச்சினை',
+        alt: 'பெரியகோட்டை டிஜிட்டல் சேவை இலச்சினை',
       },
     ],
   },

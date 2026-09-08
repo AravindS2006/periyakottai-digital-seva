@@ -229,7 +229,7 @@ export default function NewsDetailPage({ params }: { params: Promise<{ id: strin
           <div className="space-y-2 text-center md:text-left">
             <h3 className="text-xl font-black">
               {language === 'ta'
-                ? 'பெரியாக்கோட்டை கிராம மக்களுக்கான விண்ணப்ப உதவி'
+                ? 'பெரியகோட்டை கிராம மக்களுக்கான விண்ணப்ப உதவி'
                 : 'Application Assistance for Periyakottai Villagers'}
             </h3>
             <p className="text-xs sm:text-sm text-emerald-200 leading-relaxed max-w-xl">
@@ -240,7 +240,7 @@ export default function NewsDetailPage({ params }: { params: Promise<{ id: strin
             <div className="flex flex-wrap items-center gap-4 text-xs text-emerald-300 pt-1">
               <span className="flex items-center gap-1.5">
                 <MapPin className="w-3.5 h-3.5 text-emerald-400" />
-                <span>நால்ரோடு சந்திப்பு, பெரியாக்கோட்டை</span>
+                <span>நால்ரோடு சந்திப்பு, பெரியகோட்டை</span>
               </span>
               <span>•</span>
               <span className="font-semibold text-white">முருகேசன் கு: 97903 82437</span>
