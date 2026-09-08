@@ -102,9 +102,15 @@ export type GrievanceCategory =
   | 'drinking_water'
   | 'street_light'
   | 'road_repair'
+  | 'drainage'
   | 'sanitation'
   | 'ration_shop'
   | 'agriculture'
+  | 'burial_ground'
+  | 'health_sanitation'
+  | 'stray_animals'
+  | 'revenue_land'
+  | 'community_infra'
   | 'other';
 
 export type GrievanceStatus =

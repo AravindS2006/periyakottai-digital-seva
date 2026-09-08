@@ -34,9 +34,10 @@ export const VILLAGE_INFO = {
   },
   hamlets: [
     { ta: 'பெரியகோட்டை', en: 'Periyakottai' },
-    { ta: 'பெரியகோட்டை மேற்குத் தெரு', en: 'Periyakottai West Street' },
+    { ta: 'பெரியகோட்டை கிழக்கு', en: 'Periyakottai East' },
+    { ta: 'பெரியகோட்டை மேற்கு', en: 'Periyakottai West' },
+    { ta: 'கருங்கல்பட்டி', en: 'Karungalpatti' },
     { ta: 'கந்தப்ப கவுண்டன் வலசு', en: 'Kandhappa Goundan Valasu' },
-    { ta: '19 புதூர்', en: '19 Pudur' },
     { ta: 'மற்றவை (Others)', en: 'Others' }
   ],
   nearbyTowns: [

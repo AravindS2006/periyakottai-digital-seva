@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import { I18nProvider } from '@/i18n/context';
-import { AccessibilityBar } from '@/components/AccessibilityBar';
 import { Header } from '@/components/Header';
 import { Footer } from '@/components/Footer';
 import { FloatingHelpButton } from '@/components/FloatingHelpButton';
@@ -86,7 +85,6 @@ export default function RootLayout({
       <body className="min-h-screen flex flex-col antialiased selection:bg-emerald-100 selection:text-emerald-900">
         <I18nProvider>
           <NetworkStatus />
-          <AccessibilityBar />
           <Header />
           <main className="flex-1">
             {children}

@@ -32,7 +32,13 @@ import {
   Sparkles,
   ExternalLink,
   Edit3,
-  BookOpen
+  BookOpen,
+  Waves,
+  Bug,
+  Dog,
+  Landmark,
+  School,
+  HeartHandshake
 } from 'lucide-react';
 import { GrievanceTicket, GrievanceCategory, GrievanceStatus, PlatformSettings, VillageNotice } from '@/types';
 import { printAcknowledgmentReceipt } from '@/lib/printReceipt';
@@ -69,13 +75,13 @@ export default function PanchayatPage() {
   const [selectedTrackedTicket, setSelectedTrackedTicket] = useState<GrievanceTicket | null>(null);
   const [trackError, setTrackError] = useState('');
 
-  // Super Portal Secondary Civic Sections: 'notices' | 'services' | 'directory' | 'profile'
-  const [secondaryTab, setSecondaryTab] = useState<'notices' | 'services' | 'directory' | 'profile'>('notices');
+  // Additional Civic Info Tabs: 'services' | 'directory' | 'profile'
+  const [civicTab, setCivicTab] = useState<'services' | 'directory' | 'profile'>('services');
 
   const audioIntro =
     language === 'ta'
-      ? 'பெரியகோட்டை கிராம ஊராட்சி பொதுமக்கள் குறைதீர்ப்பு மற்றும் டிஜிட்டல் கிராம சூப்பர் தளம். குடிநீர், தெருவிளக்கு, சாலை, கழிவுநீர் மற்றும் ரேஷன் பிரச்சனைகளை உடனடியாக பதிவு செய்து கண்காணிக்கலாம்.'
-      : 'Periyakottai Gram Panchayat Civic Super Portal. Report grievances, track tickets in real-time, access digital e-services, village notices, and emergency administration contacts.';
+      ? 'பெரியகோட்டை கிராம ஊராட்சி பொதுமக்கள் குறைதீர்ப்பு தலைமை தளம். குடிநீர், தெருவிளக்கு, சாலை, சாக்கடை, ரேஷன் மற்றும் கிராமப் பிரச்சனைகளை உடனடியாக பதிவு செய்து கண்காணிக்கலாம்.'
+      : 'Periyakottai Gram Panchayat Civic Redressal Portal. Report all village civic grievances and track ticket status in real-time.';
 
   // Initial Fetch & Visibility-based re-fetch (Zero polling, protected free limit)
   useEffect(() => {
@@ -121,22 +127,106 @@ export default function PanchayatPage() {
     };
   }, []);
 
-  // Grievance categories
+  // Comprehensive Village Grievance categories (All kinds of village grievances)
   const categories: {
     id: GrievanceCategory;
     title: { ta: string; en: string };
     icon: any;
   }[] = [
-    { id: 'drinking_water', title: { ta: 'குடிநீர் விநியோகம்', en: 'Drinking Water' }, icon: Droplets },
+    { id: 'drinking_water', title: { ta: 'குடிநீர் விநியோகம் / தொட்டி', en: 'Drinking Water' }, icon: Droplets },
     { id: 'street_light', title: { ta: 'தெருவிளக்கு பழுது', en: 'Street Lights' }, icon: Lightbulb },
-    { id: 'road_repair', title: { ta: 'சாலை & வாறுகால்', en: 'Roads & Drainage' }, icon: Truck },
-    { id: 'sanitation', title: { ta: 'குப்பை & சுகாதாரம்', en: 'Sanitation' }, icon: Sparkles },
+    { id: 'road_repair', title: { ta: 'சாலை & தெரு பழுது', en: 'Road Repair' }, icon: Truck },
+    { id: 'drainage', title: { ta: 'சாக்கடை & கழிவுநீர் கால்வாய்', en: 'Drainage & Sewage' }, icon: Waves },
+    { id: 'sanitation', title: { ta: 'குப்பை & சுகாதார பராமரிப்பு', en: 'Sanitation / Garbage' }, icon: Sparkles },
     { id: 'ration_shop', title: { ta: 'ரேஷன் கடை குறை', en: 'Ration Shop' }, icon: Building2 },
     { id: 'agriculture', title: { ta: 'விவசாய பாசனம் & மின்சாரம்', en: 'Agri & Irrigation' }, icon: FileText },
-    { id: 'other', title: { ta: 'வருவாய்த்துறை & இதர', en: 'Revenue / Other' }, icon: HelpCircle }
+    { id: 'burial_ground', title: { ta: 'மயானம் / சுடுகாட்டுப் பாதை', en: 'Burial Ground Access' }, icon: HeartHandshake },
+    { id: 'health_sanitation', title: { ta: 'கொசு மருந்து & தடுப்பு மருந்து', en: 'Mosquito Fogging / Health' }, icon: Bug },
+    { id: 'stray_animals', title: { ta: 'தெரு நாய் & விலங்கு தொல்லை', en: 'Stray Dogs / Animals' }, icon: Dog },
+    { id: 'revenue_land', title: { ta: 'வருவாய்த்துறை & பட்டா / நிலம்', en: 'Revenue / Land Records' }, icon: Landmark },
+    { id: 'community_infra', title: { ta: 'பள்ளி, நூலகம் & சமுதாயக்கூடம்', en: 'School / Hall / Infra' }, icon: School },
+    { id: 'other', title: { ta: 'இதர கிராம பொதுப் பிரச்சனை', en: 'Other Village Grievance' }, icon: HelpCircle }
   ];
 
-  // Super Portal e-Services
+  const categoryDeptMap: Record<GrievanceCategory, { dept: { ta: string; en: string } }> = {
+    drinking_water: { dept: { ta: 'ஊராட்சி குடிநீர் பிரிவு', en: 'Panchayat Water Supply Dept' } },
+    street_light: { dept: { ta: 'மின்வாரியம் & பஞ்சாயத்து', en: 'TNEB & Panchayat Lighting' } },
+    road_repair: { dept: { ta: 'ஊரக வளர்ச்சி & ஊராட்சி நெடுஞ்சாலை', en: 'Rural Development & Roads' } },
+    drainage: { dept: { ta: 'ஊராட்சி சுகாதாரப் பிரிவு', en: 'Sanitation & Sewage Dept' } },
+    sanitation: { dept: { ta: 'கிராம துப்புரவு அணி', en: 'Village Sanitation Team' } },
+    ration_shop: { dept: { ta: 'உணவு & கூட்டுறவுத் துறை', en: 'Civil Supplies & Ration Dept' } },
+    agriculture: { dept: { ta: 'வேளாண்மை & பாசன மின் பிரிவு', en: 'Agriculture & Irrigation Section' } },
+    burial_ground: { dept: { ta: 'ஊராட்சி நிர்வாகம்', en: 'Gram Panchayat Admin' } },
+    health_sanitation: { dept: { ta: 'ஆரம்ப சுகாதார நிலையம் & ஊராட்சி', en: 'Primary Health Centre & Panchayat' } },
+    stray_animals: { dept: { ta: 'கால்நடை பராமரிப்பு & ஊராட்சி', en: 'Animal Husbandry & Panchayat' } },
+    revenue_land: { dept: { ta: 'வருவாய்த்துறை (VAO / RI / தாலுகா)', en: 'Revenue Dept (VAO/RI)' } },
+    community_infra: { dept: { ta: 'ஊராட்சி வளர்ச்சி முகமை', en: 'Panchayat Development Section' } },
+    other: { dept: { ta: 'கிராம ஊராட்சி அலுவலகம்', en: 'Panchayat General Office' } }
+  };
+
+  const getCategoryPlaceholder = (cat: GrievanceCategory, lang: 'ta' | 'en'): string => {
+    if (lang === 'ta') {
+      switch (cat) {
+        case 'drinking_water':
+          return 'எ.கா: மேல்நிலை குடிநீர் தொட்டியில் நீர் வரவில்லை / தெரு குழாய் உடைப்பு ஏற்பட்டுள்ளது...';
+        case 'street_light':
+          return 'எ.கா: பிள்ளையார் கோயில் தெருவில் 2 மின்கம்பங்களில் விளக்கு எரியவில்லை, இரவில் இருட்டாக உள்ளது...';
+        case 'road_repair':
+          return 'எ.கா: மெயின் ரோட்டில் குண்டும் குழியுமாக உள்ளது, பழுது பார்க்க வேண்டும்...';
+        case 'drainage':
+          return 'எ.கா: சாக்கடை அடைப்பு ஏற்பட்டு கழிவுநீர் சாலையில் தேங்கி சுகாதார சீர்கேடு ஏற்பட்டுள்ளது...';
+        case 'sanitation':
+          return 'எ.கா: குப்பைத் தொட்டி நிரம்பி வழிந்து துர்நாற்றம் வீசுகிறது, உடனே அகற்ற வேண்டும்...';
+        case 'ration_shop':
+          return 'எ.கா: ரேஷன் பொருட்கள் விநியோகம் / கைரேகை பதிவு / குடும்ப அட்டை தொடர்பான குறை...';
+        case 'agriculture':
+          return 'எ.கா: விவசாய பாசன வாய்க்கால் தூர்வாரப்பட வேண்டும் / மும்முனை மின்சாரம் குறைபாடு...';
+        case 'burial_ground':
+          return 'எ.கா: மயானத்திற்கு செல்லும் பாதை சேதமடைந்துள்ளது, சீரமைக்க வேண்டும்...';
+        case 'health_sanitation':
+          return 'எ.கா: பகுதியில் கொசுக்கள் அதிகமாக உள்ளது, கொசு மருந்து தெளிக்க வேண்டும்...';
+        case 'stray_animals':
+          return 'எ.கா: பள்ளிக்கூடம் அருகே தெரு நாய்கள் தொல்லை அதிகமாக உள்ளது, கட்டுப்படுத்த வேண்டும்...';
+        case 'revenue_land':
+          return 'எ.கா: பட்டா மாறுதல் / நில எல்லை அளவீடு தொடர்பாக வழிகாட்டல் தேவை...';
+        case 'community_infra':
+          return 'எ.கா: சமுதாயக்கூடம் / பள்ளி / நூலக கட்டிடம் பழுது பார்க்கப்பட வேண்டும்...';
+        default:
+          return 'குறையின் முழு விவரம், சரியான இடம், தேவைப்படும் தீர்வு ஆகியவற்றை தெளிவாக குறிப்பிடவும்...';
+      }
+    } else {
+      switch (cat) {
+        case 'drinking_water':
+          return 'e.g. Street pipe leakage / dry overhead tank / dirty water supply...';
+        case 'street_light':
+          return 'e.g. 2 street lamps not working near Temple street for past 3 days...';
+        case 'road_repair':
+          return 'e.g. Deep potholes on main village street causing accidents...';
+        case 'drainage':
+          return 'e.g. Blocked drainage overflowing onto road causing hygiene issues...';
+        case 'sanitation':
+          return 'e.g. Waste bin overflowing and needs immediate cleaning...';
+        case 'ration_shop':
+          return 'e.g. Essential goods ration shop issue / biometric issue...';
+        case 'agriculture':
+          return 'e.g. Irrigation canal desiltation needed / agricultural power issue...';
+        case 'burial_ground':
+          return 'e.g. Burial ground pathway overgrown and damaged...';
+        case 'health_sanitation':
+          return 'e.g. Mosquito menace in area, fogging required...';
+        case 'stray_animals':
+          return 'e.g. Stray animal menace near school area...';
+        case 'revenue_land':
+          return 'e.g. Land survey / Patta transfer assistance needed...';
+        case 'community_infra':
+          return 'e.g. Village community hall or library repair needed...';
+        default:
+          return 'Describe the grievance clearly with exact location and required solution...';
+      }
+    }
+  };
+
+  // Village e-Services
   const villageServices = [
     {
       id: 'patta',
@@ -216,7 +306,7 @@ export default function PanchayatPage() {
         body: JSON.stringify({
           citizenName: name.trim(),
           phoneNumber: cleanPhone,
-          village: 'பெரியகோட்டை (Periyakottai)',
+          village: 'பெரியகோட்டை',
           location: fullLocation,
           category,
           priority,
@@ -330,142 +420,50 @@ export default function PanchayatPage() {
   });
 
   return (
-    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-5 sm:py-8 space-y-6">
-      {/* 1. OPERATOR-MANAGED ANNOUNCEMENT BANNER */}
-      {platformSettings?.announcementBanner?.enabled !== false && (
-        <section
-          aria-label="Panchayat Announcements"
-          className={`rounded-2xl p-4 sm:p-4.5 border-2 shadow-xs transition-all ${
-            platformSettings?.announcementBanner?.type === 'alert'
-              ? 'bg-gradient-to-r from-red-600 via-rose-700 to-red-800 text-white border-red-900'
-              : platformSettings?.announcementBanner?.type === 'warning'
-              ? 'bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 text-slate-950 border-amber-600'
-              : 'bg-gradient-to-r from-emerald-800 via-teal-900 to-slate-900 text-white border-emerald-600'
-          }`}
-        >
-          <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
-            <div className="flex items-start gap-3">
-              <div
-                className={`p-2 rounded-xl shrink-0 mt-0.5 ${
-                  platformSettings?.announcementBanner?.type === 'warning'
-                    ? 'bg-slate-950 text-amber-300'
-                    : 'bg-white/20 text-white'
-                }`}
-              >
-                <Megaphone className="w-5 h-5 animate-bounce" />
-              </div>
+    <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 sm:py-6 space-y-6">
+      {/* 1. SLIM STATUS & ASSISTANCE BAR */}
+      <div className="flex items-center justify-between gap-2 flex-wrap pb-1">
+        <div className="flex items-center gap-2 text-xs font-bold text-slate-800">
+          <span className="w-2 h-2 rounded-full bg-emerald-600 animate-ping"></span>
+          <span>
+            {language === 'ta'
+              ? 'கிராம பொதுமக்கள் குறைதீர்ப்பு தலைமை தளம்'
+              : 'Citizen Civic Grievance Redressal Portal'}
+          </span>
+        </div>
 
-              <div className="space-y-0.5">
-                <div className="flex flex-wrap items-center gap-2">
-                  <span
-                    className={`inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full ${
-                      platformSettings?.announcementBanner?.type === 'warning'
-                        ? 'bg-slate-950 text-amber-300'
-                        : 'bg-white text-emerald-950'
-                    }`}
-                  >
-                    <span>{language === 'ta' ? 'ஊராட்சி நேரலை அறிவிப்பு' : 'Panchayat Live Notice'}</span>
-                  </span>
-                  <span className="text-[11px] opacity-90 font-bold">
-                    {language === 'ta' ? 'நால்ரோடு மக்கள் இ-சேவை மையம்' : 'Nalroad Makkal e-Seva'}
-                  </span>
-                </div>
-
-                <p className="text-xs sm:text-sm font-black leading-snug break-words">
-                  {platformSettings?.announcementBanner?.text?.[language] ||
-                    (language === 'ta'
-                      ? '📢 பெரியகோட்டை கிராம மக்களுக்கு: குடிநீர் மற்றும் தெருவிளக்கு பராமரிப்பு புகார்களை இந்த பக்கத்தில் உடனடியாக பதிவு செய்யலாம். நால்ரோடு மையம் வாயிலாக உடனடி தீர்வு காணப்படும்.'
-                      : '📢 Periyakottai citizens: Report drinking water, streetlight, and civic issues directly below for official follow-up.')}
-                </p>
-              </div>
-            </div>
-
-            <div className="flex items-center gap-2 self-end md:self-center shrink-0">
-              <VoiceAssistButton
-                textToSpeak={
-                  platformSettings?.announcementBanner?.text?.[language] ||
-                  (language === 'ta'
-                    ? 'பெரியகோட்டை கிராம ஊராட்சி குறைதீர்ப்பு பக்கம். பொதுமக்கள் தங்களின் குறைகளை இங்கே பதிவு செய்யலாம்.'
-                    : 'Periyakottai Gram Panchayat citizen grievance portal.')
-                }
-                size="sm"
-              />
-              <a
-                href="tel:9790382437"
-                className={`text-xs font-black px-3.5 py-2 rounded-xl transition-all shadow-xs flex items-center gap-1.5 shrink-0 ${
-                  platformSettings?.announcementBanner?.type === 'warning'
-                    ? 'bg-slate-950 text-white hover:bg-slate-800'
-                    : 'bg-white text-slate-950 hover:bg-slate-100'
-                }`}
-              >
-                <PhoneCall className="w-3.5 h-3.5 text-emerald-700" />
-                <span>97903 82437</span>
-              </a>
-            </div>
-          </div>
-        </section>
-      )}
-
-      {/* 2. COMPACT & PURPOSEFUL HERO BANNER */}
-      <div className="bg-gradient-to-r from-emerald-900 via-slate-900 to-emerald-950 rounded-3xl p-5 sm:p-7 text-white shadow-lg border-2 border-emerald-600 relative overflow-hidden">
-        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-4">
-          <div className="space-y-2">
-            <div className="flex flex-wrap items-center gap-2">
-              <div className="inline-flex items-center gap-1.5 bg-emerald-700/80 text-amber-300 text-xs font-black px-3 py-1 rounded-full border border-emerald-500">
-                <Building2 className="w-3.5 h-3.5" />
-                <span>{VILLAGE_INFO.block[language]}</span>
-              </div>
-              <span className="text-xs text-emerald-200 font-mono font-bold">
-                PIN: 624614 • AC 128
-              </span>
-            </div>
-
-            <h1 className="text-xl sm:text-3xl font-black text-white leading-tight">
-              {VILLAGE_INFO.name[language]}
-            </h1>
-
-            <p className="text-xs sm:text-sm text-emerald-100/90 max-w-2xl leading-relaxed">
-              {language === 'ta'
-                ? 'பெரியகோட்டை கிராம மக்களுக்கான அதிகாரப்பூர்வ டிஜிட்டல் சூப்பர் தளம். குடிநீர், தெருவிளக்கு குறைகள் பதிவு, நில ஆவணங்கள், ரேஷன் சேவைகள் மற்றும் அரசு நலத்திட்டங்கள் அனைத்தும் ஒரே இடத்தில்.'
-                : 'Complete Civic Super Portal for Periyakottai residents: Grievance registration, land records, ration services, and emergency welfare directory.'}
-            </p>
-          </div>
-
-          {/* Right Action Stack */}
-          <div className="flex flex-wrap items-center gap-2 shrink-0">
-            {/* Live Centre Operations Badge */}
-            <a
-              href={platformSettings?.googleMapUrl || 'https://maps.app.goo.gl/kDxy1NXkBNCYcAZEA'}
-              target="_blank"
-              rel="noopener noreferrer"
-              title="Google மேப்பில் நால்ரோடு மைய இருப்பிடம் பார்க்க"
-              className="inline-flex items-center gap-1.5 bg-slate-950/90 hover:bg-black text-white text-xs font-bold px-3.5 py-2 rounded-xl border border-slate-700 transition-colors"
-            >
-              <span
-                className={`w-2.5 h-2.5 rounded-full animate-pulse ${
-                  platformSettings?.centreStatus === 'open'
-                    ? 'bg-emerald-400 shadow-[0_0_8px_#34d399]'
-                    : platformSettings?.centreStatus === 'camp'
-                    ? 'bg-blue-400 shadow-[0_0_8px_#60a5fa]'
-                    : 'bg-amber-400 shadow-[0_0_8px_#fbbf24]'
-                }`}
-              />
-              <span>
-                {platformSettings?.centreStatus === 'open'
-                  ? (language === 'ta' ? 'நால்ரோடு மையம்: இயங்குகிறது' : 'Nalroad Centre: Open')
+        {/* Live Centre Operations Badge & Voice Assist */}
+        <div className="flex items-center gap-2 shrink-0">
+          <a
+            href={platformSettings?.googleMapUrl || 'https://maps.app.goo.gl/kDxy1NXkBNCYcAZEA'}
+            target="_blank"
+            rel="noopener noreferrer"
+            title="Google மேப்பில் நால்ரோடு மைய இருப்பிடம் பார்க்க"
+            className="inline-flex items-center gap-1.5 bg-slate-950 hover:bg-black text-white text-xs font-bold px-3 py-1.5 rounded-xl border border-slate-700 transition-colors"
+          >
+            <span
+              className={`w-2 h-2 rounded-full animate-pulse ${
+                platformSettings?.centreStatus === 'open'
+                  ? 'bg-emerald-400 shadow-[0_0_8px_#34d399]'
                   : platformSettings?.centreStatus === 'camp'
-                  ? (language === 'ta' ? 'கள முகாமில் உள்ளது' : 'Field Camp')
-                  : (language === 'ta' ? 'விடுமுறை / இடைவேளை' : 'Break / Holiday')}
-              </span>
-              <MapPin className="w-3.5 h-3.5 text-amber-300 ml-1" />
-            </a>
-
-            <VoiceAssistButton textToSpeak={audioIntro} size="sm" />
-          </div>
+                  ? 'bg-blue-400 shadow-[0_0_8px_#60a5fa]'
+                  : 'bg-amber-400 shadow-[0_0_8px_#fbbf24]'
+              }`}
+            />
+            <span>
+              {platformSettings?.centreStatus === 'open'
+                ? (language === 'ta' ? 'நால்ரோடு மையம்: இயங்குகிறது' : 'Nalroad Centre: Open')
+                : platformSettings?.centreStatus === 'camp'
+                ? (language === 'ta' ? 'கள முகாமில் உள்ளது' : 'Field Camp')
+                : (language === 'ta' ? 'விடுமுறை / இடைவேளை' : 'Break / Holiday')}
+            </span>
+            <MapPin className="w-3.5 h-3.5 text-amber-300 ml-0.5" />
+          </a>
+          <VoiceAssistButton textToSpeak={audioIntro} size="sm" />
         </div>
       </div>
 
-      {/* 3. PRIMARY CIVIC REPORTING & TRACKING PORTAL (AT THE TOP) */}
+      {/* 2. PRIMARY CIVIC REPORTING & TRACKING PORTAL (ON TOP!) */}
       <div className="bg-white rounded-3xl border-2 border-amber-400 shadow-xl overflow-hidden">
         {/* Portal Top Bar: Mode Switcher */}
         <div className="bg-gradient-to-r from-amber-500 via-amber-400 to-amber-500 p-2 sm:p-3 flex flex-wrap items-center justify-between gap-2 border-b-2 border-amber-600">
@@ -612,32 +610,55 @@ export default function PanchayatPage() {
               <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
                 {/* Form Column */}
                 <div className="lg:col-span-8 space-y-5">
-                  {/* Category Quick Selector Pills */}
+                  {/* Issue Category Dropdown List Selector */}
                   <div>
-                    <label className="block text-xs font-black text-slate-900 mb-2">
-                      {language === 'ta' ? 'பிரச்சனை வகை (Category):' : 'Issue Category:'}
+                    <label className="block text-xs font-black text-slate-900 mb-1.5">
+                      {language === 'ta'
+                        ? 'பிரச்சனை வகை (Issue Category) *'
+                        : 'Issue Category *'}
                     </label>
-                    <div className="flex flex-wrap gap-2">
-                      {categories.map((cat) => {
-                        const IconComponent = cat.icon;
-                        const isSelected = category === cat.id;
-                        return (
-                          <button
-                            key={cat.id}
-                            type="button"
-                            onClick={() => setCategory(cat.id)}
-                            className={`inline-flex items-center gap-1.5 px-3 py-2 rounded-xl text-xs font-bold transition-all cursor-pointer border ${
-                              isSelected
-                                ? 'bg-amber-500 text-slate-950 border-amber-600 shadow-xs font-black'
-                                : 'bg-slate-50 text-slate-700 hover:bg-slate-100 border-slate-200'
-                            }`}
-                          >
-                            <IconComponent className="w-3.5 h-3.5" />
-                            <span>{cat.title[language]}</span>
-                          </button>
-                        );
-                      })}
+
+                    <div className="relative">
+                      <select
+                        value={category}
+                        onChange={(e) => setCategory(e.target.value as GrievanceCategory)}
+                        className="w-full px-3.5 py-3 rounded-xl border-2 border-emerald-600/50 focus:border-emerald-700 text-sm font-bold text-slate-900 bg-white cursor-pointer shadow-xs transition-colors"
+                      >
+                        {categories.map((cat, idx) => (
+                          <option key={cat.id} value={cat.id}>
+                            {`${idx + 1}. ${cat.title[language]}`}
+                          </option>
+                        ))}
+                      </select>
                     </div>
+
+                    {/* Selected Issue Info Card with Department & Fast Action Notice */}
+                    {(() => {
+                      const selectedCat = categories.find((c) => c.id === category) || categories[0];
+                      const IconComp = selectedCat.icon;
+                      const deptInfo = categoryDeptMap[category];
+                      return (
+                        <div className="mt-2.5 p-3 rounded-xl bg-amber-50 border border-amber-300 flex items-center justify-between gap-3 text-xs">
+                          <div className="flex items-center gap-2.5 min-w-0">
+                            <div className="w-8 h-8 rounded-lg bg-amber-400 text-slate-950 flex items-center justify-center shrink-0 shadow-xs">
+                              <IconComp className="w-4 h-4" />
+                            </div>
+                            <div className="min-w-0">
+                              <span className="text-[10px] text-amber-900 font-bold uppercase tracking-wider block">
+                                {deptInfo?.dept[language] || (language === 'ta' ? 'ஊராட்சி நிர்வாகம்' : 'Panchayat Admin')}
+                              </span>
+                              <span className="font-extrabold text-slate-950 text-xs sm:text-sm truncate block">
+                                {selectedCat.title[language]}
+                              </span>
+                            </div>
+                          </div>
+
+                          <span className="text-[10px] font-bold bg-emerald-100 text-emerald-900 px-2.5 py-1 rounded-md border border-emerald-300 shrink-0">
+                            {language === 'ta' ? 'நேரடி குறைதீர்ப்பு' : 'Direct Grievance'}
+                          </span>
+                        </div>
+                      );
+                    })()}
                   </div>
 
                   <form onSubmit={handleSubmitGrievance} className="space-y-4">
@@ -679,7 +700,7 @@ export default function PanchayatPage() {
                       </div>
                     </div>
 
-                    {/* VILLAGE HAMLET DROPDOWN - EXACT 5 OPTIONS: Periyakottai, Karungalpatti, Kandhappa Goundan Valasu, 19 Pudur, Others */}
+                    {/* VILLAGE HAMLET DROPDOWN - EXACT OPTIONS: Periyakottai, Periyakottai East, Periyakottai West, Karungalpatti, Kandhappa Goundan Valasu, Others */}
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-3.5">
                       <div>
                         <label className="block text-xs font-bold text-slate-800 mb-1">
@@ -706,7 +727,7 @@ export default function PanchayatPage() {
                           type="text"
                           value={customLocation}
                           onChange={(e) => setCustomLocation(e.target.value)}
-                          placeholder={language === 'ta' ? 'எ.கா: பிள்ளையார் கோயில் அருகில் / மேற்கு தெரு' : 'e.g. Near Temple / West Street'}
+                          placeholder={language === 'ta' ? 'எ.கா: பிள்ளையார் கோயில் அருகில் / கிழக்குத் தெரு' : 'e.g. Near Temple / East Street'}
                           className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:border-emerald-600 text-sm text-slate-900"
                         />
                       </div>
@@ -728,7 +749,7 @@ export default function PanchayatPage() {
                       </div>
 
                       <div className="flex items-center text-xs text-slate-500 pt-5">
-                        <span>{language === 'ta' ? 'ஒட்டன்சத்திரம் ஊராட்சி ஒன்றியத்திற்கு அனுப்பப்படும்' : 'Forwarded to Oddanchatram Union'}</span>
+                        <span>{language === 'ta' ? 'ஊராட்சி அலுவலகம் & அதிகாரிகளுக்கு உடனடியாக அனுப்பப்படும்' : 'Forwarded directly to Panchayat Administration'}</span>
                       </div>
                     </div>
 
@@ -741,11 +762,7 @@ export default function PanchayatPage() {
                         rows={3}
                         value={description}
                         onChange={(e) => setDescription(e.target.value)}
-                        placeholder={
-                          language === 'ta'
-                            ? 'பிரச்சனை எப்போது ஏற்பட்டது, சரியாக எந்த இடம் என்பதை தெளிவாக குறிப்பிடவும்...'
-                            : 'Describe the issue clearly with exact location and timing...'
-                        }
+                        placeholder={getCategoryPlaceholder(category, language)}
                         className="w-full px-3.5 py-2.5 rounded-xl border border-slate-300 focus:border-emerald-600 text-sm text-slate-900 resize-y"
                       />
                     </div>
@@ -1078,31 +1095,197 @@ export default function PanchayatPage() {
         )}
       </div>
 
-      {/* 4. SUPER PORTAL CIVIC SECTIONS: NOTICES, SERVICES, DIRECTORY & PROFILE */}
-      <div className="space-y-4 pt-2">
-        {/* Super Navigation Tabs */}
-        <div className="flex flex-wrap items-center gap-2 border-b border-slate-200 pb-3">
-          <button
-            onClick={() => setSecondaryTab('notices')}
-            className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
-              secondaryTab === 'notices'
-                ? 'bg-blue-600 text-white shadow-xs'
-                : 'bg-white hover:bg-slate-100 text-slate-700 border border-slate-200'
+      {/* 3. PANCHAYAT NOTICES (DIRECTLY BELOW GRIEVANCE PORTAL) */}
+      <div className="space-y-4">
+        {/* Live Operator Announcement Banner (If active) */}
+        {platformSettings?.announcementBanner?.enabled !== false && (
+          <section
+            aria-label="Panchayat Announcements"
+            className={`rounded-2xl p-4 sm:p-4.5 border-2 shadow-xs transition-all ${
+              platformSettings?.announcementBanner?.type === 'alert'
+                ? 'bg-gradient-to-r from-red-600 via-rose-700 to-red-800 text-white border-red-900'
+                : platformSettings?.announcementBanner?.type === 'warning'
+                ? 'bg-gradient-to-r from-amber-400 via-amber-500 to-amber-600 text-slate-950 border-amber-600'
+                : 'bg-gradient-to-r from-emerald-800 via-teal-900 to-slate-900 text-white border-emerald-600'
             }`}
           >
-            <Megaphone className="w-4 h-4" />
-            <span>{language === 'ta' ? 'கிராம அறிவிப்புகள்' : 'Village Notices'}</span>
-            {notices.length > 0 && (
-              <span className="bg-blue-900 text-blue-100 text-[10px] px-2 py-0.2 rounded-full font-mono">
-                {notices.length}
-              </span>
-            )}
-          </button>
+            <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-3">
+              <div className="flex items-start gap-3">
+                <div
+                  className={`p-2 rounded-xl shrink-0 mt-0.5 ${
+                    platformSettings?.announcementBanner?.type === 'warning'
+                      ? 'bg-slate-950 text-amber-300'
+                      : 'bg-white/20 text-white'
+                  }`}
+                >
+                  <Megaphone className="w-5 h-5 animate-bounce" />
+                </div>
 
+                <div className="space-y-0.5">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span
+                      className={`inline-flex items-center gap-1 text-[10px] font-black uppercase tracking-wider px-2 py-0.5 rounded-full ${
+                        platformSettings?.announcementBanner?.type === 'warning'
+                          ? 'bg-slate-950 text-amber-300'
+                          : 'bg-white text-emerald-950'
+                      }`}
+                    >
+                      <span>{language === 'ta' ? 'ஊராட்சி நேரலை அறிவிப்பு' : 'Panchayat Live Notice'}</span>
+                    </span>
+                    <span className="text-[11px] opacity-90 font-bold">
+                      {language === 'ta' ? 'நால்ரோடு மக்கள் இ-சேவை மையம்' : 'Nalroad Makkal e-Seva'}
+                    </span>
+                  </div>
+
+                  <p className="text-xs sm:text-sm font-black leading-snug break-words">
+                    {platformSettings?.announcementBanner?.text?.[language] ||
+                      (language === 'ta'
+                        ? '📢 பெரியகோட்டை கிராம மக்களுக்கு: குடிநீர் மற்றும் தெருவிளக்கு பராமரிப்பு புகார்களை இந்த பக்கத்தில் உடனடியாக பதிவு செய்யலாம். நால்ரோடு மையம் வாயிலாக உடனடி தீர்வு காணப்படும்.'
+                        : '📢 Periyakottai citizens: Report drinking water, streetlight, and civic issues directly above for official follow-up.')}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-2 self-end md:self-center shrink-0">
+                <VoiceAssistButton
+                  textToSpeak={
+                    platformSettings?.announcementBanner?.text?.[language] ||
+                    (language === 'ta'
+                      ? 'பெரியகோட்டை கிராம ஊராட்சி நேரலை அறிவிப்பு.'
+                      : 'Periyakottai Gram Panchayat live notice.')
+                  }
+                  size="sm"
+                />
+                <a
+                  href="tel:9790382437"
+                  className={`text-xs font-black px-3.5 py-2 rounded-xl transition-all shadow-xs flex items-center gap-1.5 shrink-0 ${
+                    platformSettings?.announcementBanner?.type === 'warning'
+                      ? 'bg-slate-950 text-white hover:bg-slate-800'
+                      : 'bg-white text-slate-950 hover:bg-slate-100'
+                  }`}
+                >
+                  <PhoneCall className="w-3.5 h-3.5 text-emerald-700" />
+                  <span>97903 82437</span>
+                </a>
+              </div>
+            </div>
+          </section>
+        )}
+
+        {/* Village Notice Board */}
+        <div className="bg-white rounded-3xl p-5 sm:p-7 border border-slate-200 shadow-xs space-y-5 animate-in fade-in">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div>
+              <div className="flex items-center gap-2">
+                <Megaphone className="w-5 h-5 text-blue-600" />
+                <h3 className="text-base sm:text-lg font-black text-slate-950">
+                  {language === 'ta' ? 'பெரியகோட்டை கிராம ஊராட்சி அறிவிப்புகள் பலகை' : 'Periyakottai Village Circulars & Notices'}
+                </h3>
+              </div>
+              <p className="text-xs text-slate-500 mt-0.5">
+                {language === 'ta'
+                  ? 'ஊராட்சி மன்றம் மற்றும் நால்ரோடு மக்கள் இ-சேவை மையம் வாயிலாக பதிவேற்றப்படும் நேரலை அறிவிப்புகள்.'
+                  : 'Official circulars published by panchayat and Nalroad e-Seva centre.'}
+              </p>
+            </div>
+
+            {/* Filter Pills */}
+            <div className="flex flex-wrap items-center gap-1.5 bg-slate-100 p-1 rounded-xl">
+              {[
+                { id: 'all', label: { ta: 'அனைத்தும்', en: 'All' } },
+                { id: 'panchayat', label: { ta: 'ஊராட்சி', en: 'Panchayat' } },
+                { id: 'camp', label: { ta: 'முகாம்கள்', en: 'Camps' } },
+                { id: 'subsidy', label: { ta: 'மானியங்கள்', en: 'Subsidies' } }
+              ].map((f) => (
+                <button
+                  key={f.id}
+                  onClick={() => setSelectedNoticeCategory(f.id)}
+                  className={`px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
+                    selectedNoticeCategory === f.id
+                      ? 'bg-blue-600 text-white shadow-xs'
+                      : 'text-slate-600 hover:text-slate-950'
+                  }`}
+                >
+                  {f.label[language]}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {loadingNotices ? (
+            <div className="py-8 text-center text-slate-500 text-xs flex items-center justify-center gap-2">
+              <RefreshCw className="w-4 h-4 animate-spin text-blue-600" />
+              <span>{language === 'ta' ? 'ஏற்றப்படுகிறது...' : 'Loading notices...'}</span>
+            </div>
+          ) : filteredNotices.length === 0 ? (
+            <div className="py-8 text-center text-slate-500 text-xs bg-slate-50 rounded-2xl">
+              {language === 'ta' ? 'தற்போது இந்த பிரிவில் அறிவிப்புகள் எதுவும் இல்லை.' : 'No notices in this category right now.'}
+            </div>
+          ) : (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {filteredNotices.map((n) => (
+                <div
+                  key={n.id}
+                  className={`p-4 rounded-2xl border transition-all space-y-2.5 flex flex-col justify-between ${
+                    n.important
+                      ? 'bg-amber-50/70 border-amber-300 shadow-xs'
+                      : 'bg-white border-slate-200 hover:border-slate-300'
+                  }`}
+                >
+                  <div className="space-y-1.5">
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="flex items-center gap-2">
+                        <span
+                          className={`text-[10px] font-black uppercase px-2 py-0.5 rounded-full ${
+                            n.category === 'panchayat'
+                              ? 'bg-emerald-100 text-emerald-800'
+                              : n.category === 'camp'
+                              ? 'bg-blue-100 text-blue-800'
+                              : 'bg-purple-100 text-purple-800'
+                          }`}
+                        >
+                          {n.category}
+                        </span>
+                        {n.important && (
+                          <span className="text-[10px] bg-red-600 text-white font-black px-2 py-0.5 rounded-full animate-pulse">
+                            {language === 'ta' ? 'முக்கியமானது' : 'Important'}
+                          </span>
+                        )}
+                      </div>
+
+                      <VoiceAssistButton
+                        textToSpeak={`${n.title[language]}. ${n.content[language]}`}
+                        size="sm"
+                      />
+                    </div>
+
+                    <h4 className="font-extrabold text-sm text-slate-900 leading-snug">
+                      {n.title[language]}
+                    </h4>
+
+                    <p className="text-xs text-slate-600 leading-relaxed">
+                      {n.content[language]}
+                    </p>
+                  </div>
+
+                  <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400">
+                    <span>{n.source || 'பெரியகோட்டை கிராம ஊராட்சி'}</span>
+                    <span className="font-mono font-medium">{n.date}</span>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* 4. CIVIC SERVICES, DIRECTORY & GRAMA SABHA TABS */}
+      <div className="space-y-4 pt-2">
+        <div className="flex flex-wrap items-center gap-2 border-b border-slate-200 pb-3">
           <button
-            onClick={() => setSecondaryTab('services')}
+            onClick={() => setCivicTab('services')}
             className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
-              secondaryTab === 'services'
+              civicTab === 'services'
                 ? 'bg-amber-600 text-white shadow-xs'
                 : 'bg-white hover:bg-slate-100 text-slate-700 border border-slate-200'
             }`}
@@ -1112,21 +1295,21 @@ export default function PanchayatPage() {
           </button>
 
           <button
-            onClick={() => setSecondaryTab('directory')}
+            onClick={() => setCivicTab('directory')}
             className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
-              secondaryTab === 'directory'
+              civicTab === 'directory'
                 ? 'bg-slate-900 text-white shadow-xs'
                 : 'bg-white hover:bg-slate-100 text-slate-700 border border-slate-200'
             }`}
           >
             <Users className="w-4 h-4" />
-            <span>{language === 'ta' ? 'அதிகாரிகள் & அவசர எண்கள்' : 'Authority Directory'}</span>
+            <span>{language === 'ta' ? 'அதிகாரிகள் தொடர்புகள்' : 'Authority Directory'}</span>
           </button>
 
           <button
-            onClick={() => setSecondaryTab('profile')}
+            onClick={() => setCivicTab('profile')}
             className={`flex items-center gap-2 px-3.5 py-2 rounded-xl text-xs sm:text-sm font-bold transition-all cursor-pointer ${
-              secondaryTab === 'profile'
+              civicTab === 'profile'
                 ? 'bg-emerald-800 text-white shadow-xs'
                 : 'bg-white hover:bg-slate-100 text-slate-700 border border-slate-200'
             }`}
@@ -1136,113 +1319,8 @@ export default function PanchayatPage() {
           </button>
         </div>
 
-        {/* 1. NOTICES SUB-SECTION */}
-        {secondaryTab === 'notices' && (
-          <div className="bg-white rounded-3xl p-5 sm:p-7 border border-slate-200 shadow-xs space-y-5 animate-in fade-in">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
-              <div>
-                <h3 className="text-base sm:text-lg font-black text-slate-950">
-                  {language === 'ta' ? 'பெரியகோட்டை கிராம அறிவிப்புகள்' : 'Periyakottai Village Circulars'}
-                </h3>
-                <p className="text-xs text-slate-500">
-                  {language === 'ta'
-                    ? 'நால்ரோடு மக்கள் இ-சேவை மையம் வாயிலாக நேரடியாக பதிவேற்றப்படும் நேரலை அறிவிப்புகள்.'
-                    : 'Notices and circulars published directly by the CSC operator.'}
-                </p>
-              </div>
-
-              {/* Filter Pills */}
-              <div className="flex flex-wrap items-center gap-1.5 bg-slate-100 p-1 rounded-xl">
-                {[
-                  { id: 'all', label: { ta: 'அனைத்தும்', en: 'All' } },
-                  { id: 'panchayat', label: { ta: 'ஊராட்சி', en: 'Panchayat' } },
-                  { id: 'camp', label: { ta: 'முகாம்கள்', en: 'Camps' } },
-                  { id: 'subsidy', label: { ta: 'மானியங்கள்', en: 'Subsidies' } }
-                ].map((f) => (
-                  <button
-                    key={f.id}
-                    onClick={() => setSelectedNoticeCategory(f.id)}
-                    className={`px-3 py-1 rounded-lg text-xs font-bold transition-all cursor-pointer ${
-                      selectedNoticeCategory === f.id
-                        ? 'bg-blue-600 text-white shadow-xs'
-                        : 'text-slate-600 hover:text-slate-950'
-                    }`}
-                  >
-                    {f.label[language]}
-                  </button>
-                ))}
-              </div>
-            </div>
-
-            {loadingNotices ? (
-              <div className="py-8 text-center text-slate-500 text-xs flex items-center justify-center gap-2">
-                <RefreshCw className="w-4 h-4 animate-spin text-blue-600" />
-                <span>{language === 'ta' ? 'ஏற்றப்படுகிறது...' : 'Loading notices...'}</span>
-              </div>
-            ) : filteredNotices.length === 0 ? (
-              <div className="py-8 text-center text-slate-500 text-xs bg-slate-50 rounded-2xl">
-                {language === 'ta' ? 'தற்போது இந்த பிரிவில் அறிவிப்புகள் எதுவும் இல்லை.' : 'No notices in this category right now.'}
-              </div>
-            ) : (
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {filteredNotices.map((n) => (
-                  <div
-                    key={n.id}
-                    className={`p-4 rounded-2xl border transition-all space-y-2.5 flex flex-col justify-between ${
-                      n.important
-                        ? 'bg-amber-50/70 border-amber-300 shadow-xs'
-                        : 'bg-white border-slate-200 hover:border-slate-300'
-                    }`}
-                  >
-                    <div className="space-y-1.5">
-                      <div className="flex items-center justify-between gap-2">
-                        <div className="flex items-center gap-2">
-                          <span
-                            className={`text-[10px] font-black uppercase px-2 py-0.5 rounded-full ${
-                              n.category === 'panchayat'
-                                ? 'bg-emerald-100 text-emerald-800'
-                                : n.category === 'camp'
-                                ? 'bg-blue-100 text-blue-800'
-                                : 'bg-purple-100 text-purple-800'
-                            }`}
-                          >
-                            {n.category}
-                          </span>
-                          {n.important && (
-                            <span className="text-[10px] bg-red-600 text-white font-black px-2 py-0.5 rounded-full animate-pulse">
-                              {language === 'ta' ? 'முக்கியமானது' : 'Important'}
-                            </span>
-                          )}
-                        </div>
-
-                        <VoiceAssistButton
-                          textToSpeak={`${n.title[language]}. ${n.content[language]}`}
-                          size="sm"
-                        />
-                      </div>
-
-                      <h4 className="font-extrabold text-sm text-slate-900 leading-snug">
-                        {n.title[language]}
-                      </h4>
-
-                      <p className="text-xs text-slate-600 leading-relaxed">
-                        {n.content[language]}
-                      </p>
-                    </div>
-
-                    <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400">
-                      <span>{n.source || 'பெரியகோட்டை கிராம ஊராட்சி'}</span>
-                      <span className="font-mono font-medium">{n.date}</span>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        )}
-
-        {/* 2. VILLAGE E-SERVICES HUB */}
-        {secondaryTab === 'services' && (
+        {/* E-SERVICES TAB */}
+        {civicTab === 'services' && (
           <div className="bg-white rounded-3xl p-5 sm:p-7 border border-slate-200 shadow-xs space-y-5 animate-in fade-in">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div>
@@ -1319,8 +1397,8 @@ export default function PanchayatPage() {
           </div>
         )}
 
-        {/* 3. DIRECTORY SUB-SECTION */}
-        {secondaryTab === 'directory' && (
+        {/* DIRECTORY TAB */}
+        {civicTab === 'directory' && (
           <div className="bg-white rounded-3xl p-5 sm:p-7 border border-slate-200 shadow-xs space-y-5 animate-in fade-in">
             <div>
               <h3 className="text-base sm:text-lg font-black text-slate-950">
@@ -1328,7 +1406,7 @@ export default function PanchayatPage() {
               </h3>
               <p className="text-xs text-slate-500">
                 {language === 'ta'
-                  ? 'ஒட்டன்சத்திரம் ஊராட்சி ஒன்றியம் & பெரியகோட்டை கிராம அலுவலர்கள் எண்கள்'
+                  ? 'பெரியகோட்டை கிராம அலுவலர்கள் மற்றும் அவசர சேவை எண்கள்'
                   : 'Direct contact numbers for civic, revenue, EB, and health administration.'}
               </p>
             </div>
@@ -1367,8 +1445,8 @@ export default function PanchayatPage() {
           </div>
         )}
 
-        {/* 4. PROFILE & GRAMA SABHA SUB-SECTION */}
-        {secondaryTab === 'profile' && (
+        {/* PROFILE & GRAMA SABHA TAB */}
+        {civicTab === 'profile' && (
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 animate-in fade-in">
             {/* Village Profile Details */}
             <div className="lg:col-span-6 bg-white rounded-3xl p-5 sm:p-7 border border-slate-200 shadow-xs space-y-3">
@@ -1399,7 +1477,7 @@ export default function PanchayatPage() {
                 </div>
                 <div className="flex justify-between py-1.5 border-b border-slate-100">
                   <span className="text-slate-500">{language === 'ta' ? 'சிற்றூர்கள் (Hamlets):' : 'Hamlets:'}</span>
-                  <span className="font-bold text-slate-900">5 பகுதிகள் (Periyakottai, Karungalpatti, Kandhappa Goundan Valasu, 19 Pudur, Others)</span>
+                  <span className="font-bold text-slate-900">பெரியகோட்டை, பெரியகோட்டை கிழக்கு, பெரியகோட்டை மேற்கு, கருங்கல்பட்டி, கந்தப்ப கவுண்டன் வலசு</span>
                 </div>
               </div>
             </div>

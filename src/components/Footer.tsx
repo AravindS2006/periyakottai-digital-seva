@@ -3,10 +3,10 @@
 import React from 'react';
 import Link from 'next/link';
 import { useI18n } from '@/i18n/context';
-import { Phone, Mail, MapPin, ShieldCheck, Heart, ExternalLink, Lock } from 'lucide-react';
+import { Phone, Mail, MapPin, ShieldCheck, Heart, ExternalLink, Lock, Sun, Moon } from 'lucide-react';
 
 export function Footer() {
-  const { language, t } = useI18n();
+  const { language, t, textScale, setTextScale, highContrast, toggleHighContrast } = useI18n();
 
   return (
     <footer className="bg-slate-900 text-slate-300 border-t border-slate-800 mt-16">
@@ -269,8 +269,73 @@ export function Footer() {
           </div>
         </div>
 
+        {/* Accessibility & Settings Controls in Footer */}
+        <div className="mt-8 p-3.5 bg-slate-950/80 rounded-xl border border-slate-800 flex flex-wrap items-center justify-between gap-3 text-xs">
+          <div className="flex items-center gap-2 text-slate-300">
+            <span className="w-2 h-2 rounded-full bg-emerald-400"></span>
+            <span className="font-semibold">
+              {language === 'ta' ? 'அணுகல்தன்மை வசதிகள்:' : 'Accessibility Controls:'}
+            </span>
+            <span className="text-slate-500">|</span>
+            <span className="text-slate-400">
+              {language === 'ta' ? 'ஒட்டன்சத்திரம் தாலுகா (624614)' : 'Oddanchatram Taluk (624614)'}
+            </span>
+          </div>
+
+          <div className="flex items-center gap-2.5 flex-wrap">
+            {/* Text Scale */}
+            <div className="flex items-center bg-slate-900 rounded-lg p-0.5 border border-slate-700" role="group" aria-label="Text Size Controls">
+              <button
+                type="button"
+                onClick={() => setTextScale('normal')}
+                className={`px-2.5 py-1 rounded text-xs font-bold transition-colors cursor-pointer ${
+                  textScale === 'normal' ? 'bg-emerald-600 text-white' : 'text-slate-400 hover:text-white'
+                }`}
+                title="இயல்பு எழுத்து (Normal)"
+              >
+                A-
+              </button>
+              <button
+                type="button"
+                onClick={() => setTextScale('large')}
+                className={`px-2.5 py-1 rounded text-xs font-bold transition-colors cursor-pointer ${
+                  textScale === 'large' ? 'bg-emerald-600 text-white' : 'text-slate-400 hover:text-white'
+                }`}
+                title="பெரிய எழுத்து (Large)"
+              >
+                A
+              </button>
+              <button
+                type="button"
+                onClick={() => setTextScale('huge')}
+                className={`px-2.5 py-1 rounded text-xs font-bold transition-colors cursor-pointer ${
+                  textScale === 'huge' ? 'bg-emerald-600 text-white' : 'text-slate-400 hover:text-white'
+                }`}
+                title="மிகப்பெரிய எழுத்து (Extra Large)"
+              >
+                A+
+              </button>
+            </div>
+
+            {/* Contrast Toggle */}
+            <button
+              type="button"
+              onClick={toggleHighContrast}
+              className={`flex items-center gap-1.5 px-3 py-1 rounded-lg text-xs font-bold transition-colors border cursor-pointer ${
+                highContrast
+                  ? 'bg-amber-400 text-slate-950 border-amber-500 font-black'
+                  : 'bg-slate-900 hover:bg-slate-800 text-slate-300 border-slate-700'
+              }`}
+              aria-pressed={highContrast}
+            >
+              {highContrast ? <Sun className="w-3.5 h-3.5" /> : <Moon className="w-3.5 h-3.5" />}
+              <span>{highContrast ? (language === 'ta' ? 'வெளிச்சம்' : 'High Contrast') : (language === 'ta' ? 'கான்ட்ராஸ்ட்' : 'Contrast')}</span>
+            </button>
+          </div>
+        </div>
+
         {/* Disclaimer Box */}
-        <div className="mt-10 p-4 bg-slate-950/60 rounded-xl border border-slate-800 text-[11px] text-slate-400 leading-relaxed">
+        <div className="mt-6 p-4 bg-slate-950/60 rounded-xl border border-slate-800 text-[11px] text-slate-400 leading-relaxed">
           <p className="font-semibold text-slate-300 mb-1">
             {language === 'ta' ? 'அதிகாரப்பூர்வ மறுப்புரை (Disclaimer):' : 'Official Disclaimer:'}
           </p>
