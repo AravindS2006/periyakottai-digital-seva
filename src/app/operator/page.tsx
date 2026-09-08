@@ -4,8 +4,21 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useI18n } from '@/i18n/context';
-import { RequestTicket, GrievanceTicket, RequestStatus, GrievanceStatus, PlatformSettings, VillageNotice, GrievanceCategory } from '@/types';
-import { printAcknowledgmentReceipt } from '@/lib/printReceipt';
+import {
+  RequestTicket,
+  GrievanceTicket,
+  RequestStatus,
+  GrievanceStatus,
+  PlatformSettings,
+  VillageNotice,
+  GrievanceCategory
+} from '@/types';
+import {
+  printAcknowledgmentReceipt,
+  printOfficialGrievancePdf,
+  generateOfficialForwardingWhatsAppUrl,
+  getGrievanceDepartment
+} from '@/lib/printReceipt';
 import {
   Bell,
   Search,
@@ -44,12 +57,21 @@ import {
   Landmark,
   School,
   HelpCircle,
-  Send
+  Send,
+  Globe,
+  Share2
 } from 'lucide-react';
 
 export default function OperatorPortalPage() {
-  const { language } = useI18n();
+  const { language: globalLanguage, setLanguage: setGlobalLanguage } = useI18n();
   const router = useRouter();
+
+  // PORTAL LANGUAGE: Defaults to 'en' as requested ("The operator portal is not in english fix it")
+  // Allows seamless 1-click toggle to Tamil if desired.
+  const [portalLang, setPortalLang] = useState<'en' | 'ta'>('en');
+
+  // Helper translation function
+  const t = (enText: string, taText: string) => (portalLang === 'en' ? enText : taText);
 
   // Authentication state
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
@@ -64,7 +86,7 @@ export default function OperatorPortalPage() {
   const [notices, setNotices] = useState<VillageNotice[]>([]);
   const [loading, setLoading] = useState(true);
 
-  // DEFAULT LANDING TAB IS VILLAGE GRIEVANCE AS REQUESTED
+  // DEFAULT LANDING TAB IS VILLAGE GRIEVANCES AS REQUIRED
   const [activeTab, setActiveTab] = useState<'grievances' | 'requests' | 'settings'>('grievances');
 
   // Notifications Modal State
@@ -74,7 +96,6 @@ export default function OperatorPortalPage() {
   const [grvStatusFilter, setGrvStatusFilter] = useState<string>('All');
   const [grvCategoryFilter, setGrvCategoryFilter] = useState<string>('All');
   const [grvHamletFilter, setGrvHamletFilter] = useState<string>('All');
-  const [grvPriorityFilter, setGrvPriorityFilter] = useState<string>('All');
   const [grvSearchQuery, setGrvSearchQuery] = useState<string>('');
 
   // Filter state for Requests (Dropdown List View)
@@ -92,7 +113,7 @@ export default function OperatorPortalPage() {
   const [newNoticeContentEn, setNewNoticeContentEn] = useState('');
   const [newNoticeCategory, setNewNoticeCategory] = useState<'camp' | 'subsidy' | 'panchayat' | 'urgent'>('camp');
   const [newNoticeImportant, setNewNoticeImportant] = useState(false);
-  const [newNoticeSource, setNewNoticeSource] = useState('நால்ரோடு மக்கள் இ-சேவை மையம்');
+  const [newNoticeSource, setNewNoticeSource] = useState('Four Roads Makkal e-Seva Centre');
   const [submittingNotice, setSubmittingNotice] = useState(false);
 
   // Status update modal / remark modal
@@ -113,8 +134,8 @@ export default function OperatorPortalPage() {
   const [walkinModalOpen, setWalkinModalOpen] = useState(false);
   const [walkinName, setWalkinName] = useState('');
   const [walkinPhone, setWalkinPhone] = useState('');
-  const [walkinHamlet, setWalkinHamlet] = useState('பெரியகோட்டை');
-  const [walkinService, setWalkinService] = useState('பட்டா மாறுதல் (Patta Transfer)');
+  const [walkinHamlet, setWalkinHamlet] = useState('Periyakottai');
+  const [walkinService, setWalkinService] = useState('Patta Transfer (பட்டா மாறுதல்)');
   const [walkinPriority, setWalkinPriority] = useState<'Normal' | 'Urgent'>('Normal');
   const [walkinNote, setWalkinNote] = useState('');
   const [submittingWalkin, setSubmittingWalkin] = useState(false);
@@ -146,10 +167,10 @@ export default function OperatorPortalPage() {
         setIsAuthenticated(true);
         loadData();
       } else {
-        setAuthError(language === 'ta' ? 'தவறான ரகசிய எண் (PIN). மீண்டும் முயற்சிக்கவும்.' : 'Invalid PIN. Please try again.');
+        setAuthError(t('Invalid security PIN. Please try again.', 'தவறான ரகசிய எண் (PIN). மீண்டும் முயற்சிக்கவும்.'));
       }
     } catch {
-      setAuthError('Login failed. Please check network.');
+      setAuthError(t('Login failed. Please check network connection.', 'உள்நுழைவு தோல்வியடைந்தது. நெட்வொர்க்கை சரிபார்க்கவும்.'));
     }
   };
 
@@ -198,12 +219,18 @@ export default function OperatorPortalPage() {
     try {
       const defaultNote =
         newStatus === 'Forwarded to Official'
-          ? 'மனு சம்பந்தப்பட்ட ஊராட்சி அதிகாரிகளுக்கு நடவடிக்கைக்காக அனுப்பப்பட்டுள்ளது.'
+          ? (portalLang === 'en'
+              ? 'Forwarded to competent department official for field inspection & action.'
+              : 'மனு சம்பந்தப்பட்ட ஊராட்சி அதிகாரிகளுக்கு நடவடிக்கைக்காக அனுப்பப்பட்டுள்ளது.')
           : newStatus === 'Action Pending'
-          ? 'கள ஆய்வு & நடவடிக்கை மேற்கொள்ளப்பட்டு வருகிறது.'
+          ? (portalLang === 'en'
+              ? 'Field inspection & corrective measures in progress.'
+              : 'கள ஆய்வு & நடவடிக்கை மேற்கொள்ளப்பட்டு வருகிறது.')
           : newStatus === 'Resolved'
-          ? 'புகார் சரி செய்யப்பட்டு முழுமையாக தீர்க்கப்பட்டது.'
-          : 'மனு பெறப்பட்டு பதிவு செய்யப்பட்டது.';
+          ? (portalLang === 'en'
+              ? 'Grievance inspected and successfully resolved.'
+              : 'புகார் சரி செய்யப்பட்டு முழுமையாக தீர்க்கப்பட்டது.')
+          : (portalLang === 'en' ? 'Grievance received and registered.' : 'மனு பெறப்பட்டு பதிவு செய்யப்பட்டது.');
 
       const res = await fetch('/api/admin/update-status', {
         method: 'POST',
@@ -222,6 +249,47 @@ export default function OperatorPortalPage() {
       }
     } catch (err) {
       console.error('Error in quick status transition:', err);
+    } finally {
+      setUpdatingStatus(false);
+    }
+  };
+
+  /**
+   * SEND TO OFFICIAL:
+   * 1. Formats entire grievance as neat, detailed 1-page A4 PDF memo
+   * 2. Forwards to operator's WhatsApp (97903 82437) himself
+   * 3. Updates status to 'Forwarded to Official'
+   */
+  const handleSendGrievanceToOfficial = async (grv: GrievanceTicket) => {
+    setUpdatingStatus(true);
+    try {
+      // 1. Synchronously open WhatsApp to operator's WhatsApp number to avoid browser popup blockers
+      const whatsappUrl = generateOfficialForwardingWhatsAppUrl(grv);
+      window.open(whatsappUrl, '_blank');
+
+      // 2. Generate neat, detailed official PDF / Print memo
+      setTimeout(() => {
+        printOfficialGrievancePdf(grv);
+      }, 150);
+
+      // 3. Update status in backend
+      await handleQuickGrievanceStatusChange(
+        grv.id,
+        'Forwarded to Official',
+        portalLang === 'en'
+          ? 'Forwarded to department official for field inspection & action (Official Memo Generated).'
+          : 'மனு சம்பந்தப்பட்ட துறை அலுவலருக்கு கள ஆய்வு & நடவடிக்கைக்காக அனுப்பப்பட்டது (அதிகாரப்பூர்வ குறிப்பாணை தயார்).'
+      );
+
+      setSaveSuccessMsg(
+        t(
+          '✅ Official PDF Memo generated & forwarded to Operator WhatsApp (97903 82437)!',
+          '✅ அதிகாரப்பூர்வ PDF குறிப்பாணை உருவாக்கப்பட்டு ஆபரேட்டர் வாட்ஸ்அப்பிற்கு (97903 82437) அனுப்பப்பட்டது!'
+        )
+      );
+      setTimeout(() => setSaveSuccessMsg(''), 5000);
+    } catch (err) {
+      console.error('Error in sending grievance to official:', err);
     } finally {
       setUpdatingStatus(false);
     }
@@ -306,7 +374,7 @@ export default function OperatorPortalPage() {
       const data = await res.json();
       if (data.success) {
         setSettings(data.settings);
-        setSaveSuccessMsg(language === 'ta' ? '✅ மையம் நிலை மாற்றப்பட்டது!' : '✅ Centre status updated!');
+        setSaveSuccessMsg(t('✅ Centre status updated successfully!', '✅ மையம் நிலை மாற்றப்பட்டது!'));
         setTimeout(() => setSaveSuccessMsg(''), 3000);
       }
     } catch (err) {
@@ -332,7 +400,7 @@ export default function OperatorPortalPage() {
           serviceName: walkinService,
           village: walkinHamlet,
           priority: walkinPriority,
-          additionalDetails: walkinNote.trim() || 'நேரடி மைய முன்பதிவு (Direct Walk-in Booking)'
+          additionalDetails: walkinNote.trim() || (portalLang === 'en' ? 'Direct Walk-in Booking' : 'நேரடி மைய முன்பதிவு')
         })
       });
       if (res.ok) {
@@ -352,21 +420,28 @@ export default function OperatorPortalPage() {
   // Notice Creation
   const handleCreateNotice = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!newNoticeTitleTa.trim()) return;
+    if (!newNoticeTitleTa.trim() || !newNoticeContentTa.trim()) return;
+
     setSubmittingNotice(true);
     try {
       const res = await fetch('/api/notices', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
-          title: { ta: newNoticeTitleTa.trim(), en: newNoticeTitleEn.trim() || newNoticeTitleTa.trim() },
-          content: { ta: newNoticeContentTa.trim(), en: newNoticeContentEn.trim() || newNoticeContentTa.trim() },
+          title: {
+            ta: newNoticeTitleTa.trim(),
+            en: newNoticeTitleEn.trim() || newNoticeTitleTa.trim()
+          },
+          content: {
+            ta: newNoticeContentTa.trim(),
+            en: newNoticeContentEn.trim() || newNoticeContentTa.trim()
+          },
           category: newNoticeCategory,
           important: newNoticeImportant,
-          source: newNoticeSource.trim(),
-          date: new Date().toISOString().split('T')[0]
+          source: newNoticeSource
         })
       });
+
       if (res.ok) {
         setNoticeModalOpen(false);
         setNewNoticeTitleTa('');
@@ -376,7 +451,7 @@ export default function OperatorPortalPage() {
         loadData();
       }
     } catch (err) {
-      console.error('Error publishing notice:', err);
+      console.error('Error creating notice:', err);
     } finally {
       setSubmittingNotice(false);
     }
@@ -384,7 +459,7 @@ export default function OperatorPortalPage() {
 
   // Notice Deletion
   const handleDeleteNotice = async (id: string) => {
-    if (!confirm(language === 'ta' ? 'இந்த அறிவிப்பை நீக்க விரும்புகிறீர்களா?' : 'Delete this notice?')) return;
+    if (!confirm(t('Are you sure you want to delete this notice?', 'இந்த அறிவிப்பை நீக்க விரும்புகிறீர்களா?'))) return;
     try {
       const res = await fetch(`/api/notices?id=${encodeURIComponent(id)}`, { method: 'DELETE' });
       if (res.ok) {
@@ -395,18 +470,22 @@ export default function OperatorPortalPage() {
     }
   };
 
-  // Helper: WhatsApp URL for Grievances
+  // Helper: WhatsApp URL for Citizen Grievance Update
   const generateGrievanceWhatsAppUrl = (grv: GrievanceTicket) => {
     const text = encodeURIComponent(
-      `வணக்கம் ${grv.citizenName} அவர்களே,\n\nநால்ரோடு மக்கள் இ-சேவை மையத்திலிருந்து (முருகேசன் கு EFADGL0636) இந்த செய்தி அனுப்பப்படுகிறது.\n\nதங்கள் குறைதீர்ப்பு மனு விவரம்:\n📋 மனு எண்: ${grv.id}\n📁 பிரிவு: ${grv.category}\n🚦 தற்போதைய நிலை: *${grv.status}*\n📍 இடம்: ${grv.location || grv.village}\n\nகூடுதல் விவரங்களை அறிய நால்ரோடு மையத்தை 97903 82437 என்ற எண்ணில் தொடர்பு கொள்ளலாம்.\n\nபெரியகோட்டை டிஜிட்டல் சேவை`
+      portalLang === 'en'
+        ? `Greetings ${grv.citizenName},\n\nUpdate from Four Roads Makkal e-Seva Centre (Murugesan K, CSC EFADGL0636):\n\n📋 Grievance ID: ${grv.id}\n📁 Category: ${grv.category}\n🚦 Status: *${grv.status}*\n📍 Hamlet: ${grv.location || grv.village}\n\nFor assistance, contact Four Roads e-Seva at 97903 82437.\n\nPeriyakottai Digital Seva`
+        : `வணக்கம் ${grv.citizenName} அவர்களே,\n\nநால்ரோடு மக்கள் இ-சேவை மையத்திலிருந்து (முருகேசன் கு EFADGL0636) இந்த செய்தி அனுப்பப்படுகிறது.\n\nதங்கள் குறைதீர்ப்பு மனு விவரம்:\n📋 மனு எண்: ${grv.id}\n📁 பிரிவு: ${grv.category}\n🚦 தற்போதைய நிலை: *${grv.status}*\n📍 இடம்: ${grv.location || grv.village}\n\nகூடுதல் விவரங்களை அறிய நால்ரோடு மையத்தை 97903 82437 என்ற எண்ணில் தொடர்பு கொள்ளலாம்.\n\nபெரியகோட்டை டிஜிட்டல் சேவை`
     );
     return `https://wa.me/91${grv.phoneNumber.replace(/\D/g, '')}?text=${text}`;
   };
 
-  // Helper: WhatsApp URL for Requests
+  // Helper: WhatsApp URL for Citizen Request Update
   const generateRequestWhatsAppUrl = (ticket: RequestTicket) => {
     const text = encodeURIComponent(
-      `வணக்கம் ${ticket.citizenName} அவர்களே,\n\nநால்ரோடு மக்கள் இ-சேவை மையத்திலிருந்து (முருகேசன் கு EFADGL0636):\n\nவிண்ணப்ப விவரம்:\n📋 மனு எண்: ${ticket.id}\n📄 சேவை: ${ticket.serviceName}\n🚦 தற்போதைய நிலை: *${ticket.status}*\n\nதொடர்புக்கு: 97903 82437`
+      portalLang === 'en'
+        ? `Greetings ${ticket.citizenName},\n\nUpdate from Four Roads Makkal e-Seva Centre (Murugesan K, CSC EFADGL0636):\n\n📋 Request ID: ${ticket.id}\n📄 Service: ${ticket.serviceName}\n🚦 Status: *${ticket.status}*\n\nContact: 97903 82437`
+        : `வணக்கம் ${ticket.citizenName} அவர்களே,\n\nநால்ரோடு மக்கள் இ-சேவை மையத்திலிருந்து (முருகேசன் கு EFADGL0636):\n\nவிண்ணப்ப விவரம்:\n📋 மனு எண்: ${ticket.id}\n📄 சேவை: ${ticket.serviceName}\n🚦 தற்போதைய நிலை: *${ticket.status}*\n\nதொடர்புக்கு: 97903 82437`
     );
     return `https://wa.me/91${ticket.phoneNumber.replace(/\D/g, '')}?text=${text}`;
   };
@@ -449,49 +528,56 @@ export default function OperatorPortalPage() {
   const newGrievances = grievances.filter((g) => g.status === 'Received');
   const forwardedGrievances = grievances.filter((g) => g.status === 'Forwarded to Official');
   const pendingGrievances = grievances.filter((g) => g.status === 'Action Pending');
-  const resolvedGrievances = grievances.filter((g) => g.status === 'Resolved' || g.status === 'Closed');
-
-  const pendingRequests = requests.filter((r) => r.status !== 'Completed' && r.status !== 'Cancelled');
+  const resolvedGrievances = grievances.filter((g) => g.status === 'Resolved');
   const urgentRequests = requests.filter((r) => r.priority === 'Urgent' && r.status !== 'Completed');
-
-  // Total Actionable Notification Items
   const totalNotifications = newGrievances.length + urgentRequests.length;
 
-  // Unauthenticated Login View
-  if (!isAuthenticated && !checkingAuth) {
+  if (checkingAuth) {
     return (
-      <div className="min-h-screen bg-slate-100 flex items-center justify-center p-4">
-        <div className="bg-white rounded-3xl p-8 sm:p-10 border-2 border-emerald-500 shadow-2xl max-w-md w-full text-center space-y-6 animate-in fade-in zoom-in-95">
-          <div className="w-20 h-20 mx-auto rounded-2xl overflow-hidden border-2 border-emerald-600 shadow-md">
+      <div className="min-h-screen flex items-center justify-center bg-slate-100">
+        <div className="text-center space-y-3">
+          <div className="w-10 h-10 border-4 border-emerald-600 border-t-transparent rounded-full animate-spin mx-auto" />
+          <p className="text-sm font-bold text-slate-700">
+            {t('Verifying Operator Session...', 'ஆபரேட்டர் அமர்வு சரிபார்க்கப்படுகிறது...')}
+          </p>
+        </div>
+      </div>
+    );
+  }
+
+  // LOGIN SCREEN IN ENGLISH / TAMIL
+  if (!isAuthenticated) {
+    return (
+      <div className="min-h-screen bg-linear-to-b from-slate-900 via-slate-800 to-slate-950 flex items-center justify-center px-4">
+        <div className="max-w-md w-full bg-white rounded-3xl p-6 sm:p-8 shadow-2xl space-y-6 border border-slate-200">
+          <div className="text-center space-y-2">
             <img
               src="/images/murugesan.jpg"
-              alt="முருகேசன் கு"
-              className="w-full h-full object-cover"
+              alt="Murugesan K"
+              className="w-16 h-16 rounded-2xl mx-auto object-cover border-2 border-emerald-600 shadow-md"
             />
-          </div>
-
-          <div>
-            <span className="text-[10px] bg-amber-400 text-slate-950 font-black px-2.5 py-0.5 rounded-full">
-              e-Sevai ID: EFADGL0636
-            </span>
-            <h1 className="text-xl sm:text-2xl font-black text-slate-950 mt-2">
-              ஆபரேட்டர் மேலாண்மை தளம்
+            <h1 className="text-xl font-black text-slate-900">
+              {t('Operator Management Console', 'நால்ரோடு மக்கள் இ-சேவை மையம்')}
             </h1>
-            <p className="text-xs text-slate-500 mt-1">
-              நால்ரோடு மக்கள் இ-சேவை மையம் | முருகேசன் கு
+            <p className="text-xs text-slate-600 font-medium">
+              {t('Four Roads Makkal e-Seva Centre • Periyakottai (624614)', 'ஆபரேட்டர் மேலாண்மை போர்டல் • பெரியகோட்டை')}
             </p>
-          </div>
-
-          {authError && (
-            <div className="p-3 bg-red-50 border border-red-200 text-red-700 text-xs font-bold rounded-xl">
-              {authError}
+            <div className="inline-flex items-center gap-1.5 bg-amber-100 text-amber-900 px-2.5 py-1 rounded-full text-xs font-bold mt-1">
+              <span>CSC ID: EFADGL0636 • Murugesan K</span>
             </div>
-          )}
+          </div>
 
           <form onSubmit={handleLogin} className="space-y-4">
+            {authError && (
+              <div className="p-3 bg-red-50 border border-red-200 text-red-700 text-xs rounded-xl font-bold flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 shrink-0" />
+                <span>{authError}</span>
+              </div>
+            )}
+
             <div>
-              <label className="block text-left text-xs font-bold text-slate-700 mb-1">
-                ரகசிய கடவுச்சொல் (Operator PIN):
+              <label className="block text-xs font-black text-slate-700 uppercase tracking-wider mb-2">
+                {t('Enter Operator Security PIN', 'ஆபரேட்டர் ரகசிய எண் (PIN)')}
               </label>
               <input
                 type="password"
@@ -502,8 +588,8 @@ export default function OperatorPortalPage() {
                 className="w-full text-center tracking-widest text-2xl font-black py-2.5 rounded-xl border-2 border-slate-300 focus:border-emerald-600 outline-none"
                 autoFocus
               />
-              <p className="text-[11px] text-slate-500 mt-1">
-                அங்கீகரிக்கப்பட்ட நால்ரோடு இ-சேவை மைய ஆபரேட்டர் மட்டுமே அணுக முடியும்
+              <p className="text-[11px] text-slate-500 mt-1 text-center">
+                {t('Authorized CSC Operator Access Only (Default PIN: 624614)', 'அங்கீகரிக்கப்பட்ட இ-சேவை மைய ஆபரேட்டர் மட்டுமே அணுக முடியும்')}
               </p>
             </div>
 
@@ -512,16 +598,28 @@ export default function OperatorPortalPage() {
               className="w-full bg-emerald-700 hover:bg-emerald-800 text-white font-black py-3 rounded-xl shadow transition-all flex items-center justify-center gap-2 cursor-pointer"
             >
               <Lock className="w-4 h-4" />
-              <span>உள்நுழைக (Enter Portal)</span>
+              <span>{t('Verify PIN & Access Console', 'உள்நுழைக (Enter Portal)')}</span>
             </button>
           </form>
 
+          {/* Quick Language Toggle in Login */}
+          <div className="flex items-center justify-center gap-2 pt-2 border-t border-slate-100 text-xs">
+            <button
+              type="button"
+              onClick={() => setPortalLang(portalLang === 'en' ? 'ta' : 'en')}
+              className="text-slate-600 hover:text-emerald-700 font-bold flex items-center gap-1"
+            >
+              <Globe className="w-3.5 h-3.5 text-emerald-600" />
+              <span>{portalLang === 'en' ? 'தமிழில் மாற்ற (Switch to Tamil)' : 'Switch to English'}</span>
+            </button>
+          </div>
+
           <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
             <Link href="/" className="hover:text-emerald-800 font-bold">
-              ← பொது முகப்பு தளம்
+              ← {t('Citizen Home Portal', 'பொது முகப்பு தளம்')}
             </Link>
             <Link href="/panchayat" className="hover:text-emerald-800 font-bold">
-              குறைதீர்ப்பு தளம்
+              {t('Panchayat Portal →', 'குறைதீர்ப்பு தளம் →')}
             </Link>
           </div>
         </div>
@@ -530,8 +628,8 @@ export default function OperatorPortalPage() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-100/90 py-4 px-3 sm:px-6 lg:px-8 space-y-4">
-      <div className="max-w-7xl mx-auto space-y-4">
+    <div className="min-h-screen bg-slate-100/90 py-3 px-3 sm:px-6 lg:px-8 space-y-4">
+      <div className="max-w-7xl mx-auto space-y-3">
 
         {/* 1. SLIM EXECUTIVE OPERATOR TOOLBAR (VERY SMALL OPERATOR DETAILS) */}
         <div className="bg-white rounded-2xl px-4 py-2.5 border border-slate-200 shadow-xs flex flex-col md:flex-row items-center justify-between gap-3">
@@ -539,48 +637,62 @@ export default function OperatorPortalPage() {
           <div className="flex items-center gap-2.5 w-full md:w-auto">
             <img
               src="/images/murugesan.jpg"
-              alt="முருகேசன் கு"
+              alt="Murugesan K"
               className="w-10 h-10 rounded-xl object-cover border border-emerald-600 shadow-xs shrink-0"
             />
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-2 flex-wrap">
                 <span className="font-extrabold text-xs sm:text-sm text-slate-900 leading-tight">
-                  முருகேசன் கு
+                  {portalLang === 'en' ? 'Murugesan K' : 'முருகேசன் கு'}
                 </span>
                 <span className="bg-amber-400 text-slate-950 text-[10px] font-black px-1.5 py-0.2 rounded">
                   EFADGL0636
                 </span>
                 <span className="text-[11px] text-emerald-800 font-bold hidden sm:inline">
-                  • நால்ரோடு மக்கள் இ-சேவை மையம் (624614)
+                  • {t('Four Roads Makkal e-Seva Centre (624614)', 'நால்ரோடு மக்கள் இ-சேவை மையம் (624614)')}
                 </span>
               </div>
               <div className="flex items-center gap-2 text-[10px] text-slate-500 mt-0.5">
-                <span>மைய நிலை:</span>
+                <span>{t('Centre Status:', 'மைய நிலை:')}</span>
                 <select
                   value={settings?.centreStatus || 'open'}
                   onChange={(e) => handleQuickCentreStatusChange(e.target.value as any)}
-                  className="bg-slate-50 border border-slate-200 rounded px-1.5 py-0.5 font-bold text-slate-800 cursor-pointer"
+                  className="bg-slate-50 border border-slate-200 rounded px-1.5 py-0.5 font-bold text-slate-800 cursor-pointer text-[10px]"
                   disabled={savingSettings}
                 >
-                  <option value="open">🟢 திறந்துள்ளது (Open)</option>
-                  <option value="camp">🔵 முகாமில் (Field Camp)</option>
-                  <option value="temp_closed">🟡 இடைவேளை (Break)</option>
-                  <option value="closed">🔴 விடுமுறை (Closed)</option>
+                  <option value="open">🟢 {t('Open', 'திறந்துள்ளது (Open)')}</option>
+                  <option value="camp">🔵 {t('Special Camp', 'முகாமில் (Field Camp)')}</option>
+                  <option value="temp_closed">🟡 {t('Temp Break', 'இடைவேளை (Break)')}</option>
+                  <option value="closed">🔴 {t('Closed', 'விடுமுறை (Closed)')}</option>
                 </select>
                 {saveSuccessMsg && (
-                  <span className="text-emerald-700 font-bold animate-in fade-in">{saveSuccessMsg}</span>
+                  <span className="text-emerald-700 font-bold animate-in fade-in truncate max-w-xs">{saveSuccessMsg}</span>
                 )}
               </div>
             </div>
           </div>
 
-          {/* Quick Action Tools: Notifications, Walk-in, Refresh, Logout */}
+          {/* Quick Action Tools: Language Toggle, Notifications, Walk-in, Refresh, Logout */}
           <div className="flex items-center gap-2 w-full md:w-auto justify-end shrink-0">
+            {/* Language Switcher (EN / TA) */}
+            <button
+              onClick={() => {
+                const nextLang = portalLang === 'en' ? 'ta' : 'en';
+                setPortalLang(nextLang);
+                if (setGlobalLanguage) setGlobalLanguage(nextLang);
+              }}
+              className="px-2.5 py-1.5 rounded-xl border border-slate-200 hover:border-slate-400 bg-slate-50 text-slate-800 font-black text-xs flex items-center gap-1.5 cursor-pointer shadow-2xs transition-colors"
+              title="Toggle English / தமிழ்"
+            >
+              <Globe className="w-3.5 h-3.5 text-emerald-600" />
+              <span>{portalLang === 'en' ? 'தமிழ்' : 'English'}</span>
+            </button>
+
             {/* Real-time Notification Bell */}
             <button
               onClick={() => setNotificationsOpen(!notificationsOpen)}
               className="relative p-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 transition-colors flex items-center justify-center cursor-pointer"
-              title="அறிவிப்புகள் (Notifications)"
+              title={t('Operator Notifications', 'அறிவிப்புகள்')}
             >
               <Bell className="w-4 h-4 text-slate-800" />
               {totalNotifications > 0 && (
@@ -596,38 +708,38 @@ export default function OperatorPortalPage() {
               className="bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs px-3 py-2 rounded-xl shadow-xs transition-colors flex items-center gap-1.5 cursor-pointer"
             >
               <PlusCircle className="w-3.5 h-3.5 text-emerald-200" />
-              <span>+ முன் பதிவு</span>
+              <span>{t('+ Walk-in', '+ முன் பதிவு')}</span>
             </button>
 
-            {/* Refresh Button */}
+            {/* Reload Data */}
             <button
               onClick={loadData}
-              className="bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs px-2.5 py-2 rounded-xl transition-colors flex items-center gap-1 cursor-pointer"
-              title="தரவை புதுப்பி"
+              disabled={loading}
+              className="p-2 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl transition-colors cursor-pointer"
+              title={t('Refresh Data', 'மறுஏற்றம்')}
             >
-              <RefreshCw className={`w-3.5 h-3.5 ${loading ? 'animate-spin text-emerald-700' : ''}`} />
-              <span className="hidden sm:inline">புதுப்பி</span>
+              <RefreshCw className={`w-4 h-4 ${loading ? 'animate-spin text-emerald-600' : ''}`} />
             </button>
 
-            {/* Logout Button */}
+            {/* Logout */}
             <button
               onClick={handleLogout}
-              className="bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold text-xs px-2.5 py-2 rounded-xl border border-rose-200 transition-colors flex items-center gap-1 cursor-pointer"
-              title="வெளியேறு"
+              className="p-2 bg-slate-100 hover:bg-red-50 text-slate-600 hover:text-red-700 rounded-xl transition-colors cursor-pointer"
+              title={t('Logout', 'வெளியேறு')}
             >
-              <LogOut className="w-3.5 h-3.5" />
+              <LogOut className="w-4 h-4" />
             </button>
           </div>
         </div>
 
-        {/* NOTIFICATIONS DROPDOWN / MODAL */}
+        {/* NOTIFICATIONS MODAL / DRAWER */}
         {notificationsOpen && (
           <div className="bg-white rounded-2xl border-2 border-amber-400 p-4 shadow-xl animate-in fade-in zoom-in-95 space-y-3">
             <div className="flex items-center justify-between border-b border-slate-200 pb-2">
               <div className="flex items-center gap-2">
                 <Bell className="w-4 h-4 text-amber-600" />
                 <span className="font-extrabold text-sm text-slate-900">
-                  ஆபரேட்டர் நேரலை அறிவிப்புகள் ({totalNotifications})
+                  {t(`Live Operator Notifications (${totalNotifications})`, `ஆபரேட்டர் நேரலை அறிவிப்புகள் (${totalNotifications})`)}
                 </span>
               </div>
               <button
@@ -641,7 +753,7 @@ export default function OperatorPortalPage() {
             <div className="max-h-60 overflow-y-auto space-y-2">
               {newGrievances.length === 0 && urgentRequests.length === 0 ? (
                 <div className="text-center py-6 text-xs text-slate-500">
-                  தற்போது புதிய அவசர அல்லது நிலுவை அறிவிப்புகள் எதுவும் இல்லை.
+                  {t('No pending or urgent notifications at this time.', 'தற்போது புதிய அவசர அல்லது நிலுவை அறிவிப்புகள் எதுவும் இல்லை.')}
                 </div>
               ) : (
                 <>
@@ -659,13 +771,17 @@ export default function OperatorPortalPage() {
                       <div className="min-w-0">
                         <div className="flex items-center gap-1.5">
                           <span className="font-mono font-black text-[11px] text-amber-950">{g.id}</span>
-                          <span className="bg-red-600 text-white font-black text-[9px] px-1.5 py-0.2 rounded">புதிய குறை</span>
+                          <span className="bg-red-600 text-white font-black text-[9px] px-1.5 py-0.2 rounded">
+                            {t('NEW GRIEVANCE', 'புதிய குறை')}
+                          </span>
                         </div>
                         <p className="font-bold text-slate-900 truncate mt-0.5">
                           {g.citizenName} ({g.location || g.village}) — {g.category}
                         </p>
                       </div>
-                      <span className="text-[11px] font-bold text-amber-900 shrink-0">தீர்வு காண்க →</span>
+                      <span className="text-[11px] font-bold text-amber-900 shrink-0">
+                        {t('View & Act →', 'தீர்வு காண்க →')}
+                      </span>
                     </div>
                   ))}
 
@@ -683,13 +799,17 @@ export default function OperatorPortalPage() {
                       <div className="min-w-0">
                         <div className="flex items-center gap-1.5">
                           <span className="font-mono font-black text-[11px] text-rose-950">{r.id}</span>
-                          <span className="bg-red-600 text-white font-black text-[9px] px-1.5 py-0.2 rounded">அவசர விண்ணப்பம்</span>
+                          <span className="bg-red-600 text-white font-black text-[9px] px-1.5 py-0.2 rounded">
+                            {t('URGENT REQUEST', 'அவசர விண்ணப்பம்')}
+                          </span>
                         </div>
                         <p className="font-bold text-slate-900 truncate mt-0.5">
                           {r.citizenName} — {r.serviceName}
                         </p>
                       </div>
-                      <span className="text-[11px] font-bold text-rose-900 shrink-0">காண்க →</span>
+                      <span className="text-[11px] font-bold text-rose-900 shrink-0">
+                        {t('View →', 'காண்க →')}
+                      </span>
                     </div>
                   ))}
                 </>
@@ -709,7 +829,7 @@ export default function OperatorPortalPage() {
             className="bg-white p-2.5 rounded-xl border border-slate-200 shadow-2xs cursor-pointer hover:border-purple-400 transition-colors"
           >
             <div className="flex items-center justify-between text-[11px] text-slate-500 font-bold">
-              <span>மொத்த புகார்கள்</span>
+              <span>{t('Total Grievances', 'மொத்த புகார்கள்')}</span>
               <Building2 className="w-3.5 h-3.5 text-purple-600" />
             </div>
             <p className="text-lg font-black text-slate-900 mt-0.5">{grievances.length}</p>
@@ -728,7 +848,7 @@ export default function OperatorPortalPage() {
             }`}
           >
             <div className="flex items-center justify-between text-[11px] font-bold text-slate-600">
-              <span>🚨 புதிய மனுக்கள்</span>
+              <span>🚨 {t('New Grievances', 'புதிய மனுக்கள்')}</span>
               <Bell className={`w-3.5 h-3.5 ${newGrievances.length > 0 ? 'text-red-600 animate-bounce' : 'text-slate-400'}`} />
             </div>
             <p className={`text-lg font-black mt-0.5 ${newGrievances.length > 0 ? 'text-red-600' : 'text-slate-900'}`}>
@@ -745,7 +865,7 @@ export default function OperatorPortalPage() {
             className="bg-white p-2.5 rounded-xl border border-slate-200 shadow-2xs cursor-pointer hover:border-blue-400 transition-colors"
           >
             <div className="flex items-center justify-between text-[11px] text-slate-500 font-bold">
-              <span>அதிகாரிக்கு அனுப்பியவை</span>
+              <span>{t('Forwarded to Official', 'அதிகாரிக்கு அனுப்பியவை')}</span>
               <Clock className="w-3.5 h-3.5 text-blue-600" />
             </div>
             <p className="text-lg font-black text-blue-700 mt-0.5">{forwardedGrievances.length}</p>
@@ -760,7 +880,7 @@ export default function OperatorPortalPage() {
             className="bg-white p-2.5 rounded-xl border border-slate-200 shadow-2xs cursor-pointer hover:border-emerald-400 transition-colors"
           >
             <div className="flex items-center justify-between text-[11px] text-slate-500 font-bold">
-              <span>தீர்க்கப்பட்டவை</span>
+              <span>{t('Resolved', 'தீர்க்கப்பட்டவை')}</span>
               <CheckCircle2 className="w-3.5 h-3.5 text-emerald-600" />
             </div>
             <p className="text-lg font-black text-emerald-700 mt-0.5">{resolvedGrievances.length}</p>
@@ -775,7 +895,7 @@ export default function OperatorPortalPage() {
             className="bg-white p-2.5 rounded-xl border border-slate-200 shadow-2xs cursor-pointer hover:border-emerald-400 transition-colors col-span-2 sm:col-span-1"
           >
             <div className="flex items-center justify-between text-[11px] text-slate-500 font-bold">
-              <span>அரசு சான்றிதழ் மனுக்கள்</span>
+              <span>{t('e-Seva Requests', 'அரசு சான்றிதழ் மனுக்கள்')}</span>
               <FileText className="w-3.5 h-3.5 text-emerald-600" />
             </div>
             <p className="text-lg font-black text-slate-900 mt-0.5">{requests.length}</p>
@@ -787,7 +907,7 @@ export default function OperatorPortalPage() {
           {/* Navigation Workspace Tabs */}
           <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 pb-3">
             <div className="flex flex-wrap items-center gap-2">
-              {/* Tab 1: Grievance (DEFAULT) */}
+              {/* Tab 1: Grievances (DEFAULT) */}
               <button
                 onClick={() => setActiveTab('grievances')}
                 className={`px-3.5 py-2 rounded-xl text-xs sm:text-sm font-extrabold transition-all flex items-center gap-2 cursor-pointer ${
@@ -797,10 +917,10 @@ export default function OperatorPortalPage() {
                 }`}
               >
                 <AlertTriangle className="w-4 h-4 text-amber-400" />
-                <span>கிராம குறைதீர்ப்பு ({grievances.length})</span>
+                <span>{t('Village Grievances', 'கிராம குறைதீர்ப்பு')} ({grievances.length})</span>
                 {newGrievances.length > 0 && (
                   <span className="bg-red-600 text-white font-black text-[9px] px-1.5 py-0.2 rounded-full animate-pulse">
-                    {newGrievances.length} புதியவை
+                    {newGrievances.length} {t('New', 'புதியவை')}
                   </span>
                 )}
               </button>
@@ -815,7 +935,7 @@ export default function OperatorPortalPage() {
                 }`}
               >
                 <FileText className="w-4 h-4" />
-                <span>அரசு சான்றிதழ் மனுக்கள் ({requests.length})</span>
+                <span>{t('Citizen Requests', 'அரசு சான்றிதழ் மனுக்கள்')} ({requests.length})</span>
               </button>
 
               {/* Tab 3: Centre Settings & Notices */}
@@ -828,7 +948,7 @@ export default function OperatorPortalPage() {
                 }`}
               >
                 <Sliders className="w-4 h-4" />
-                <span>மைய அமைப்புகள் & அறிவிப்புகள்</span>
+                <span>{t('Settings & Notices', 'மைய அமைப்புகள் & அறிவிப்புகள்')}</span>
               </button>
             </div>
           </div>
@@ -841,22 +961,27 @@ export default function OperatorPortalPage() {
                 <div className="p-3 bg-amber-50 border border-amber-300 rounded-xl flex items-center justify-between gap-3 text-xs">
                   <div className="flex items-center gap-2 text-amber-950 font-bold">
                     <Bell className="w-4 h-4 text-amber-700 animate-bounce" />
-                    <span>கவனிக்கவும்: {newGrievances.length} புதிய குறைதீர்ப்பு மனுக்கள் வந்துள்ளன. உடனடியாக நடவடிக்கை எடுக்கவும்!</span>
+                    <span>
+                      {t(
+                        `Attention: ${newGrievances.length} new grievance(s) received. Immediate field action required!`,
+                        `கவனிக்கவும்: ${newGrievances.length} புதிய குறைதீர்ப்பு மனுக்கள் வந்துள்ளன. உடனடியாக நடவடிக்கை எடுக்கவும்!`
+                      )}
+                    </span>
                   </div>
                   <button
                     onClick={() => {
                       setGrvStatusFilter('Received');
                       setGrvSearchQuery('');
                     }}
-                    className="bg-slate-950 text-amber-300 font-bold px-2.5 py-1 rounded-lg hover:bg-black shrink-0 cursor-pointer"
+                    className="bg-slate-950 text-amber-300 font-bold px-2.5 py-1 rounded-lg hover:bg-black shrink-0 cursor-pointer text-xs"
                   >
-                    புதியவை மட்டும் காண்க →
+                    {t('View New Only →', 'புதியவை மட்டும் காண்க →')}
                   </button>
                 </div>
               )}
 
               {/* CLEAN FILTER BAR AS DROPDOWN LISTS (NO CLUTTER!) */}
-              <div className="bg-slate-50 p-3 rounded-xl border border-slate-200 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2 text-xs">
+              <div className="bg-slate-50 p-3 rounded-xl border border-slate-200 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 text-xs">
                 {/* Search Input */}
                 <div className="relative">
                   <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
@@ -864,7 +989,7 @@ export default function OperatorPortalPage() {
                     type="text"
                     value={grvSearchQuery}
                     onChange={(e) => setGrvSearchQuery(e.target.value)}
-                    placeholder="மனு எண், பெயர், எண், விவரம்..."
+                    placeholder={t('Search by ID, name, mobile, description...', 'மனு எண், பெயர், எண், விவரம்...')}
                     className="w-full pl-8 pr-6 py-2 text-xs rounded-xl border border-slate-300 focus:border-purple-600 bg-white"
                   />
                   {grvSearchQuery && (
@@ -884,11 +1009,11 @@ export default function OperatorPortalPage() {
                     onChange={(e) => setGrvStatusFilter(e.target.value)}
                     className="w-full px-2.5 py-2 text-xs font-bold rounded-xl border border-slate-300 focus:border-purple-600 bg-white cursor-pointer"
                   >
-                    <option value="All">அனைத்து நிலைகளும் (All Status)</option>
-                    <option value="Received">🚨 புதிய மனுக்கள் ({newGrievances.length} New)</option>
-                    <option value="Forwarded to Official">⏳ அதிகாரிக்கு அனுப்பியவை ({forwardedGrievances.length})</option>
-                    <option value="Action Pending">🔄 நடவடிக்கை நிலுவை ({pendingGrievances.length})</option>
-                    <option value="Resolved">✅ தீர்க்கப்பட்டவை ({resolvedGrievances.length})</option>
+                    <option value="All">{t('All Statuses', 'அனைத்து நிலைகளும் (All Status)')}</option>
+                    <option value="Received">🚨 {t(`New / Received (${newGrievances.length})`, `புதிய மனுக்கள் (${newGrievances.length})`)}</option>
+                    <option value="Forwarded to Official">⏳ {t(`Forwarded to Official (${forwardedGrievances.length})`, `அதிகாரிக்கு அனுப்பியவை (${forwardedGrievances.length})`)}</option>
+                    <option value="Action Pending">🔄 {t(`Action Pending (${pendingGrievances.length})`, `நடவடிக்கை நிலுவை (${pendingGrievances.length})`)}</option>
+                    <option value="Resolved">✅ {t(`Resolved (${resolvedGrievances.length})`, `தீர்க்கப்பட்டவை (${resolvedGrievances.length})`)}</option>
                   </select>
                 </div>
 
@@ -899,262 +1024,259 @@ export default function OperatorPortalPage() {
                     onChange={(e) => setGrvCategoryFilter(e.target.value)}
                     className="w-full px-2.5 py-2 text-xs font-bold rounded-xl border border-slate-300 focus:border-purple-600 bg-white cursor-pointer"
                   >
-                    <option value="All">அனைத்து பிரச்சனைகளும் (All Categories)</option>
-                    <option value="drinking_water">💧 குடிநீர் விநியோகம் / தொட்டி</option>
-                    <option value="street_light">💡 தெருவிளக்கு பழுது</option>
-                    <option value="road_repair">🛣️ சாலை & தெரு பழுது</option>
-                    <option value="drainage">🚰 சாக்கடை & கழிவுநீர்</option>
-                    <option value="sanitation">🧹 குப்பை & சுகாதாரம்</option>
-                    <option value="ration_shop">🍚 ரேஷன் கடை குறை</option>
-                    <option value="agriculture">🌾 விவசாயம் & பாசனம்</option>
-                    <option value="burial_ground">🕊️ மயானம் / பாதை</option>
-                    <option value="health_sanitation">🦟 கொசு மருந்து & சுகாதாரம்</option>
-                    <option value="stray_animals">🐕 விலங்கு & தெருநாய் தொல்லை</option>
-                    <option value="revenue_land">📜 வருவாய்த்துறை & பட்டா</option>
-                    <option value="community_infra">🏫 பள்ளி & சமுதாயக்கூடம்</option>
-                    <option value="other">📋 இதர கிராமப் பிரச்சனை</option>
+                    <option value="All">{t('All Categories', 'அனைத்து பிரிவுகளும் (All Categories)')}</option>
+                    <option value="Drinking Water Supply">{t('🚰 Drinking Water Supply', '🚰 குடிநீர் வசதி (Drinking Water)')}</option>
+                    <option value="Street Light Maintenance">{t('💡 Street Light Maintenance', '💡 தெருவிளக்கு பராமரிப்பு (Street Light)')}</option>
+                    <option value="Drainage & Sanitation">{t('🌊 Drainage & Sanitation', '🌊 சாக்கடை & கழிவுநீர் (Drainage)')}</option>
+                    <option value="Road & Pavement Repair">{t('🛣️ Road & Pavement Repair', '🛣️ சாலை & நடைபாதை (Roads)')}</option>
+                    <option value="Garbage & Waste Disposal">{t('🗑️ Garbage & Waste Disposal', '🗑️ குப்பை மேலாண்மை (Garbage)')}</option>
+                    <option value="Public Health & Mosquito Fogging">{t('🏥 Public Health & Fogging', '🏥 பொது சுகாதாரம் (Health & Fogging)')}</option>
+                    <option value="PDS / Ration Shop">{t('🌾 PDS / Ration Shop', '🌾 ரேஷன் கடை குறைபாடுகள் (Ration)')}</option>
+                    <option value="Agricultural Grievances">{t('🚜 Agricultural Grievances', '🚜 விவசாயம் & பாசனம் (Agriculture)')}</option>
+                    <option value="Revenue & Patta Matters">{t('🏛️ Revenue & Patta Matters', '🏛️ வருவாய்த்துறை & பட்டா (Revenue)')}</option>
+                    <option value="School & Anganwadi Infrastructure">{t('🏫 School & Anganwadi', '🏫 பள்ளி & அங்கன்வாடி (School)')}</option>
+                    <option value="Stray Animals & Cattle">{t('🐕 Stray Animals & Cattle', '🐕 தெருநாய்கள் & கால்நடைகள் (Animals)')}</option>
+                    <option value="Other Grievances">{t('❓ Other Grievances', '❓ இதர பொது பிரச்சினைகள் (Other)')}</option>
                   </select>
                 </div>
 
-                {/* Hamlet Dropdown List */}
+                {/* Village Hamlet Dropdown List */}
                 <div>
                   <select
                     value={grvHamletFilter}
                     onChange={(e) => setGrvHamletFilter(e.target.value)}
                     className="w-full px-2.5 py-2 text-xs font-bold rounded-xl border border-slate-300 focus:border-purple-600 bg-white cursor-pointer"
                   >
-                    <option value="All">அனைத்து சிற்றூர்களும் (All Hamlets)</option>
-                    <option value="பெரியகோட்டை">பெரியகோட்டை</option>
-                    <option value="பெரியகோட்டை கிழக்கு">பெரியகோட்டை கிழக்கு</option>
-                    <option value="பெரியகோட்டை மேற்கு">பெரியகோட்டை மேற்கு</option>
-                    <option value="கருங்கல்பட்டி">கருங்கல்பட்டி</option>
-                    <option value="கந்தப்ப கவுண்டன் வலசு">கந்தப்ப கவுண்டன் வலசு</option>
+                    <option value="All">{t('All Hamlets', 'அனைத்து கிராம பகுதிகள் (All Hamlets)')}</option>
+                    <option value="பெரியகோட்டை">{t('Periyakottai (பெரியகோட்டை)', 'பெரியகோட்டை')}</option>
+                    <option value="பெரியகோட்டை கிழக்கு">{t('Periyakottai East (பெரியகோட்டை கிழக்கு)', 'பெரியகோட்டை கிழக்கு')}</option>
+                    <option value="பெரியகோட்டை மேற்கு">{t('Periyakottai West (பெரியகோட்டை மேற்கு)', 'பெரியகோட்டை மேற்கு')}</option>
+                    <option value="கருங்கல்பட்டி">{t('Karungalpatti (கருங்கல்பட்டி)', 'கருங்கல்பட்டி')}</option>
+                    <option value="கந்தப்ப கவுண்டன் வலசு">{t('Kandhappa Goundan Valasu (கந்தப்ப கவுண்டன் வலசு)', 'கந்தப்ப கவுண்டன் வலசு')}</option>
                   </select>
-                </div>
-
-                {/* Action / Reset */}
-                <div className="flex items-center gap-2">
-                  <span className="text-[11px] text-slate-500 font-semibold truncate flex-1">
-                    கிடைத்த மனுக்கள்: <b className="text-slate-900">{filteredGrievances.length}</b>
-                  </span>
-
-                  {(grvSearchQuery || grvStatusFilter !== 'All' || grvCategoryFilter !== 'All' || grvHamletFilter !== 'All') && (
-                    <button
-                      onClick={() => {
-                        setGrvSearchQuery('');
-                        setGrvStatusFilter('All');
-                        setGrvCategoryFilter('All');
-                        setGrvHamletFilter('All');
-                      }}
-                      className="px-2 py-1.5 text-xs text-rose-600 hover:bg-rose-50 border border-rose-200 rounded-lg font-bold cursor-pointer shrink-0"
-                    >
-                      மீட்டமை
-                    </button>
-                  )}
                 </div>
               </div>
 
-              {/* GRIEVANCES LIST VIEW (ACTIONABLE PROBLEM SOLVER) */}
-              {loading ? (
-                <div className="py-12 text-center text-xs text-slate-500 font-bold">
-                  புகார்கள் ஏற்றப்படுகின்றன...
-                </div>
-              ) : filteredGrievances.length === 0 ? (
-                <div className="py-12 text-center bg-slate-50 rounded-2xl border border-dashed border-slate-200 p-6 space-y-2">
-                  <CheckCircle2 className="w-8 h-8 text-emerald-600 mx-auto" />
-                  <h4 className="font-bold text-sm text-slate-800">
-                    தேர்ந்தெடுக்கப்பட்ட வடிகட்டியில் எந்த புகாரும் இல்லை
-                  </h4>
-                  <p className="text-xs text-slate-500">
-                    பொதுமக்கள் பதிவு செய்யும் புதிய மனுக்கள் உடனடியாக இங்கே தோன்றும்.
-                  </p>
-                </div>
-              ) : (
-                <div className="space-y-3">
-                  {filteredGrievances.map((grv) => (
-                    <div
-                      key={grv.id}
-                      className={`p-4 rounded-2xl border transition-all bg-white flex flex-col lg:flex-row lg:items-center justify-between gap-4 shadow-2xs ${
-                        grv.status === 'Received'
-                          ? 'border-2 border-amber-400 bg-amber-50/20'
-                          : grv.status === 'Resolved' || grv.status === 'Closed'
-                          ? 'border-emerald-200 bg-emerald-50/10'
-                          : 'border-slate-200'
-                      }`}
+              {/* GRIEVANCES TICKET LIST */}
+              <div className="space-y-3">
+                {filteredGrievances.length === 0 ? (
+                  <div className="text-center py-12 bg-slate-50 rounded-2xl border border-slate-200 space-y-2">
+                    <Inbox className="w-10 h-10 text-slate-400 mx-auto" />
+                    <p className="font-bold text-sm text-slate-700">
+                      {t('No grievance tickets found matching the selected filters.', 'தேர்ந்தெடுக்கப்பட்ட வடிகட்டிகளில் மனுக்கள் எதுவும் இல்லை.')}
+                    </p>
+                    <button
+                      onClick={() => {
+                        setGrvStatusFilter('All');
+                        setGrvCategoryFilter('All');
+                        setGrvHamletFilter('All');
+                        setGrvSearchQuery('');
+                      }}
+                      className="text-xs text-purple-700 hover:underline font-bold"
                     >
-                      {/* Ticket Info */}
-                      <div className="space-y-1.5 flex-1 min-w-0">
-                        <div className="flex flex-wrap items-center gap-2">
-                          <span className="font-mono font-black text-xs text-slate-900 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
-                            {grv.id}
-                          </span>
+                      {t('Reset All Filters', 'வடிகட்டிகளை மீட்டமைக்க')}
+                    </button>
+                  </div>
+                ) : (
+                  filteredGrievances.map((grv) => {
+                    const dept = getGrievanceDepartment(grv.category);
+                    return (
+                      <div
+                        key={grv.id}
+                        className={`p-4 rounded-2xl border transition-all ${
+                          grv.status === 'Received'
+                            ? 'bg-amber-50/40 border-amber-300 shadow-xs'
+                            : grv.status === 'Forwarded to Official'
+                            ? 'bg-blue-50/40 border-blue-200'
+                            : grv.status === 'Resolved'
+                            ? 'bg-emerald-50/30 border-emerald-200'
+                            : 'bg-white border-slate-200'
+                        }`}
+                      >
+                        <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3">
+                          {/* Ticket Meta & Content */}
+                          <div className="space-y-2 min-w-0 flex-1">
+                            <div className="flex flex-wrap items-center gap-2">
+                              <span className="font-mono font-black text-xs text-slate-900 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
+                                {grv.id}
+                              </span>
 
-                          {grv.status === 'Received' && (
-                            <span className="bg-red-600 text-white font-black text-[10px] px-2 py-0.5 rounded-full animate-pulse">
-                              ● புதிய மனு
-                            </span>
-                          )}
+                              {/* Status Badge */}
+                              <span
+                                className={`text-[11px] font-extrabold px-2.5 py-0.5 rounded-full ${
+                                  grv.status === 'Received'
+                                    ? 'bg-red-100 text-red-800'
+                                    : grv.status === 'Forwarded to Official'
+                                    ? 'bg-blue-100 text-blue-900'
+                                    : grv.status === 'Action Pending'
+                                    ? 'bg-amber-100 text-amber-900'
+                                    : grv.status === 'Resolved'
+                                    ? 'bg-emerald-100 text-emerald-900'
+                                    : 'bg-slate-100 text-slate-700'
+                                }`}
+                              >
+                                {grv.status === 'Received'
+                                  ? t('🚨 Received (New)', '🚨 புதிய மனு (Received)')
+                                  : grv.status === 'Forwarded to Official'
+                                  ? t('⏳ Forwarded to Official', '⏳ அதிகாரிக்கு அனுப்பப்பட்டது')
+                                  : grv.status === 'Action Pending'
+                                  ? t('🔄 Action Pending', '🔄 நடவடிக்கை நிலுவை')
+                                  : grv.status === 'Resolved'
+                                  ? t('✅ Resolved', '✅ தீர்க்கப்பட்டது')
+                                  : grv.status}
+                              </span>
 
-                          <span
-                            className={`text-[11px] font-extrabold px-2.5 py-0.5 rounded-full border ${
-                              grv.status === 'Resolved' || grv.status === 'Closed'
-                                ? 'bg-emerald-100 text-emerald-900 border-emerald-300'
-                                : grv.status === 'Action Pending'
-                                ? 'bg-amber-100 text-amber-900 border-amber-300'
-                                : grv.status === 'Forwarded to Official'
-                                ? 'bg-blue-100 text-blue-900 border-blue-300'
-                                : 'bg-purple-100 text-purple-900 border-purple-300'
-                            }`}
-                          >
-                            ● {grv.status}
-                          </span>
+                              {/* Category Badge */}
+                              <span className="text-[11px] font-bold text-slate-700 bg-slate-100 px-2 py-0.5 rounded">
+                                {grv.category}
+                              </span>
 
-                          <span className="text-[11px] font-bold text-slate-700 bg-slate-100 border border-slate-200 px-2 py-0.5 rounded">
-                            {grv.category}
-                          </span>
+                              {/* Dept Badge */}
+                              <span className="text-[10px] font-bold text-purple-900 bg-purple-50 px-2 py-0.5 rounded border border-purple-200 hidden sm:inline">
+                                {portalLang === 'en' ? dept.en : dept.ta}
+                              </span>
 
-                          <span className="text-[11px] text-slate-400 font-mono">
-                            {new Date(grv.createdAt).toLocaleDateString('ta-IN')}
-                          </span>
-                        </div>
+                              <span className="text-[11px] text-slate-400">
+                                {new Date(grv.createdAt).toLocaleDateString(portalLang === 'en' ? 'en-GB' : 'ta-IN')}
+                              </span>
+                            </div>
 
-                        <h3 className="font-bold text-sm text-slate-900">
-                          {grv.citizenName} ({grv.phoneNumber}) — <span className="font-normal text-slate-700">{grv.description}</span>
-                        </h3>
+                            <h3 className="font-bold text-sm text-slate-900">
+                              {grv.citizenName} ({grv.phoneNumber}) —{' '}
+                              <span className="font-normal text-slate-700">{grv.description}</span>
+                            </h3>
 
-                        <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500">
-                          <span className="flex items-center gap-1 font-medium">
-                            <MapPin className="w-3.5 h-3.5 text-slate-400 shrink-0" />
-                            <span>இடம்: {grv.location || grv.village}</span>
-                          </span>
+                            <div className="flex flex-wrap items-center gap-3 text-xs text-slate-500">
+                              <span className="flex items-center gap-1 font-medium">
+                                <MapPin className="w-3.5 h-3.5 text-slate-400 shrink-0" />
+                                <span>{t('Hamlet:', 'இடம்:')} {grv.location || grv.village}</span>
+                              </span>
 
-                          {grv.timeline && grv.timeline.length > 0 && grv.timeline[grv.timeline.length - 1].note && (
-                            <span className="text-[11px] text-purple-900 font-bold bg-purple-50 border border-purple-200 px-2 py-0.5 rounded truncate max-w-md">
-                              நடவடிக்கை: {grv.timeline[grv.timeline.length - 1].note}
-                            </span>
-                          )}
+                              {grv.timeline && grv.timeline.length > 0 && grv.timeline[grv.timeline.length - 1].note && (
+                                <span className="text-[11px] text-purple-900 font-bold bg-purple-50 border border-purple-200 px-2 py-0.5 rounded truncate max-w-md">
+                                  {t('Latest Action:', 'நடவடிக்கை:')} {grv.timeline[grv.timeline.length - 1].note}
+                                </span>
+                              )}
+                            </div>
+                          </div>
+
+                          {/* Problem Solver Interactive Action Tools */}
+                          {/* CRITICAL ORDER: Send to Official -> Start Action -> NOTE BUTTON -> RESOLVE BUTTON -> WhatsApp -> Call -> PDF Memo */}
+                          <div className="flex flex-wrap items-center gap-2 shrink-0 pt-2 lg:pt-0 border-t lg:border-t-0 border-slate-100">
+                            
+                            {/* 1. SEND TO OFFICIAL (Formats neat PDF + Forwards to operator's WhatsApp himself) */}
+                            {grv.status === 'Received' && (
+                              <button
+                                onClick={() => handleSendGrievanceToOfficial(grv)}
+                                disabled={updatingStatus}
+                                className="px-3 py-1.5 bg-blue-700 hover:bg-blue-800 text-white font-black rounded-xl text-xs flex items-center gap-1.5 cursor-pointer shadow-xs transition-colors"
+                                title={t(
+                                  'Format official PDF and forward to operator WhatsApp (97903 82437)',
+                                  'அதிகாரப்பூர்வ PDF உருவாக்கி ஆபரேட்டர் வாட்ஸ்அப்பிற்கு அனுப்ப'
+                                )}
+                              >
+                                <Send className="w-3.5 h-3.5" />
+                                <span>{t('Send to Official →', 'அதிகாரிக்கு அனுப்பு →')}</span>
+                              </button>
+                            )}
+
+                            {/* 2. START ACTION TRANSITION */}
+                            {grv.status === 'Forwarded to Official' && (
+                              <button
+                                onClick={() => handleQuickGrievanceStatusChange(grv.id, 'Action Pending')}
+                                disabled={updatingStatus}
+                                className="px-3 py-1.5 bg-amber-600 hover:bg-amber-700 text-white font-black rounded-xl text-xs flex items-center gap-1.5 cursor-pointer shadow-xs"
+                                title={t('Mark Action in Progress', 'நடவடிக்கை நிலுவைக்கு மாற்ற')}
+                              >
+                                <span>{t('Start Action →', 'நடவடிக்கை துவங்கு →')}</span>
+                              </button>
+                            )}
+
+                            {/* 3. NOTE BUTTON (MUST BE BEFORE THE RESOLVE BUTTON AS REQUESTED) */}
+                            <button
+                              onClick={() => {
+                                setStatusModalTicket({
+                                  id: grv.id,
+                                  type: 'grievance',
+                                  currentStatus: grv.status,
+                                  citizenName: grv.citizenName,
+                                  phoneNumber: grv.phoneNumber,
+                                  serviceName: grv.category,
+                                  description: grv.description
+                                });
+                                setSelectedStatus(grv.status);
+                              }}
+                              className="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs flex items-center gap-1 cursor-pointer"
+                              title={t('Add Official Remark / Change Status', 'குறிப்பு அல்லது நிலை மாற்ற')}
+                            >
+                              <FileText className="w-3.5 h-3.5 text-slate-600" />
+                              <span>{t('Note', 'குறிப்பு')}</span>
+                            </button>
+
+                            {/* 4. RESOLVE BUTTON (AFTER NOTE BUTTON AS REQUESTED) */}
+                            {grv.status !== 'Resolved' && grv.status !== 'Closed' && (
+                              <button
+                                onClick={() => handleQuickGrievanceStatusChange(grv.id, 'Resolved')}
+                                disabled={updatingStatus}
+                                className="px-3 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white font-black rounded-xl text-xs flex items-center gap-1 cursor-pointer shadow-xs"
+                                title={t('Mark as Resolved', 'பிரச்சனை தீர்க்கப்பட்டது என குறிக்க')}
+                              >
+                                <Check className="w-3.5 h-3.5" />
+                                <span>{t('Resolve', 'தீர்க்கப்பட்டது')}</span>
+                              </button>
+                            )}
+
+                            {/* 5. WhatsApp Citizen 1-Click */}
+                            <a
+                              href={generateGrievanceWhatsAppUrl(grv)}
+                              target="_blank"
+                              rel="noopener noreferrer"
+                              className="px-2.5 py-1.5 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl text-xs flex items-center gap-1 transition-colors shadow-2xs"
+                              title={t('Send WhatsApp update to citizen', 'குடிமகனுக்கு வாட்ஸ்அப் தகவல் அனுப்ப')}
+                            >
+                              <MessageCircle className="w-3.5 h-3.5" />
+                              <span>WhatsApp</span>
+                            </a>
+
+                            {/* 6. Call Citizen */}
+                            <a
+                              href={`tel:${grv.phoneNumber}`}
+                              className="p-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl transition-colors"
+                              title={t('Call Citizen', 'அழைக்க')}
+                            >
+                              <PhoneCall className="w-3.5 h-3.5 text-slate-700" />
+                            </a>
+
+                            {/* 7. Official PDF Memo Direct Button */}
+                            <button
+                              onClick={() => printOfficialGrievancePdf(grv)}
+                              className="p-1.5 bg-slate-100 hover:bg-purple-100 text-purple-800 rounded-xl transition-colors cursor-pointer"
+                              title={t('Print Official Grievance Memo PDF', 'அதிகாரப்பூர்வ குறைதீர்ப்பு குறிப்பாணை PDF அச்சிடுக')}
+                            >
+                              <Printer className="w-3.5 h-3.5" />
+                            </button>
+                          </div>
                         </div>
                       </div>
-
-                      {/* Problem Solver Interactive Action Tools */}
-                      <div className="flex flex-wrap items-center gap-2 shrink-0 pt-2 lg:pt-0 border-t lg:border-t-0 border-slate-100">
-                        {/* 1-Click Fast Transitions */}
-                        {grv.status === 'Received' && (
-                          <button
-                            onClick={() => handleQuickGrievanceStatusChange(grv.id, 'Forwarded to Official')}
-                            disabled={updatingStatus}
-                            className="px-3 py-1.5 bg-blue-700 hover:bg-blue-800 text-white font-bold rounded-xl text-xs flex items-center gap-1 cursor-pointer"
-                            title="ஊராட்சி அதிகாரிக்கு அனுப்ப"
-                          >
-                            <span>அதிகாரிக்கு அனுப்பு →</span>
-                          </button>
-                        )}
-
-                        {grv.status === 'Forwarded to Official' && (
-                          <button
-                            onClick={() => handleQuickGrievanceStatusChange(grv.id, 'Action Pending')}
-                            disabled={updatingStatus}
-                            className="px-3 py-1.5 bg-amber-600 hover:bg-amber-700 text-white font-bold rounded-xl text-xs flex items-center gap-1 cursor-pointer"
-                            title="நடவடிக்கை நிலுவைக்கு மாற்ற"
-                          >
-                            <span>நடவடிக்கை துவங்கு →</span>
-                          </button>
-                        )}
-
-                        {grv.status !== 'Resolved' && grv.status !== 'Closed' && (
-                          <button
-                            onClick={() => handleQuickGrievanceStatusChange(grv.id, 'Resolved')}
-                            disabled={updatingStatus}
-                            className="px-3 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold rounded-xl text-xs flex items-center gap-1 cursor-pointer"
-                            title="பிரச்சனை தீர்க்கப்பட்டது என குறிக்க"
-                          >
-                            <Check className="w-3.5 h-3.5" />
-                            <span>தீர்க்கப்பட்டது</span>
-                          </button>
-                        )}
-
-                        {/* Add Custom Remark / Detailed Status Modal */}
-                        <button
-                          onClick={() => {
-                            setStatusModalTicket({
-                              id: grv.id,
-                              type: 'grievance',
-                              currentStatus: grv.status,
-                              citizenName: grv.citizenName,
-                              phoneNumber: grv.phoneNumber,
-                              serviceName: grv.category,
-                              description: grv.description
-                            });
-                            setSelectedStatus(grv.status);
-                          }}
-                          className="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs flex items-center gap-1 cursor-pointer"
-                          title="குறிப்பு அல்லது நிலை மாற்ற"
-                        >
-                          <FileText className="w-3.5 h-3.5" />
-                          <span>குறிப்பு</span>
-                        </button>
-
-                        {/* WhatsApp Citizen 1-Click */}
-                        <a
-                          href={generateGrievanceWhatsAppUrl(grv)}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="px-2.5 py-1.5 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl text-xs flex items-center gap-1 transition-colors shadow-2xs"
-                          title="குடிமகனுக்கு வாட்ஸ்அப் தகவல் அனுப்ப"
-                        >
-                          <MessageCircle className="w-3.5 h-3.5" />
-                          <span>WhatsApp</span>
-                        </a>
-
-                        {/* Call Citizen */}
-                        <a
-                          href={`tel:${grv.phoneNumber}`}
-                          className="p-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl transition-colors"
-                          title="அழைக்க"
-                        >
-                          <PhoneCall className="w-3.5 h-3.5 text-slate-700" />
-                        </a>
-
-                        {/* Print Official Slip */}
-                        <button
-                          onClick={() =>
-                            printAcknowledgmentReceipt({
-                              id: grv.id,
-                              citizenName: grv.citizenName,
-                              phoneNumber: grv.phoneNumber,
-                              serviceName: `கிராம குறைதீர்ப்பு (${grv.category})`,
-                              village: grv.location || grv.village,
-                              createdAt: grv.createdAt,
-                              status: grv.status,
-                              description: grv.description
-                            })
-                          }
-                          className="p-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl transition-colors cursor-pointer"
-                          title="1-பக்க ரசீது அச்சிட"
-                        >
-                          <Printer className="w-3.5 h-3.5" />
-                        </button>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-              )}
+                    );
+                  })
+                )}
+              </div>
             </div>
           )}
 
-          {/* TAB 2: E-SEVA REQUESTS */}
+          {/* TAB 2: CITIZEN SERVICE REQUESTS */}
           {activeTab === 'requests' && (
             <div className="space-y-4">
-              {/* Clean Filter Bar as Dropdown Lists */}
+              {/* Requests Filter Bar */}
               <div className="bg-slate-50 p-3 rounded-xl border border-slate-200 grid grid-cols-1 sm:grid-cols-3 gap-2 text-xs">
-                {/* Search */}
                 <div className="relative">
                   <Search className="w-3.5 h-3.5 absolute left-3 top-1/2 -translate-y-1/2 text-slate-400" />
                   <input
                     type="text"
                     value={reqSearchQuery}
                     onChange={(e) => setReqSearchQuery(e.target.value)}
-                    placeholder="விண்ணப்ப எண், பெயர், எண்..."
+                    placeholder={t('Search by ID, name, service...', 'மனு எண், பெயர், சேவை...')}
                     className="w-full pl-8 pr-6 py-2 text-xs rounded-xl border border-slate-300 focus:border-emerald-600 bg-white"
                   />
                   {reqSearchQuery && (
@@ -1167,56 +1289,49 @@ export default function OperatorPortalPage() {
                   )}
                 </div>
 
-                {/* Status Dropdown */}
                 <div>
                   <select
                     value={reqStatusFilter}
                     onChange={(e) => setReqStatusFilter(e.target.value)}
                     className="w-full px-2.5 py-2 text-xs font-bold rounded-xl border border-slate-300 focus:border-emerald-600 bg-white cursor-pointer"
                   >
-                    <option value="All">அனைத்து நிலைகளும் (All Status)</option>
-                    <option value="Submitted">மனு பெறப்பட்டது (Submitted)</option>
-                    <option value="Under Review">ஆய்வில் உள்ளது (Under Review)</option>
-                    <option value="In Progress">செயலில் உள்ளது (In Progress)</option>
-                    <option value="Ready for Citizen">சான்றிதழ் தயார் (Ready)</option>
-                    <option value="Completed">நிறைவடைந்தது (Completed)</option>
+                    <option value="All">{t('All Statuses', 'அனைத்து நிலைகளும் (All Status)')}</option>
+                    <option value="Submitted">{t('Submitted / New', 'மனு பதிவு (Submitted)')}</option>
+                    <option value="In Progress">{t('In Progress', 'செயலில் (In Progress)')}</option>
+                    <option value="Ready for Citizen">{t('Ready for Citizen', 'சான்றிதழ் தயார் (Ready)')}</option>
+                    <option value="Completed">{t('Completed', 'முடிக்கப்பட்டது (Completed)')}</option>
                   </select>
                 </div>
 
-                {/* Priority Dropdown */}
                 <div>
                   <select
                     value={reqPriorityFilter}
                     onChange={(e) => setReqPriorityFilter(e.target.value)}
                     className="w-full px-2.5 py-2 text-xs font-bold rounded-xl border border-slate-300 focus:border-emerald-600 bg-white cursor-pointer"
                   >
-                    <option value="All">அனைத்து முன்னுரிமை</option>
-                    <option value="Urgent">🔴 அவசரம் (Urgent)</option>
-                    <option value="Normal">சாதாரண (Normal)</option>
+                    <option value="All">{t('All Priorities', 'அனைத்து முன்னுரிமை (All Priority)')}</option>
+                    <option value="Urgent">🚨 {t('Urgent Applications', 'அவசர விண்ணப்பங்கள் (Urgent)')}</option>
+                    <option value="Normal">📋 {t('Normal Applications', 'சாதாரண விண்ணப்பங்கள் (Normal)')}</option>
                   </select>
                 </div>
               </div>
 
-              {/* REQUESTS LIST */}
-              {loading ? (
-                <div className="py-12 text-center text-xs text-slate-500 font-bold">
-                  விண்ணப்பங்கள் ஏற்றப்படுகின்றன...
-                </div>
-              ) : filteredRequests.length === 0 ? (
-                <div className="py-12 text-center bg-slate-50 rounded-2xl border border-dashed border-slate-200 p-6 space-y-2">
-                  <FileText className="w-8 h-8 text-emerald-600 mx-auto" />
-                  <h4 className="font-bold text-sm text-slate-800">
-                    விண்ணப்பங்கள் எதுவும் இல்லை
-                  </h4>
-                </div>
-              ) : (
-                <div className="space-y-3">
-                  {filteredRequests.map((ticket) => (
+              {/* Requests List */}
+              <div className="space-y-3">
+                {filteredRequests.length === 0 ? (
+                  <div className="text-center py-12 bg-slate-50 rounded-2xl border border-slate-200">
+                    <Inbox className="w-10 h-10 text-slate-400 mx-auto mb-2" />
+                    <p className="font-bold text-sm text-slate-700">
+                      {t('No citizen service applications found.', 'விண்ணப்பங்கள் எதுவும் இல்லை.')}
+                    </p>
+                  </div>
+                ) : (
+                  filteredRequests.map((ticket) => (
                     <div
                       key={ticket.id}
-                      className="p-4 rounded-2xl border border-slate-200 hover:border-emerald-300 transition-all bg-white flex flex-col lg:flex-row lg:items-center justify-between gap-4 shadow-2xs"
+                      className="p-4 rounded-2xl border border-slate-200 bg-white hover:border-emerald-300 transition-all flex flex-col lg:flex-row lg:items-center justify-between gap-3 shadow-2xs"
                     >
-                      <div className="space-y-1.5 flex-1 min-w-0">
+                      <div className="space-y-1.5 min-w-0 flex-1">
                         <div className="flex flex-wrap items-center gap-2">
                           <span className="font-black font-mono text-xs text-slate-900 bg-slate-100 px-2 py-0.5 rounded border border-slate-200">
                             {ticket.id}
@@ -1236,11 +1351,11 @@ export default function OperatorPortalPage() {
                           </span>
                           {ticket.priority === 'Urgent' && (
                             <span className="text-[10px] bg-red-600 text-white font-black px-2 py-0.5 rounded-full">
-                              அவசரம்
+                              {t('URGENT', 'அவசரம்')}
                             </span>
                           )}
                           <span className="text-[11px] text-slate-400">
-                            {new Date(ticket.createdAt).toLocaleDateString('ta-IN')}
+                            {new Date(ticket.createdAt).toLocaleDateString(portalLang === 'en' ? 'en-GB' : 'ta-IN')}
                           </span>
                         </div>
 
@@ -1261,18 +1376,9 @@ export default function OperatorPortalPage() {
                       </div>
 
                       {/* Request Action Tools */}
+                      {/* NOTE BUTTON BEFORE COMPLETE BUTTON */}
                       <div className="flex flex-wrap items-center gap-2 shrink-0 pt-2 lg:pt-0 border-t lg:border-t-0 border-slate-100">
-                        {ticket.status !== 'Completed' && (
-                          <button
-                            onClick={() => handleQuickRequestStatusChange(ticket.id, 'Completed')}
-                            disabled={updatingStatus}
-                            className="px-3 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold rounded-xl text-xs flex items-center gap-1 cursor-pointer"
-                          >
-                            <Check className="w-3.5 h-3.5" />
-                            <span>முடிக்கப்பட்டது</span>
-                          </button>
-                        )}
-
+                        {/* NOTE BUTTON */}
                         <button
                           onClick={() => {
                             setStatusModalTicket({
@@ -1286,125 +1392,159 @@ export default function OperatorPortalPage() {
                             setSelectedStatus(ticket.status);
                           }}
                           className="px-2.5 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl text-xs flex items-center gap-1 cursor-pointer"
+                          title={t('Add Note / Update Status', 'குறிப்பு சேர்க்க')}
                         >
                           <FileText className="w-3.5 h-3.5" />
-                          <span>நிலை மாற்றம்</span>
+                          <span>{t('Note', 'குறிப்பு')}</span>
                         </button>
 
+                        {/* COMPLETE BUTTON */}
+                        {ticket.status !== 'Completed' && (
+                          <button
+                            onClick={() => handleQuickRequestStatusChange(ticket.id, 'Completed')}
+                            disabled={updatingStatus}
+                            className="px-3 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold rounded-xl text-xs flex items-center gap-1 cursor-pointer"
+                            title={t('Mark Completed', 'முடிக்கப்பட்டது')}
+                          >
+                            <Check className="w-3.5 h-3.5" />
+                            <span>{t('Complete', 'முடிக்கப்பட்டது')}</span>
+                          </button>
+                        )}
+
+                        {/* WhatsApp */}
                         <a
                           href={generateRequestWhatsAppUrl(ticket)}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="px-2.5 py-1.5 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl text-xs flex items-center gap-1"
+                          title="WhatsApp Citizen"
                         >
                           <MessageCircle className="w-3.5 h-3.5" />
                           <span>WhatsApp</span>
                         </a>
 
+                        {/* Call */}
                         <a
                           href={`tel:${ticket.phoneNumber}`}
-                          className="p-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl"
+                          className="p-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl"
+                          title={t('Call Citizen', 'அழைக்க')}
                         >
-                          <PhoneCall className="w-3.5 h-3.5 text-slate-700" />
+                          <PhoneCall className="w-3.5 h-3.5" />
                         </a>
 
+                        {/* Print Receipt */}
                         <button
-                          onClick={() =>
-                            printAcknowledgmentReceipt({
-                              id: ticket.id,
-                              citizenName: ticket.citizenName,
-                              phoneNumber: ticket.phoneNumber,
-                              serviceName: ticket.serviceName,
-                              village: ticket.village,
-                              createdAt: ticket.createdAt,
-                              status: ticket.status
-                            })
-                          }
-                          className="p-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-xl cursor-pointer"
-                          title="ரசீது அச்சிட"
+                          onClick={() => printAcknowledgmentReceipt(ticket)}
+                          className="p-1.5 bg-slate-100 hover:bg-emerald-100 text-emerald-800 rounded-xl cursor-pointer"
+                          title={t('Print Acknowledgment Receipt', 'ரசீது அச்சிடுக')}
                         >
                           <Printer className="w-3.5 h-3.5" />
                         </button>
                       </div>
                     </div>
-                  ))}
-                </div>
-              )}
+                  ))
+                )}
+              </div>
             </div>
           )}
 
-          {/* TAB 3: CENTRE SETTINGS & NOTICES */}
+          {/* TAB 3: SETTINGS & NOTICES */}
           {activeTab === 'settings' && (
             <div className="space-y-6">
-              {/* Centre Status Configuration */}
-              <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-3">
-                <h4 className="font-extrabold text-sm text-slate-900 flex items-center gap-2">
-                  <Sliders className="w-4 h-4 text-emerald-700" />
-                  <span>நால்ரோடு இ-சேவை மைய நேரலை இயக்க நிலை (Live Status)</span>
-                </h4>
+              {/* Centre Status Management */}
+              <div className="bg-slate-50 p-4 rounded-2xl border border-slate-200 space-y-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="font-extrabold text-sm text-slate-900">
+                      {t('Centre Operating Status & Working Hours', 'மையத்தின் செயல்பாட்டு நிலை')}
+                    </h3>
+                    <p className="text-xs text-slate-500">
+                      {t('Controls the live badge shown on the citizen homepage', 'பொதுமக்கள் தளத்தில் தோன்றும் நேரலை நிலை')}
+                    </p>
+                  </div>
+                  {saveSuccessMsg && (
+                    <span className="text-xs font-bold text-emerald-700 bg-emerald-50 px-2 py-1 rounded">
+                      {saveSuccessMsg}
+                    </span>
+                  )}
+                </div>
 
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                  {[
-                    { id: 'open', label: '🟢 இயங்குகிறது (Open)' },
-                    { id: 'camp', label: '🔵 சிறப்பு முகாம் (Camp)' },
-                    { id: 'temp_closed', label: '🟡 தற்காலிக இடைவேளை' },
-                    { id: 'closed', label: '🔴 விடுமுறை (Closed)' }
-                  ].map((st) => (
+                  {(['open', 'camp', 'temp_closed', 'closed'] as const).map((st) => (
                     <button
-                      key={st.id}
-                      onClick={() => handleQuickCentreStatusChange(st.id as any)}
-                      disabled={savingSettings}
-                      className={`p-2.5 rounded-xl border text-xs font-bold transition-all cursor-pointer ${
-                        settings?.centreStatus === st.id
-                          ? 'bg-emerald-700 text-white border-emerald-800 shadow-xs'
-                          : 'bg-white text-slate-700 hover:bg-slate-100 border-slate-200'
+                      key={st}
+                      onClick={() => handleQuickCentreStatusChange(st)}
+                      className={`p-3 rounded-xl border text-left font-bold text-xs transition-all cursor-pointer ${
+                        settings?.centreStatus === st
+                          ? 'border-emerald-600 bg-emerald-50 text-emerald-900 ring-2 ring-emerald-500/20'
+                          : 'border-slate-200 bg-white hover:bg-slate-100 text-slate-700'
                       }`}
                     >
-                      {st.label}
+                      <div className="text-sm">
+                        {st === 'open' && '🟢'}
+                        {st === 'camp' && '🔵'}
+                        {st === 'temp_closed' && '🟡'}
+                        {st === 'closed' && '🔴'}
+                      </div>
+                      <div className="mt-1 font-black">
+                        {st === 'open' && t('Open for Service', 'திறந்துள்ளது')}
+                        {st === 'camp' && t('Field Camp', 'கிராம முகாமில்')}
+                        {st === 'temp_closed' && t('Temporary Break', 'இடைவேளை')}
+                        {st === 'closed' && t('Closed', 'விடுமுறை')}
+                      </div>
                     </button>
                   ))}
                 </div>
               </div>
 
-              {/* Village Notices Management */}
-              <div className="p-4 bg-slate-50 rounded-2xl border border-slate-200 space-y-3">
+              {/* Village Announcements Management */}
+              <div className="space-y-3">
                 <div className="flex items-center justify-between">
-                  <h4 className="font-extrabold text-sm text-slate-900 flex items-center gap-2">
-                    <FileText className="w-4 h-4 text-emerald-700" />
-                    <span>கிராம அரசு செய்திகள் & அறிவிப்புகள் ({notices.length})</span>
-                  </h4>
+                  <div>
+                    <h3 className="font-extrabold text-sm text-slate-900">
+                      {t('Village Notice Board & Public Announcements', 'கிராம ஊராட்சி நேரலை அறிவிப்பு பலகை')}
+                    </h3>
+                    <p className="text-xs text-slate-500">
+                      {t('Displayed on citizen portal and panchayat page', 'பொதுமக்கள் தளத்தில் உடனுக்குடன் காண்பிக்கப்படும்')}
+                    </p>
+                  </div>
                   <button
                     onClick={() => setNoticeModalOpen(true)}
-                    className="px-3 py-1.5 bg-emerald-700 hover:bg-emerald-800 text-white font-bold text-xs rounded-xl shadow-xs transition-colors flex items-center gap-1 cursor-pointer"
+                    className="bg-purple-900 hover:bg-purple-950 text-white font-bold text-xs px-3 py-2 rounded-xl flex items-center gap-1.5 cursor-pointer"
                   >
                     <PlusCircle className="w-3.5 h-3.5" />
-                    <span>+ புதிய அறிவிப்பு</span>
+                    <span>{t('+ Create Notice', '+ புதிய அறிவிப்பு')}</span>
                   </button>
                 </div>
 
-                <div className="space-y-2">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   {notices.map((n) => (
                     <div
                       key={n.id}
-                      className="p-3 bg-white rounded-xl border border-slate-200 flex items-center justify-between gap-3 text-xs"
+                      className="p-3.5 rounded-xl border border-slate-200 bg-white space-y-2 shadow-2xs relative"
                     >
-                      <div className="min-w-0">
-                        <div className="flex items-center gap-2">
-                          <span className="font-bold text-slate-900">{n.title.ta}</span>
-                          <span className="text-[10px] bg-slate-100 text-slate-600 px-1.5 py-0.2 rounded font-mono">
-                            {n.date}
-                          </span>
-                        </div>
-                        <p className="text-slate-500 text-[11px] truncate mt-0.5">{n.content.ta}</p>
+                      <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-black uppercase tracking-wider bg-purple-100 text-purple-900 px-2 py-0.5 rounded">
+                          {n.category}
+                        </span>
+                        <button
+                          onClick={() => handleDeleteNotice(n.id)}
+                          className="text-slate-400 hover:text-red-600 p-1 cursor-pointer"
+                          title={t('Delete Notice', 'அறிவிப்பை நீக்க')}
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
                       </div>
-
-                      <button
-                        onClick={() => handleDeleteNotice(n.id)}
-                        className="p-1.5 text-rose-600 hover:bg-rose-50 rounded-lg shrink-0 cursor-pointer"
-                        title="அறிவிப்பை நீக்கு"
-                      >
-                        <Trash2 className="w-3.5 h-3.5" />
-                      </button>
+                      <h4 className="font-black text-xs text-slate-900">
+                        {portalLang === 'en' ? n.title.en || n.title.ta : n.title.ta}
+                      </h4>
+                      <p className="text-xs text-slate-600 line-clamp-2">
+                        {portalLang === 'en' ? n.content.en || n.content.ta : n.content.ta}
+                      </p>
+                      <div className="text-[10px] text-slate-400 pt-1 border-t border-slate-100 flex items-center justify-between">
+                        <span>{n.source}</span>
+                        <span>{new Date(n.date).toLocaleDateString(portalLang === 'en' ? 'en-GB' : 'ta-IN')}</span>
+                      </div>
                     </div>
                   ))}
                 </div>
@@ -1414,89 +1554,207 @@ export default function OperatorPortalPage() {
         </div>
       </div>
 
-      {/* MODAL 1: STATUS UPDATE / REMARK MODAL */}
-      {statusModalTicket && (
-        <div className="fixed inset-0 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-in fade-in">
-          <div className="bg-white rounded-2xl p-5 sm:p-6 border-2 border-emerald-600 shadow-2xl max-w-md w-full space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-              <div>
-                <span className="font-mono font-black text-xs text-emerald-800 bg-emerald-50 px-2 py-0.5 rounded border border-emerald-200">
-                  {statusModalTicket.id}
-                </span>
-                <h3 className="font-extrabold text-sm text-slate-900 mt-1">
-                  மனு நிலை மாற்றம் & குறிப்பு பதிவு
-                </h3>
-              </div>
+      {/* WALK-IN CITIZEN REGISTRATION MODAL */}
+      {walkinModalOpen && (
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl p-6 max-w-lg w-full space-y-4 shadow-2xl animate-in fade-in zoom-in-95">
+            <div className="flex items-center justify-between border-b pb-3">
+              <h3 className="font-black text-sm text-slate-900">
+                {t('Register Walk-in Citizen Application', 'நேரடி குடிமக்கள் முன் பதிவு (Walk-in Booking)')}
+              </h3>
               <button
-                onClick={() => setStatusModalTicket(null)}
-                className="text-slate-400 hover:text-slate-600 p-1"
+                onClick={() => setWalkinModalOpen(false)}
+                className="text-slate-400 hover:text-slate-700"
               >
-                <X className="w-5 h-5" />
+                <X className="w-4 h-4" />
               </button>
             </div>
 
-            <div className="text-xs text-slate-600 bg-slate-50 p-2.5 rounded-xl space-y-1">
-              <p><b>குடிமகன்:</b> {statusModalTicket.citizenName} ({statusModalTicket.phoneNumber})</p>
-              <p><b>பிரிவு:</b> {statusModalTicket.serviceName}</p>
+            <form onSubmit={handleWalkinSubmit} className="space-y-3 text-xs">
+              <div>
+                <label className="block font-bold text-slate-700 mb-1">{t('Citizen Name', 'குடிமகன் பெயர்')} *</label>
+                <input
+                  type="text"
+                  required
+                  value={walkinName}
+                  onChange={(e) => setWalkinName(e.target.value)}
+                  placeholder={t('e.g. K. Arumugam', 'எ.கா: சுப்பிரமணி க')}
+                  className="w-full px-3 py-2 rounded-xl border border-slate-300 focus:border-emerald-600 outline-none"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">{t('Mobile Number', 'செல்போன் எண்')} *</label>
+                  <input
+                    type="tel"
+                    required
+                    maxLength={10}
+                    value={walkinPhone}
+                    onChange={(e) => setWalkinPhone(e.target.value)}
+                    placeholder="9876543210"
+                    className="w-full px-3 py-2 rounded-xl border border-slate-300 focus:border-emerald-600 outline-none"
+                  />
+                </div>
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">{t('Village Hamlet', 'கிராம பகுதி')}</label>
+                  <select
+                    value={walkinHamlet}
+                    onChange={(e) => setWalkinHamlet(e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white"
+                  >
+                    <option value="Periyakottai">Periyakottai (பெரியகோட்டை)</option>
+                    <option value="Periyakottai East">Periyakottai East (பெரியகோட்டை கிழக்கு)</option>
+                    <option value="Periyakottai West">Periyakottai West (பெரியகோட்டை மேற்கு)</option>
+                    <option value="Karungalpatti">Karungalpatti (கருங்கல்பட்டி)</option>
+                    <option value="Kandhappa Goundan Valasu">Kandhappa Goundan Valasu (கந்தப்ப கவுண்டன் வலசு)</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">{t('Service Required', 'கோரப்படும் சேவை')}</label>
+                  <input
+                    type="text"
+                    value={walkinService}
+                    onChange={(e) => setWalkinService(e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl border border-slate-300"
+                  />
+                </div>
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">{t('Priority', 'முன்னுரிமை')}</label>
+                  <select
+                    value={walkinPriority}
+                    onChange={(e) => setWalkinPriority(e.target.value as any)}
+                    className="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white font-bold"
+                  >
+                    <option value="Normal">{t('Normal Priority', 'சாதாரண முன்னுரிமை')}</option>
+                    <option value="Urgent">🚨 {t('Urgent Application', 'அவசர விண்ணப்பம்')}</option>
+                  </select>
+                </div>
+              </div>
+
+              <div>
+                <label className="block font-bold text-slate-700 mb-1">{t('Special Notes / Documents', 'குறிப்புகள் / ஆவணங்கள்')}</label>
+                <textarea
+                  rows={2}
+                  value={walkinNote}
+                  onChange={(e) => setWalkinNote(e.target.value)}
+                  placeholder={t('Enter Aadhaar / Ration card / service details...', 'ஆதார் அல்லது ரேஷன் அட்டை விவரங்கள்...')}
+                  className="w-full px-3 py-2 rounded-xl border border-slate-300 outline-none"
+                />
+              </div>
+
+              <div className="flex items-center justify-end gap-2 pt-2 border-t">
+                <button
+                  type="button"
+                  onClick={() => setWalkinModalOpen(false)}
+                  className="px-4 py-2 rounded-xl bg-slate-100 text-slate-700 font-bold"
+                >
+                  {t('Cancel', 'ரத்து')}
+                </button>
+                <button
+                  type="submit"
+                  disabled={submittingWalkin}
+                  className="px-4 py-2 rounded-xl bg-emerald-700 text-white font-bold hover:bg-emerald-800"
+                >
+                  {submittingWalkin ? t('Registering...', 'பதிவாகிறது...') : t('Register Walk-in', 'முன் பதிவு செய்க')}
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
+
+      {/* OFFICIAL REMARK / DETAILED STATUS UPDATE MODAL */}
+      {statusModalTicket && (
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl p-6 max-w-md w-full space-y-4 shadow-2xl animate-in fade-in zoom-in-95">
+            <div className="flex items-center justify-between border-b pb-3">
+              <h3 className="font-black text-sm text-slate-900">
+                {t('Add Official Action Remark', 'அதிகாரப்பூர்வ நடவடிக்கை குறிப்பு')}
+              </h3>
+              <button
+                onClick={() => setStatusModalTicket(null)}
+                className="text-slate-400 hover:text-slate-700"
+              >
+                <X className="w-4 h-4" />
+              </button>
             </div>
 
-            <form onSubmit={handleUpdateStatusSubmit} className="space-y-3">
+            <div className="p-2.5 bg-slate-50 rounded-xl border border-slate-200 text-xs space-y-1">
+              <p className="font-bold text-slate-900">
+                {t('Ticket ID:', 'மனு எண்:')} <span className="font-mono">{statusModalTicket.id}</span>
+              </p>
+              <p className="text-slate-600">
+                {t('Citizen:', 'மனுதாரர்:')} {statusModalTicket.citizenName} ({statusModalTicket.phoneNumber})
+              </p>
+              {statusModalTicket.description && (
+                <p className="text-slate-500 italic truncate">
+                  "{statusModalTicket.description}"
+                </p>
+              )}
+            </div>
+
+            <form onSubmit={handleUpdateStatusSubmit} className="space-y-3 text-xs">
               <div>
-                <label className="block text-xs font-bold text-slate-800 mb-1">
-                  புதிய நிலை தேர்வு செய்க:
-                </label>
+                <label className="block font-bold text-slate-700 mb-1">{t('Select Status:', 'மனு நிலை:')}</label>
                 <select
                   value={selectedStatus}
                   onChange={(e) => setSelectedStatus(e.target.value)}
-                  className="w-full px-3 py-2 text-xs font-bold rounded-xl border border-slate-300 focus:border-emerald-600 bg-white"
+                  className="w-full px-3 py-2 rounded-xl border border-slate-300 font-bold bg-white"
                 >
                   {statusModalTicket.type === 'grievance' ? (
                     <>
-                      <option value="Received">🚨 மனு பெறப்பட்டது (Received)</option>
-                      <option value="Forwarded to Official">⏳ அதிகாரிக்கு அனுப்பப்பட்டது (Forwarded)</option>
-                      <option value="Action Pending">🔄 நடவடிக்கை எடுக்கப்படுகிறது (Action Pending)</option>
-                      <option value="Resolved">✅ தீர்க்கப்பட்டது (Resolved)</option>
-                      <option value="Closed">முடிக்கப்பட்டது (Closed)</option>
+                      <option value="Received">{t('Received (New)', 'Received (புதிய மனு)')}</option>
+                      <option value="Forwarded to Official">{t('Forwarded to Official', 'Forwarded to Official (அதிகாரிக்கு அனுப்பியது)')}</option>
+                      <option value="Action Pending">{t('Action Pending', 'Action Pending (நடவடிக்கை நிலுவை)')}</option>
+                      <option value="Resolved">{t('Resolved', 'Resolved (தீர்க்கப்பட்டது)')}</option>
+                      <option value="Closed">{t('Closed', 'Closed (நிறைவு)')}</option>
                     </>
                   ) : (
                     <>
-                      <option value="Submitted">மனு பெறப்பட்டது (Submitted)</option>
-                      <option value="Under Review">ஆய்வில் உள்ளது (Under Review)</option>
-                      <option value="In Progress">செயலில் உள்ளது (In Progress)</option>
-                      <option value="Ready for Citizen">சான்றிதழ் தயார் (Ready)</option>
-                      <option value="Completed">நிறைவடைந்தது (Completed)</option>
+                      <option value="Submitted">{t('Submitted', 'Submitted (மனு பதிவு)')}</option>
+                      <option value="In Progress">{t('In Progress', 'In Progress (செயலில்)')}</option>
+                      <option value="Ready for Citizen">{t('Ready for Citizen', 'Ready for Citizen (சான்றிதழ் தயார்)')}</option>
+                      <option value="Completed">{t('Completed', 'Completed (முடிக்கப்பட்டது)')}</option>
                     </>
                   )}
                 </select>
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-800 mb-1">
-                  ஆபரேட்டர் உத்தியோகபூர்வ குறிப்பு (Official Note):
+                <label className="block font-bold text-slate-700 mb-1">
+                  {t('Official Remark / Note for Citizen & Records:', 'அதிகாரப்பூர்வ குறிப்பு (மனுதாரருக்கும் தெரியும்):')} *
                 </label>
                 <textarea
-                  rows={2}
+                  required
+                  rows={3}
                   value={statusNote}
                   onChange={(e) => setStatusNote(e.target.value)}
-                  placeholder="எ.கா: கள ஆய்வு செய்யப்பட்டது / சம்பந்தப்பட்ட துறைக்கு மனு அனுப்பப்பட்டது..."
-                  className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 focus:border-emerald-600 resize-none"
+                  placeholder={t(
+                    'e.g. Field inspection conducted by VAO; repair work ordered for completion.',
+                    'எ.கா: கிராம நிர்வாக அலுவலர் ஆய்வு செய்தார்; குடிநீர் மோட்டார் பழுது நீக்கும் பணி துவங்கியுள்ளது.'
+                  )}
+                  className="w-full px-3 py-2 rounded-xl border border-slate-300 outline-none"
                 />
               </div>
 
-              <div className="flex items-center gap-2 pt-2">
+              <div className="flex items-center justify-end gap-2 pt-2 border-t">
                 <button
                   type="button"
                   onClick={() => setStatusModalTicket(null)}
-                  className="flex-1 py-2 text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl"
+                  className="px-4 py-2 rounded-xl bg-slate-100 text-slate-700 font-bold"
                 >
-                  ரத்து
+                  {t('Cancel', 'ரத்து')}
                 </button>
                 <button
                   type="submit"
                   disabled={updatingStatus}
-                  className="flex-1 py-2 text-xs font-black text-white bg-emerald-700 hover:bg-emerald-800 rounded-xl shadow-xs cursor-pointer"
+                  className="px-4 py-2 rounded-xl bg-purple-900 text-white font-bold hover:bg-purple-950"
                 >
-                  {updatingStatus ? 'சேமிக்கப்படுகிறது...' : 'உடனே சேமி'}
+                  {updatingStatus ? t('Saving...', 'சேமிக்கப்படுகிறது...') : t('Save Remark & Update', 'சேமித்து நிலையை மாற்று')}
                 </button>
               </div>
             </form>
@@ -1504,213 +1762,121 @@ export default function OperatorPortalPage() {
         </div>
       )}
 
-      {/* MODAL 2: WALK-IN BOOKING MODAL */}
-      {walkinModalOpen && (
-        <div className="fixed inset-0 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-in fade-in">
-          <div className="bg-white rounded-2xl p-5 sm:p-6 border-2 border-emerald-600 shadow-2xl max-w-md w-full space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-              <h3 className="font-extrabold text-sm text-slate-900 flex items-center gap-2">
-                <PlusCircle className="w-4 h-4 text-emerald-700" />
-                <span>நேரடி வாடிக்கையாளர் முன் பதிவு (Walk-in Citizen)</span>
-              </h3>
-              <button
-                onClick={() => setWalkinModalOpen(false)}
-                className="text-slate-400 hover:text-slate-600 p-1"
-              >
-                <X className="w-5 h-5" />
-              </button>
-            </div>
-
-            <form onSubmit={handleWalkinSubmit} className="space-y-3">
-              <div>
-                <label className="block text-xs font-bold text-slate-800 mb-1">விண்ணப்பதாரர் பெயர் *</label>
-                <input
-                  type="text"
-                  required
-                  value={walkinName}
-                  onChange={(e) => setWalkinName(e.target.value)}
-                  placeholder="பெயர்"
-                  className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 focus:border-emerald-600"
-                />
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-slate-800 mb-1">செல்போன் எண் (10 இலக்கம்) *</label>
-                <input
-                  type="tel"
-                  required
-                  maxLength={10}
-                  value={walkinPhone}
-                  onChange={(e) => setWalkinPhone(e.target.value)}
-                  placeholder="98XXXXXXXX"
-                  className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 focus:border-emerald-600 font-mono"
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-2">
-                <div>
-                  <label className="block text-xs font-bold text-slate-800 mb-1">சிற்றூர் (Hamlet)</label>
-                  <select
-                    value={walkinHamlet}
-                    onChange={(e) => setWalkinHamlet(e.target.value)}
-                    className="w-full px-2.5 py-2 text-xs font-bold rounded-xl border border-slate-300 focus:border-emerald-600 bg-white cursor-pointer"
-                  >
-                    <option value="பெரியகோட்டை">பெரியகோட்டை</option>
-                    <option value="பெரியகோட்டை கிழக்கு">பெரியகோட்டை கிழக்கு</option>
-                    <option value="பெரியகோட்டை மேற்கு">பெரியகோட்டை மேற்கு</option>
-                    <option value="கருங்கல்பட்டி">கருங்கல்பட்டி</option>
-                    <option value="கந்தப்ப கவுண்டன் வலசு">கந்தப்ப கவுண்டன் வலசு</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label className="block text-xs font-bold text-slate-800 mb-1">முன்னுரிமை</label>
-                  <select
-                    value={walkinPriority}
-                    onChange={(e) => setWalkinPriority(e.target.value as any)}
-                    className="w-full px-2.5 py-2 text-xs font-bold rounded-xl border border-slate-300 focus:border-emerald-600 bg-white cursor-pointer"
-                  >
-                    <option value="Normal">சாதாரண (Normal)</option>
-                    <option value="Urgent">அவசரம் (Urgent)</option>
-                  </select>
-                </div>
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-slate-800 mb-1">தேவைப்படும் சேவை</label>
-                <select
-                  value={walkinService}
-                  onChange={(e) => setWalkinService(e.target.value)}
-                  className="w-full px-2.5 py-2 text-xs font-bold rounded-xl border border-slate-300 focus:border-emerald-600 bg-white cursor-pointer"
-                >
-                  <option value="பட்டா மாறுதல் (Patta Transfer)">பட்டா பெயர் மாற்றம் (Patta Transfer)</option>
-                  <option value="சிட்டா / அடங்கல் நகல் (Chitta Adangal)">சிட்டா / அடங்கல் நகல்</option>
-                  <option value="வருமானச் சான்றிதழ் (Income Certificate)">வருமானச் சான்றிதழ்</option>
-                  <option value="சாதிச் சான்றிதழ் (Community Certificate)">சாதிச் சான்றிதழ்</option>
-                  <option value="இருப்பிடச் சான்றிதழ் (Nativity Certificate)">இருப்பிடச் சான்றிதழ்</option>
-                  <option value="முதல் பட்டதாரி சான்றிதழ் (First Graduate)">முதல் பட்டதாரி சான்றிதழ்</option>
-                  <option value="ஸ்மார்ட் ரேஷன் கார்டு விண்ணப்பம் (Ration Card)">ஸ்மார்ட் ரேஷன் கார்டு சேவை</option>
-                  <option value="PM கிசான் உழவர் உதவித் தொகை (PM-Kisan)">PM கிசான் உதவித் தொகை பதிவு</option>
-                  <option value="முதியோர் உதவித்தொகை (OAP Pension)">முதியோர் ஓய்வூதியம்</option>
-                  <option value="மகளிர் உரிமைத் தொகை (Magalir Urimai)">மகளிர் உரிமைத் தொகை விண்ணப்பம்</option>
-                </select>
-              </div>
-
-              <div>
-                <label className="block text-xs font-bold text-slate-800 mb-1">குறிப்பு</label>
-                <input
-                  type="text"
-                  value={walkinNote}
-                  onChange={(e) => setWalkinNote(e.target.value)}
-                  placeholder="அசல் ஆவணங்கள் சமர்ப்பிக்கப்பட்டது / கூடுதல் தகவல்..."
-                  className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 focus:border-emerald-600"
-                />
-              </div>
-
-              <div className="flex items-center gap-2 pt-2">
-                <button
-                  type="button"
-                  onClick={() => setWalkinModalOpen(false)}
-                  className="flex-1 py-2 text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl"
-                >
-                  ரத்து
-                </button>
-                <button
-                  type="submit"
-                  disabled={submittingWalkin}
-                  className="flex-1 py-2 text-xs font-black text-white bg-emerald-700 hover:bg-emerald-800 rounded-xl shadow-xs cursor-pointer"
-                >
-                  {submittingWalkin ? 'பதிவாகிறது...' : 'முன்பதிவு செய்'}
-                </button>
-              </div>
-            </form>
-          </div>
-        </div>
-      )}
-
-      {/* MODAL 3: PUBLISH NOTICE MODAL */}
+      {/* CREATE NOTICE MODAL */}
       {noticeModalOpen && (
-        <div className="fixed inset-0 bg-slate-950/60 backdrop-blur-xs flex items-center justify-center p-4 z-50 animate-in fade-in">
-          <div className="bg-white rounded-2xl p-5 sm:p-6 border-2 border-emerald-600 shadow-2xl max-w-md w-full space-y-4">
-            <div className="flex items-center justify-between border-b border-slate-100 pb-3">
-              <h3 className="font-extrabold text-sm text-slate-900">
-                புதிய அரசு செய்தி / அறிவிப்பு வெளியீடு
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl p-6 max-w-lg w-full space-y-4 shadow-2xl animate-in fade-in zoom-in-95">
+            <div className="flex items-center justify-between border-b pb-3">
+              <h3 className="font-black text-sm text-slate-900">
+                {t('Post New Announcement / Notice', 'புதிய ஊராட்சி அறிவிப்பு வெளியிடுக')}
               </h3>
               <button
                 onClick={() => setNoticeModalOpen(false)}
-                className="text-slate-400 hover:text-slate-600 p-1"
+                className="text-slate-400 hover:text-slate-700"
               >
-                <X className="w-5 h-5" />
+                <X className="w-4 h-4" />
               </button>
             </div>
 
-            <form onSubmit={handleCreateNotice} className="space-y-3">
+            <form onSubmit={handleCreateNotice} className="space-y-3 text-xs">
               <div>
-                <label className="block text-xs font-bold text-slate-800 mb-1">அறிவிப்பு தலைப்பு (தமிழ்) *</label>
+                <label className="block font-bold text-slate-700 mb-1">{t('Notice Title (English)', 'அறிவிப்பு தலைப்பு (ஆங்கிலம்)')}</label>
+                <input
+                  type="text"
+                  value={newNoticeTitleEn}
+                  onChange={(e) => setNewNoticeTitleEn(e.target.value)}
+                  placeholder="e.g. Special Aadhaar Correction Camp This Friday"
+                  className="w-full px-3 py-2 rounded-xl border border-slate-300"
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-slate-700 mb-1">{t('Notice Title (Tamil)', 'அறிவிப்பு தலைப்பு (தமிழ்)')} *</label>
                 <input
                   type="text"
                   required
                   value={newNoticeTitleTa}
                   onChange={(e) => setNewNoticeTitleTa(e.target.value)}
-                  placeholder="எ.கா: சிறப்பு பட்டா திருத்த முகாம்"
-                  className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 focus:border-emerald-600"
+                  placeholder="எ.கா: வரும் வெள்ளிக்கிழமை சிறப்பு ஆதார் திருத்த முகாம்"
+                  className="w-full px-3 py-2 rounded-xl border border-slate-300"
                 />
               </div>
 
               <div>
-                <label className="block text-xs font-bold text-slate-800 mb-1">முழு விவரம் *</label>
+                <label className="block font-bold text-slate-700 mb-1">{t('Description (English)', 'முழு விவரம் (ஆங்கிலம்)')}</label>
+                <textarea
+                  rows={2}
+                  value={newNoticeContentEn}
+                  onChange={(e) => setNewNoticeContentEn(e.target.value)}
+                  placeholder="Details regarding time, venue, documents..."
+                  className="w-full px-3 py-2 rounded-xl border border-slate-300"
+                />
+              </div>
+
+              <div>
+                <label className="block font-bold text-slate-700 mb-1">{t('Description (Tamil)', 'முழு விவரம் (தமிழ்)')} *</label>
                 <textarea
                   required
-                  rows={3}
+                  rows={2}
                   value={newNoticeContentTa}
                   onChange={(e) => setNewNoticeContentTa(e.target.value)}
-                  placeholder="நாள், நேரம், இடம் மற்றும் தேவையான ஆவணங்கள்..."
-                  className="w-full px-3 py-2 text-xs rounded-xl border border-slate-300 focus:border-emerald-600 resize-none"
+                  placeholder="முகாம் நடைபெறும் இடம், நேரம், தேவையான ஆவணங்கள்..."
+                  className="w-full px-3 py-2 rounded-xl border border-slate-300"
                 />
               </div>
 
               <div className="grid grid-cols-2 gap-2">
                 <div>
-                  <label className="block text-xs font-bold text-slate-800 mb-1">பிரிவு</label>
+                  <label className="block font-bold text-slate-700 mb-1">{t('Category', 'பிரிவு')}</label>
                   <select
                     value={newNoticeCategory}
                     onChange={(e) => setNewNoticeCategory(e.target.value as any)}
-                    className="w-full px-2.5 py-2 text-xs font-bold rounded-xl border border-slate-300 focus:border-emerald-600 bg-white"
+                    className="w-full px-3 py-2 rounded-xl border border-slate-300 bg-white"
                   >
-                    <option value="camp">சிறப்பு முகாம் (Camp)</option>
-                    <option value="subsidy">மானியத் திட்டம் (Subsidy)</option>
-                    <option value="panchayat">பஞ்சாயத்து அறிவிப்பு</option>
-                    <option value="urgent">அவசர செய்தி (Urgent)</option>
+                    <option value="camp">{t('Camp (முகாம்)', 'camp (முகாம்)')}</option>
+                    <option value="subsidy">{t('Subsidy (மானியம்)', 'subsidy (மானியம்)')}</option>
+                    <option value="panchayat">{t('Panchayat (ஊராட்சி)', 'panchayat (ஊராட்சி)')}</option>
+                    <option value="urgent">{t('Urgent (அவசரம்)', 'urgent (அவசரம்)')}</option>
                   </select>
                 </div>
-
-                <div className="flex items-center pt-5">
-                  <label className="flex items-center gap-2 text-xs font-bold text-slate-700 cursor-pointer">
-                    <input
-                      type="checkbox"
-                      checked={newNoticeImportant}
-                      onChange={(e) => setNewNoticeImportant(e.target.checked)}
-                      className="w-4 h-4 rounded text-emerald-600 focus:ring-emerald-500"
-                    />
-                    <span>முக்கிய அறிவிப்பு</span>
-                  </label>
+                <div>
+                  <label className="block font-bold text-slate-700 mb-1">{t('Source', 'மூலம்')}</label>
+                  <input
+                    type="text"
+                    value={newNoticeSource}
+                    onChange={(e) => setNewNoticeSource(e.target.value)}
+                    className="w-full px-3 py-2 rounded-xl border border-slate-300"
+                  />
                 </div>
               </div>
 
-              <div className="flex items-center gap-2 pt-2">
+              <div className="flex items-center gap-2 pt-1">
+                <input
+                  type="checkbox"
+                  id="noticeImportant"
+                  checked={newNoticeImportant}
+                  onChange={(e) => setNewNoticeImportant(e.target.checked)}
+                  className="w-4 h-4 rounded text-red-600 cursor-pointer"
+                />
+                <label htmlFor="noticeImportant" className="font-bold text-slate-800 cursor-pointer">
+                  {t('Mark as Urgent Announcement (Flashing Banner)', 'அவசர முதன்மை அறிவிப்பாக வெளியிடுக')}
+                </label>
+              </div>
+
+              <div className="flex items-center justify-end gap-2 pt-2 border-t">
                 <button
                   type="button"
                   onClick={() => setNoticeModalOpen(false)}
-                  className="flex-1 py-2 text-xs font-bold text-slate-700 bg-slate-100 hover:bg-slate-200 rounded-xl"
+                  className="px-4 py-2 rounded-xl bg-slate-100 text-slate-700 font-bold"
                 >
-                  ரத்து
+                  {t('Cancel', 'ரத்து')}
                 </button>
                 <button
                   type="submit"
                   disabled={submittingNotice}
-                  className="flex-1 py-2 text-xs font-black text-white bg-emerald-700 hover:bg-emerald-800 rounded-xl shadow-xs cursor-pointer"
+                  className="px-4 py-2 rounded-xl bg-purple-900 text-white font-bold hover:bg-purple-950"
                 >
-                  {submittingNotice ? 'வெளியிடப்படுகிறது...' : 'வெளியிடுக'}
+                  {submittingNotice ? t('Publishing...', 'வெளியாகிறது...') : t('Publish Notice', 'அறிவிப்பை வெளியிடு')}
                 </button>
               </div>
             </form>
