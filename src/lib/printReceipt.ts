@@ -47,7 +47,7 @@ export function getGrievanceDepartment(category: string): { en: string; ta: stri
 /**
  * Shared helper to print an isolated HTML document in a hidden iframe
  */
-function printHtmlInIframe(htmlContent: string): void {
+function printHtmlInIframe(htmlContent: string, documentTitle?: string): void {
   if (typeof window === 'undefined') return;
 
   let iframe = document.getElementById('pds-print-iframe') as HTMLIFrameElement;
@@ -68,6 +68,9 @@ function printHtmlInIframe(htmlContent: string): void {
     doc.open();
     doc.write(htmlContent);
     doc.close();
+    if (documentTitle && iframe.contentWindow?.document) {
+      iframe.contentWindow.document.title = documentTitle;
+    }
 
     setTimeout(() => {
       try {
@@ -417,6 +420,8 @@ export function printAcknowledgmentReceipt(ticket: ReceiptData): void {
 export function printOfficialGrievancePdf(grv: GrievanceTicket): void {
   if (typeof window === 'undefined') return;
 
+  const applicantName = (grv.citizenName || 'Applicant').trim().replace(/[\\/:*?"<>|]/g, '');
+
   const filingDateStr = new Date(grv.createdAt).toLocaleString('en-GB', {
     day: '2-digit',
     month: '2-digit',
@@ -442,7 +447,7 @@ export function printOfficialGrievancePdf(grv: GrievanceTicket): void {
     <html lang="ta">
       <head>
         <meta charset="utf-8" />
-        <title>Grievance_Forwarding_Memo_${grv.id}</title>
+        <title>${applicantName}</title>
         <style>
           @page {
             size: A4 portrait;
@@ -827,7 +832,7 @@ export function printOfficialGrievancePdf(grv: GrievanceTicket): void {
     </html>
   `;
 
-  printHtmlInIframe(memoHtml);
+  printHtmlInIframe(memoHtml, applicantName);
 }
 
 /**

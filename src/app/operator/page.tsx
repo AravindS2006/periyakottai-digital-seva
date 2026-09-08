@@ -63,15 +63,11 @@ import {
 } from 'lucide-react';
 
 export default function OperatorPortalPage() {
-  const { language: globalLanguage, setLanguage: setGlobalLanguage } = useI18n();
+  const { language } = useI18n();
   const router = useRouter();
 
-  // PORTAL LANGUAGE: Defaults to 'en' as requested ("The operator portal is not in english fix it")
-  // Allows seamless 1-click toggle to Tamil if desired.
-  const [portalLang, setPortalLang] = useState<'en' | 'ta'>('en');
-
-  // Helper translation function
-  const t = (enText: string, taText: string) => (portalLang === 'en' ? enText : taText);
+  // Helper translation function controlled by the top navigation bar language toggle
+  const t = (enText: string, taText: string) => (language === 'ta' ? taText : enText);
 
   // Authentication state
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
@@ -219,18 +215,18 @@ export default function OperatorPortalPage() {
     try {
       const defaultNote =
         newStatus === 'Forwarded to Official'
-          ? (portalLang === 'en'
+          ? (language !== 'ta'
               ? 'Forwarded to competent department official for field inspection & action.'
               : 'மனு சம்பந்தப்பட்ட ஊராட்சி அதிகாரிகளுக்கு நடவடிக்கைக்காக அனுப்பப்பட்டுள்ளது.')
           : newStatus === 'Action Pending'
-          ? (portalLang === 'en'
+          ? (language !== 'ta'
               ? 'Field inspection & corrective measures in progress.'
               : 'கள ஆய்வு & நடவடிக்கை மேற்கொள்ளப்பட்டு வருகிறது.')
           : newStatus === 'Resolved'
-          ? (portalLang === 'en'
+          ? (language !== 'ta'
               ? 'Grievance inspected and successfully resolved.'
               : 'புகார் சரி செய்யப்பட்டு முழுமையாக தீர்க்கப்பட்டது.')
-          : (portalLang === 'en' ? 'Grievance received and registered.' : 'மனு பெறப்பட்டு பதிவு செய்யப்பட்டது.');
+          : (language !== 'ta' ? 'Grievance received and registered.' : 'மனு பெறப்பட்டு பதிவு செய்யப்பட்டது.');
 
       const res = await fetch('/api/admin/update-status', {
         method: 'POST',
@@ -276,7 +272,7 @@ export default function OperatorPortalPage() {
       await handleQuickGrievanceStatusChange(
         grv.id,
         'Forwarded to Official',
-        portalLang === 'en'
+        language !== 'ta'
           ? 'Forwarded to department official for field inspection & action (Official Memo Generated).'
           : 'மனு சம்பந்தப்பட்ட துறை அலுவலருக்கு கள ஆய்வு & நடவடிக்கைக்காக அனுப்பப்பட்டது (அதிகாரப்பூர்வ குறிப்பாணை தயார்).'
       );
@@ -400,7 +396,7 @@ export default function OperatorPortalPage() {
           serviceName: walkinService,
           village: walkinHamlet,
           priority: walkinPriority,
-          additionalDetails: walkinNote.trim() || (portalLang === 'en' ? 'Direct Walk-in Booking' : 'நேரடி மைய முன்பதிவு')
+          additionalDetails: walkinNote.trim() || (language !== 'ta' ? 'Direct Walk-in Booking' : 'நேரடி மைய முன்பதிவு')
         })
       });
       if (res.ok) {
@@ -473,7 +469,7 @@ export default function OperatorPortalPage() {
   // Helper: WhatsApp URL for Citizen Grievance Update
   const generateGrievanceWhatsAppUrl = (grv: GrievanceTicket) => {
     const text = encodeURIComponent(
-      portalLang === 'en'
+      language !== 'ta'
         ? `Greetings ${grv.citizenName},\n\nUpdate from Four Roads Makkal e-Seva Centre (Murugesan K, CSC EFADGL0636):\n\n📋 Grievance ID: ${grv.id}\n📁 Category: ${grv.category}\n🚦 Status: *${grv.status}*\n📍 Hamlet: ${grv.location || grv.village}\n\nFor assistance, contact Four Roads e-Seva at 97903 82437.\n\nPeriyakottai Digital Seva`
         : `வணக்கம் ${grv.citizenName} அவர்களே,\n\nநால்ரோடு மக்கள் இ-சேவை மையத்திலிருந்து (முருகேசன் கு EFADGL0636) இந்த செய்தி அனுப்பப்படுகிறது.\n\nதங்கள் குறைதீர்ப்பு மனு விவரம்:\n📋 மனு எண்: ${grv.id}\n📁 பிரிவு: ${grv.category}\n🚦 தற்போதைய நிலை: *${grv.status}*\n📍 இடம்: ${grv.location || grv.village}\n\nகூடுதல் விவரங்களை அறிய நால்ரோடு மையத்தை 97903 82437 என்ற எண்ணில் தொடர்பு கொள்ளலாம்.\n\nபெரியகோட்டை டிஜிட்டல் சேவை`
     );
@@ -483,7 +479,7 @@ export default function OperatorPortalPage() {
   // Helper: WhatsApp URL for Citizen Request Update
   const generateRequestWhatsAppUrl = (ticket: RequestTicket) => {
     const text = encodeURIComponent(
-      portalLang === 'en'
+      language !== 'ta'
         ? `Greetings ${ticket.citizenName},\n\nUpdate from Four Roads Makkal e-Seva Centre (Murugesan K, CSC EFADGL0636):\n\n📋 Request ID: ${ticket.id}\n📄 Service: ${ticket.serviceName}\n🚦 Status: *${ticket.status}*\n\nContact: 97903 82437`
         : `வணக்கம் ${ticket.citizenName} அவர்களே,\n\nநால்ரோடு மக்கள் இ-சேவை மையத்திலிருந்து (முருகேசன் கு EFADGL0636):\n\nவிண்ணப்ப விவரம்:\n📋 மனு எண்: ${ticket.id}\n📄 சேவை: ${ticket.serviceName}\n🚦 தற்போதைய நிலை: *${ticket.status}*\n\nதொடர்புக்கு: 97903 82437`
     );
@@ -602,17 +598,6 @@ export default function OperatorPortalPage() {
             </button>
           </form>
 
-          {/* Quick Language Toggle in Login */}
-          <div className="flex items-center justify-center gap-2 pt-2 border-t border-slate-100 text-xs">
-            <button
-              type="button"
-              onClick={() => setPortalLang(portalLang === 'en' ? 'ta' : 'en')}
-              className="text-slate-600 hover:text-emerald-700 font-bold flex items-center gap-1"
-            >
-              <Globe className="w-3.5 h-3.5 text-emerald-600" />
-              <span>{portalLang === 'en' ? 'தமிழில் மாற்ற (Switch to Tamil)' : 'Switch to English'}</span>
-            </button>
-          </div>
 
           <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-xs text-slate-500">
             <Link href="/" className="hover:text-emerald-800 font-bold">
@@ -643,7 +628,7 @@ export default function OperatorPortalPage() {
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-2 flex-wrap">
                 <span className="font-extrabold text-xs sm:text-sm text-slate-900 leading-tight">
-                  {portalLang === 'en' ? 'Murugesan K' : 'முருகேசன் கு'}
+                  {language !== 'ta' ? 'Murugesan K' : 'முருகேசன் கு'}
                 </span>
                 <span className="bg-amber-400 text-slate-950 text-[10px] font-black px-1.5 py-0.2 rounded">
                   EFADGL0636
@@ -674,19 +659,6 @@ export default function OperatorPortalPage() {
 
           {/* Quick Action Tools: Language Toggle, Notifications, Walk-in, Refresh, Logout */}
           <div className="flex items-center gap-2 w-full md:w-auto justify-end shrink-0">
-            {/* Language Switcher (EN / TA) */}
-            <button
-              onClick={() => {
-                const nextLang = portalLang === 'en' ? 'ta' : 'en';
-                setPortalLang(nextLang);
-                if (setGlobalLanguage) setGlobalLanguage(nextLang);
-              }}
-              className="px-2.5 py-1.5 rounded-xl border border-slate-200 hover:border-slate-400 bg-slate-50 text-slate-800 font-black text-xs flex items-center gap-1.5 cursor-pointer shadow-2xs transition-colors"
-              title="Toggle English / தமிழ்"
-            >
-              <Globe className="w-3.5 h-3.5 text-emerald-600" />
-              <span>{portalLang === 'en' ? 'தமிழ்' : 'English'}</span>
-            </button>
 
             {/* Real-time Notification Bell */}
             <button
@@ -1133,11 +1105,11 @@ export default function OperatorPortalPage() {
 
                               {/* Dept Badge */}
                               <span className="text-[10px] font-bold text-purple-900 bg-purple-50 px-2 py-0.5 rounded border border-purple-200 hidden sm:inline">
-                                {portalLang === 'en' ? dept.en : dept.ta}
+                                {language !== 'ta' ? dept.en : dept.ta}
                               </span>
 
                               <span className="text-[11px] text-slate-400">
-                                {new Date(grv.createdAt).toLocaleDateString(portalLang === 'en' ? 'en-GB' : 'ta-IN')}
+                                {new Date(grv.createdAt).toLocaleDateString(language !== 'ta' ? 'en-GB' : 'ta-IN')}
                               </span>
                             </div>
 
@@ -1355,7 +1327,7 @@ export default function OperatorPortalPage() {
                             </span>
                           )}
                           <span className="text-[11px] text-slate-400">
-                            {new Date(ticket.createdAt).toLocaleDateString(portalLang === 'en' ? 'en-GB' : 'ta-IN')}
+                            {new Date(ticket.createdAt).toLocaleDateString(language !== 'ta' ? 'en-GB' : 'ta-IN')}
                           </span>
                         </div>
 
@@ -1536,14 +1508,14 @@ export default function OperatorPortalPage() {
                         </button>
                       </div>
                       <h4 className="font-black text-xs text-slate-900">
-                        {portalLang === 'en' ? n.title.en || n.title.ta : n.title.ta}
+                        {language !== 'ta' ? n.title.en || n.title.ta : n.title.ta}
                       </h4>
                       <p className="text-xs text-slate-600 line-clamp-2">
-                        {portalLang === 'en' ? n.content.en || n.content.ta : n.content.ta}
+                        {language !== 'ta' ? n.content.en || n.content.ta : n.content.ta}
                       </p>
                       <div className="text-[10px] text-slate-400 pt-1 border-t border-slate-100 flex items-center justify-between">
                         <span>{n.source}</span>
-                        <span>{new Date(n.date).toLocaleDateString(portalLang === 'en' ? 'en-GB' : 'ta-IN')}</span>
+                        <span>{new Date(n.date).toLocaleDateString(language !== 'ta' ? 'en-GB' : 'ta-IN')}</span>
                       </div>
                     </div>
                   ))}
