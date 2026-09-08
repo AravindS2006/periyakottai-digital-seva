@@ -33,7 +33,7 @@ export const VILLAGE_INFO = {
     en: 'Periyakottai Branch Post Office (Delivery) / Chatrapatti Sub Post Office - 624614'
   },
   hamlets: [
-    { ta: 'பெரியாக்கோட்டை', en: 'Periyakottai' },
+    { ta: 'பெரியகோட்டை', en: 'Periyakottai' },
     { ta: 'பெரியகோட்டை மேற்குத் தெரு', en: 'Periyakottai West Street' },
     { ta: 'கந்தப்ப கவுண்டன் வலசு', en: 'Kandhappa Goundan Valasu' },
     { ta: '19 புதூர்', en: '19 Pudur' },
