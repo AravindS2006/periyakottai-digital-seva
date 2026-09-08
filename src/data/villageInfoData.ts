@@ -34,7 +34,7 @@ export const VILLAGE_INFO = {
   },
   hamlets: [
     { ta: 'பெரியாக்கோட்டை', en: 'Periyakottai' },
-    { ta: 'கருங்கல்பட்டி', en: 'Karungalpatti' },
+    { ta: 'பெரியகோட்டை மேற்குத் தெரு', en: 'Periyakottai West Street' },
     { ta: 'கந்தப்ப கவுண்டன் வலசு', en: 'Kandhappa Goundan Valasu' },
     { ta: '19 புதூர்', en: '19 Pudur' },
     { ta: 'மற்றவை (Others)', en: 'Others' }
