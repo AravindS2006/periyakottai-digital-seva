@@ -257,9 +257,9 @@ export function printAcknowledgmentReceipt(ticket: ReceiptData): void {
             <div class="header-left">
               <img src="/images/logo.png" alt="இலச்சினை" class="logo" />
               <div class="header-titles">
-                <h1>பெரியாக்கோட்டை கிராம பஞ்சாயத்து</h1>
+                <h1>பெரியகோட்டை கிராம பஞ்சாயத்து</h1>
                 <h2>நால்ரோடு மக்கள் இ-சேவை மையம்</h2>
-                <p>நால்ரோடு சந்திப்பு, பெரியாக்கோட்டை, ஒட்டன்சத்திரம் தாலுகா, திண்டுக்கல் - 624614</p>
+                <p>நால்ரோடு சந்திப்பு, பெரியகோட்டை, ஒட்டன்சத்திரம் தாலுகா, திண்டுக்கல் - 624614</p>
               </div>
             </div>
             <div class="header-right">
@@ -299,7 +299,7 @@ export function printAcknowledgmentReceipt(ticket: ReceiptData): void {
             </tr>
             <tr>
               <td class="label">கிராமம் / முகவரி (Village):</td>
-              <td class="value">${ticket.village || 'பெரியாக்கோட்டை'}</td>
+              <td class="value">${ticket.village || 'பெரியகோட்டை'}</td>
             </tr>
             <tr>
               <td class="label">பதிவு தேதி & நேரம் (Date & Time):</td>
@@ -336,7 +336,7 @@ export function printAcknowledgmentReceipt(ticket: ReceiptData): void {
 
           <!-- Footer -->
           <div class="footer">
-            பெரியாக்கோட்டை கிராம பஞ்சாயத்து டிஜிட்டல் சேவை தளம் | கணினி மூலம் தானாக உருவாக்கப்பட்ட ரசீது | பக்கம்: 1 / 1
+            பெரியகோட்டை கிராம பஞ்சாயத்து டிஜிட்டல் சேவை தளம் | கணினி மூலம் தானாக உருவாக்கப்பட்ட ரசீது | பக்கம்: 1 / 1
           </div>
         </div>
       </body>

@@ -42,7 +42,7 @@ export default function ContactsPage() {
         </div>
         <h1 className="text-2xl sm:text-4xl font-extrabold text-slate-950">
           {language === 'ta'
-            ? 'பெரியாக்கோட்டை & ஒட்டன்சத்திரம் முக்கிய எண்கள்'
+            ? 'பெரியகோட்டை & ஒட்டன்சத்திரம் முக்கிய எண்கள்'
             : 'Important & Emergency Helplines'}
         </h1>
         <p className="text-xs sm:text-base text-slate-600 max-w-2xl">

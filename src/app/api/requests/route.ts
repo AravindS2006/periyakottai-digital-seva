@@ -45,7 +45,7 @@ export async function POST(request: Request) {
     const newTicket = db.createRequest({
       citizenName: body.citizenName,
       phoneNumber: body.phoneNumber,
-      village: body.village || 'பெரியாக்கோட்டை',
+      village: body.village || 'பெரியகோட்டை',
       serviceId: body.serviceId || 'general_assistance',
       serviceName: body.serviceName || 'பொது உதவி',
       description: body.description || '',

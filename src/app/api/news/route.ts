@@ -157,7 +157,7 @@ async function fetchLiveRss(category: string): Promise<NewsItem[]> {
           en: `Latest live news bulletin reported by ${source}. Tap the link to view the complete news coverage.`
         },
         content: {
-          ta: `${title}\n\nஇந்த செய்தி ${source} மூலம் ${publishDate} அன்று வெளியிடப்பட்டுள்ளது. அதிகாரப்பூர்வ தகவல்களுக்கு மூல செய்தி பக்கத்தை பார்வையிடவும். பெரியாக்கோட்டை மக்கள் அரசு திட்ட விவரங்கள் மற்றும் விண்ணப்ப உதவிகளுக்கு நால்ரோடு மக்கள் இ-சேவை மையத்தை (9790382437) அணுகலாம்.`,
+          ta: `${title}\n\nஇந்த செய்தி ${source} மூலம் ${publishDate} அன்று வெளியிடப்பட்டுள்ளது. அதிகாரப்பூர்வ தகவல்களுக்கு மூல செய்தி பக்கத்தை பார்வையிடவும். பெரியகோட்டை மக்கள் அரசு திட்ட விவரங்கள் மற்றும் விண்ணப்ப உதவிகளுக்கு நால்ரோடு மக்கள் இ-சேவை மையத்தை (9790382437) அணுகலாம்.`,
           en: `${title}\n\nReported by ${source} on ${publishDate}. Visit the source link for the full bulletin. For government scheme applications and assistance in Periyakottai, contact Nalroad Makkal e-Seva Centre (+91 97903 82437).`
         },
         category: inferredCat,

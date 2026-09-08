@@ -25,7 +25,7 @@ export default function CSCCentrePage() {
   const { language } = useI18n();
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
-  const [village, setVillage] = useState('பெரியாக்கோட்டை (Periyakottai)');
+  const [village, setVillage] = useState('பெரியகோட்டை (Periyakottai)');
   const [serviceName, setServiceName] = useState('வருமான / சாதி சான்றிதழ்');
   const [description, setDescription] = useState('');
   const [doorstep, setDoorstep] = useState(false);
@@ -75,7 +75,7 @@ export default function CSCCentrePage() {
 
   const audioIntro =
     language === 'ta'
-      ? 'நால்ரோடு மக்கள் இ-சேவை மையம், பெரியாக்கோட்டை. ஆபரேட்டர் முருகேசன் கு. செல்போன்: 97903 82437. பட்டா, சான்றிதழ்கள், குடும்ப அட்டை மற்றும் அனைத்து அரசு ஆன்லைன் சேவைகளும் அரசு நிர்ணயித்த கட்டணத்தில் செய்து தரப்படும்.'
+      ? 'நால்ரோடு மக்கள் இ-சேவை மையம், பெரியகோட்டை. ஆபரேட்டர் முருகேசன் கு. செல்போன்: 97903 82437. பட்டா, சான்றிதழ்கள், குடும்ப அட்டை மற்றும் அனைத்து அரசு ஆன்லைன் சேவைகளும் அரசு நிர்ணயித்த கட்டணத்தில் செய்து தரப்படும்.'
       : 'Nalroad Makkal e-Seva Centre, Periyakottai. Operated by Murugesan K. Phone: 9790382437. All government certificates, patta transfer, and Aadhaar services assisted at transparent rates.';
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -193,7 +193,7 @@ export default function CSCCentrePage() {
             </p>
             <p className="text-xs sm:text-sm text-emerald-100/90 max-w-3xl leading-relaxed">
               {language === 'ta'
-                ? 'பெரியாக்கோட்டை, நால்ரோடு, தேவத்தூர் மற்றும் ஒட்டன்சத்திரம் வட்டார பொதுமக்களுக்கு அரசு சேவைகளை இடைத்தரகர்கள் இன்றி, எளிய முறையில் நேரடியாகப் பெற்றுத் தரும் நம்பகமான சேவை மையம்.'
+                ? 'பெரியகோட்டை, நால்ரோடு, தேவத்தூர் மற்றும் ஒட்டன்சத்திரம் வட்டார பொதுமக்களுக்கு அரசு சேவைகளை இடைத்தரகர்கள் இன்றி, எளிய முறையில் நேரடியாகப் பெற்றுத் தரும் நம்பகமான சேவை மையம்.'
                 : 'Dedicated local e-Seva / Common Service Centre assisting rural citizens in obtaining certificates, land records, welfare pensions, and digital identity documents.'}
             </p>
           </div>
@@ -210,7 +210,7 @@ export default function CSCCentrePage() {
           </a>
 
           <a
-            href="https://wa.me/919790382437?text=வணக்கம்%20முருகேசன்%20அவர்களே,%20பெரியாக்கோட்டை%20டிஜிட்டல்%20சேவை%20தளம்%20மூலம்%20தொடர்பு%20கொள்கிறேன்."
+            href="https://wa.me/919790382437?text=வணக்கம்%20முருகேசன்%20அவர்களே,%20பெரியகோட்டை%20டிஜிட்டல்%20சேவை%20தளம்%20மூலம்%20தொடர்பு%20கொள்கிறேன்."
             target="_blank"
             rel="noopener noreferrer"
             className="bg-green-600 hover:bg-green-700 text-white text-xs sm:text-sm font-bold px-5 py-3 rounded-xl shadow transition-all flex items-center gap-2"
@@ -254,7 +254,7 @@ export default function CSCCentrePage() {
                 <span className="font-bold text-slate-900 block mb-1">
                   {language === 'ta' ? 'முகவரி:' : 'Address:'}
                 </span>
-                <p>நால்ரோடு சந்திப்பு, பெரியாக்கோட்டை அஞ்சல்,</p>
+                <p>நால்ரோடு சந்திப்பு, பெரியகோட்டை அஞ்சல்,</p>
                 <p>ஒட்டன்சத்திரம் தாலுகா, திண்டுக்கல் மாவட்டம் - 624614</p>
                 <p className="text-[11px] text-slate-500 mt-1">
                   (ஒட்டன்சத்திரம் - சத்திரப்பட்டி மெயின் ரோடு)
@@ -463,7 +463,7 @@ export default function CSCCentrePage() {
                       onChange={(e) => setVillage(e.target.value)}
                       className="w-full px-3 py-2 rounded-xl border border-slate-300 focus:border-emerald-600 text-sm text-slate-900 bg-white"
                     >
-                      <option value="பெரியாக்கோட்டை (Periyakottai)">பெரியாக்கோட்டை</option>
+                      <option value="பெரியகோட்டை (Periyakottai)">பெரியகோட்டை</option>
                       <option value="நால்ரோடு (Nalroad)">நால்ரோடு</option>
                       <option value="சத்திரப்பட்டி (Chatrapatti)">சத்திரப்பட்டி</option>
                       <option value="தேவத்தூர் (Devathur)">தேவத்தூர்</option>

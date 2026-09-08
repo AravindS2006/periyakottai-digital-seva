@@ -429,7 +429,7 @@ export const SCHEMES_DATA: Scheme[] = [
       en: 'State flagship initiative to transform all rural thatched and mud huts into modern concrete houses with toilets.'
     },
     targetAudience: {
-      ta: 'பெரியாக்கோட்டை கிராமத்தில் சொந்த மனை உள்ள குடிசை வாசிகள்',
+      ta: 'பெரியகோட்டை கிராமத்தில் சொந்த மனை உள்ள குடிசை வாசிகள்',
       en: 'Hut dwellers in rural villages owning house patta/site'
     },
     rules: {
@@ -448,7 +448,7 @@ export const SCHEMES_DATA: Scheme[] = [
       ]
     },
     howToApply: {
-      ta: 'பெரியாக்கோட்டை கிராம ஊராட்சி செயலாளர் அல்லது ஒட்டன்சத்திரம் ஊராட்சி ஒன்றிய அலுவலகத்தில் பதிவு செய்ய நால்ரோடு மையம் ஆவணங்களை தயார் செய்து தரும்.',
+      ta: 'பெரியகோட்டை கிராம ஊராட்சி செயலாளர் அல்லது ஒட்டன்சத்திரம் ஊராட்சி ஒன்றிய அலுவலகத்தில் பதிவு செய்ய நால்ரோடு மையம் ஆவணங்களை தயார் செய்து தரும்.',
       en: 'Document preparation at Nalroad e-Seva Centre for submission to Periyakottai Panchayat Secretary / BDO.'
     },
     officialLink: 'https://tnrd.tn.gov.in/',

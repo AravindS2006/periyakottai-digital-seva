@@ -12,7 +12,7 @@ export const CONTACTS_DATA: ContactItem[] = [
     phone: '9790382437',
     email: 'nalroadmakkalesevaimaiyam@gmail.com',
     address: {
-      ta: 'நால்ரோடு சந்திப்பு, பெரியாக்கோட்டை அஞ்சல், ஒட்டன்சத்திரம் தாலுகா, திண்டுக்கல் மாவட்டம் - 624614',
+      ta: 'நால்ரோடு சந்திப்பு, பெரியகோட்டை அஞ்சல், ஒட்டன்சத்திரம் தாலுகா, திண்டுக்கல் மாவட்டம் - 624614',
       en: 'Nalroad Junction, Periyakottai Post, Oddanchatram Taluk, Dindigul District - 624614'
     },
     timing: {
@@ -182,7 +182,7 @@ export const CONTACTS_DATA: ContactItem[] = [
     alternatePhone: '7402608106',
     email: 'oddblock.tndgl@nic.in',
     address: {
-      ta: 'ஊராட்சி ஒன்றிய அலுவலகம் (பெரியாக்கோட்டை உள்ளிட்ட கிராம பஞ்சாயத்துகள்)',
+      ta: 'ஊராட்சி ஒன்றிய அலுவலகம் (பெரியகோட்டை உள்ளிட்ட கிராம பஞ்சாயத்துகள்)',
       en: 'Panchayat Union Office, Oddanchatram (Governs rural gram panchayats)'
     },
     timing: {
@@ -258,7 +258,7 @@ export const CONTACTS_DATA: ContactItem[] = [
     category: 'health',
     phone: '04553-240668',
     address: {
-      ta: 'தேவத்தூர் (பெரியாக்கோட்டை கிராமத்திற்கு அருகிலுள்ள ஆரம்ப சுகாதார நிலையம், ~4 கி.மீ)',
+      ta: 'தேவத்தூர் (பெரியகோட்டை கிராமத்திற்கு அருகிலுள்ள ஆரம்ப சுகாதார நிலையம், ~4 கி.மீ)',
       en: 'Devathur village (Nearest Primary Health Centre to Periyakottai, ~4 km)'
     },
     timing: {
@@ -350,13 +350,13 @@ export const CONTACTS_DATA: ContactItem[] = [
   {
     id: 'post_office_chatrapatti_periyakottai',
     title: {
-      ta: 'பெரியாக்கோட்டை & சத்திரப்பட்டி அஞ்சல் அலுவலகம் (PIN 624614)',
+      ta: 'பெரியகோட்டை & சத்திரப்பட்டி அஞ்சல் அலுவலகம் (PIN 624614)',
       en: 'Periyakottai Branch Post Office / Chatrapatti SO (PIN 624614)'
     },
     category: 'administration',
     phone: '04553-240220',
     address: {
-      ta: 'பெரியாக்கோட்டை கிராம அஞ்சலகம் / சத்திரப்பட்டி துணை அஞ்சலகம் - 624614',
+      ta: 'பெரியகோட்டை கிராம அஞ்சலகம் / சத்திரப்பட்டி துணை அஞ்சலகம் - 624614',
       en: 'Periyakottai Branch Post Office / Chatrapatti Sub Post Office - PIN 624614'
     },
     timing: {

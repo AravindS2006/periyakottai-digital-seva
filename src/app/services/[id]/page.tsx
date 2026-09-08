@@ -212,7 +212,7 @@ export default function ServiceDetailPage() {
                 முருகேசன் கு (Murugesan K)
               </p>
               <p>நால்ரோடு மக்கள் இ-சேவை மையம்</p>
-              <p className="text-emerald-300">பெரியாக்கோட்டை (624614)</p>
+              <p className="text-emerald-300">பெரியகோட்டை (624614)</p>
             </div>
 
             {/* Direct Action Buttons */}
@@ -235,7 +235,7 @@ export default function ServiceDetailPage() {
 
               <a
                 href={`https://wa.me/919790382437?text=${encodeURIComponent(
-                  `வணக்கம் முருகேசன் அவர்களே, பெரியாக்கோட்டை டிஜிட்டல் சேவை மூலம் ${service.name[language]} பற்றி உதவி தேவைப்படுகிறது.`
+                  `வணக்கம் முருகேசன் அவர்களே, பெரியகோட்டை டிஜிட்டல் சேவை மூலம் ${service.name[language]} பற்றி உதவி தேவைப்படுகிறது.`
                 )}`}
                 target="_blank"
                 rel="noopener noreferrer"

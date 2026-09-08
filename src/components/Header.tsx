@@ -113,12 +113,12 @@ export function Header() {
           <Link href="/" className="flex items-center gap-2.5 sm:gap-3 group min-w-0 shrink-0">
             <img
               src="/images/logo.png"
-              alt="பெரியாக்கோட்டை அரசு இ-சேவை இலச்சினை"
+              alt="பெரியகோட்டை அரசு இ-சேவை இலச்சினை"
               className="w-10 h-10 sm:w-11 sm:h-11 rounded-full object-cover shadow-xs border-2 border-emerald-600 group-hover:scale-105 transition-transform shrink-0"
             />
             <div className="min-w-0">
               <div className="font-extrabold text-xs sm:text-base lg:text-lg xl:text-xl text-emerald-950 leading-tight whitespace-nowrap">
-                {language === 'ta' ? 'பெரியாக்கோட்டை டிஜிட்டல் சேவை' : 'Periyakottai Digital Seva'}
+                {language === 'ta' ? 'பெரியகோட்டை டிஜிட்டல் சேவை' : 'Periyakottai Digital Seva'}
               </div>
               <div className="text-[10px] xl:text-xs text-emerald-700 font-medium whitespace-nowrap">
                 {language === 'ta'

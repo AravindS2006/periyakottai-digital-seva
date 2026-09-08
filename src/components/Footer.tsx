@@ -25,7 +25,7 @@ export function Footer() {
               </h4>
               <p className="text-xs text-emerald-200/80">
                 {language === 'ta'
-                  ? 'நால்ரோடு மக்கள் இ-சேவை மையம் | பெரியாக்கோட்டை கிராம மக்களுக்கான நேரடி டிஜிட்டல் உதவி'
+                  ? 'நால்ரோடு மக்கள் இ-சேவை மையம் | பெரியகோட்டை கிராம மக்களுக்கான நேரடி டிஜிட்டல் உதவி'
                   : 'Nalroad Makkal e-Seva Centre | Dedicated digital gateway for Periyakottai residents'}
               </p>
             </div>
@@ -39,7 +39,7 @@ export function Footer() {
               <span>{language === 'ta' ? 'அழைக்க: 97903 82437' : 'Call: 97903 82437'}</span>
             </a>
             <a
-              href="https://wa.me/919790382437?text=வணக்கம்,%20பெரியாக்கோட்டை%20டிஜிட்டல்%20சேவை%20வழியாக%20தொடர்பு%20கொள்கிறேன்."
+              href="https://wa.me/919790382437?text=வணக்கம்,%20பெரியகோட்டை%20டிஜிட்டல்%20சேவை%20வழியாக%20தொடர்பு%20கொள்கிறேன்."
               target="_blank"
               rel="noopener noreferrer"
               className="bg-emerald-800 hover:bg-emerald-700 text-white text-xs sm:text-sm font-bold px-4 py-2 rounded-lg flex items-center gap-2 transition-colors"
@@ -58,16 +58,16 @@ export function Footer() {
             <div className="flex items-center gap-3">
               <img
                 src="/images/logo.png"
-                alt="பெரியாக்கோட்டை அரசு இ-சேவை இலச்சினை"
+                alt="பெரியகோட்டை அரசு இ-சேவை இலச்சினை"
                 className="w-10 h-10 rounded-full object-cover border-2 border-emerald-500 shadow-md shrink-0"
               />
               <h3 className="text-white font-extrabold text-base leading-tight">
-                {language === 'ta' ? 'பெரியாக்கோட்டை டிஜிட்டல் சேவை' : 'Periyakottai Digital Seva'}
+                {language === 'ta' ? 'பெரியகோட்டை டிஜிட்டல் சேவை' : 'Periyakottai Digital Seva'}
               </h3>
             </div>
             <p className="text-xs text-slate-400 leading-relaxed">
               {language === 'ta'
-                ? 'பெரியாக்கோட்டை கிராம பஞ்சாயத்து மற்றும் நால்ரோடு பகுதி விவசாயிகளுக்கும், பொதுமக்களுக்கும் அரசு சேவைகளை எளிதாகக் கொண்டு சேர்க்கும் பொது சேவை தளம்.'
+                ? 'பெரியகோட்டை கிராம பஞ்சாயத்து மற்றும் நால்ரோடு பகுதி விவசாயிகளுக்கும், பொதுமக்களுக்கும் அரசு சேவைகளை எளிதாகக் கொண்டு சேர்க்கும் பொது சேவை தளம்.'
                 : 'Smart public service platform enabling transparent, effortless access to government schemes and e-Seva assistance for the people of Periyakottai.'}
             </p>
             <div className="pt-2 text-xs space-y-1.5 text-slate-300">
@@ -80,7 +80,7 @@ export function Footer() {
                   className="hover:text-emerald-300 underline decoration-dotted transition-colors"
                   title="Google மேப்பில் திறக்க"
                 >
-                  நால்ரோடு சந்திப்பு, பெரியாக்கோட்டை - 624614 (Google Map ↗)
+                  நால்ரோடு சந்திப்பு, பெரியகோட்டை - 624614 (Google Map ↗)
                 </a>
               </p>
               <p className="flex items-center gap-2">
@@ -276,7 +276,7 @@ export function Footer() {
           </p>
           <p>
             {language === 'ta'
-              ? 'இந்த இணையதளம் பெரியாக்கோட்டை கிராம மக்கள் அரசு திட்டங்கள் மற்றும் சான்றிதழ் விவரங்களை எளிதில் அறிந்துகொள்ளவும், நால்ரோடு மக்கள் இ-சேவை மையத்தின் (முருகேசன் கு) உதவியைப் பெறவும் உருவாக்கப்பட்ட குடிமக்கள் வழிகாட்டி தளம் ஆகும். இது தமிழ்நாடு அரசோ அல்லது மத்திய அரசோ நேரடியாக நடத்தும் தளம் அல்ல. அரசு சான்றிதழ்கள், மானியங்கள் மற்றும் திட்டங்களுக்கான இறுதி ஒப்புதல் மற்றும் தகுதி நிர்ணயம் சம்பந்தப்பட்ட அரசு அலுவலர்களின் ஆய்வுக்கு உட்பட்டது.'
+              ? 'இந்த இணையதளம் பெரியகோட்டை கிராம மக்கள் அரசு திட்டங்கள் மற்றும் சான்றிதழ் விவரங்களை எளிதில் அறிந்துகொள்ளவும், நால்ரோடு மக்கள் இ-சேவை மையத்தின் (முருகேசன் கு) உதவியைப் பெறவும் உருவாக்கப்பட்ட குடிமக்கள் வழிகாட்டி தளம் ஆகும். இது தமிழ்நாடு அரசோ அல்லது மத்திய அரசோ நேரடியாக நடத்தும் தளம் அல்ல. அரசு சான்றிதழ்கள், மானியங்கள் மற்றும் திட்டங்களுக்கான இறுதி ஒப்புதல் மற்றும் தகுதி நிர்ணயம் சம்பந்தப்பட்ட அரசு அலுவலர்களின் ஆய்வுக்கு உட்பட்டது.'
               : 'This platform is an independent civic information and CSC assistance gateway operated in association with Nalroad Makkal e-Seva Centre (Murugesan K) for Periyakottai village. It is not an official government authority. Final approval and eligibility for all government certificates and welfare schemes remain subject to verification by the respective government departments.'}
           </p>
         </div>
@@ -284,7 +284,7 @@ export function Footer() {
         {/* Bottom Bar */}
         <div className="mt-8 pt-6 border-t border-slate-800 flex flex-col sm:flex-row items-center justify-between gap-4 text-xs text-slate-500">
           <p>
-            © {new Date().getFullYear()} பெரியாக்கோட்டை டிஜிட்டல் சேவை | Oddanchatram, Dindigul - 624614
+            © {new Date().getFullYear()} பெரியகோட்டை டிஜிட்டல் சேவை | Oddanchatram, Dindigul - 624614
           </p>
           <p className="flex items-center gap-1 text-slate-400">
             <span>Made with</span>

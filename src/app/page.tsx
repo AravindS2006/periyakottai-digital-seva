@@ -385,14 +385,14 @@ export default function HomePage() {
           {/* Hero Badge */}
           <div className="inline-flex items-center gap-2 bg-emerald-100/90 text-emerald-900 border border-emerald-300 px-3.5 py-1.5 rounded-full text-xs sm:text-sm font-extrabold shadow-2xs">
             <ShieldCheck className="w-4 h-4 text-emerald-700" />
-            <span>{t('hero_badge', 'பெரியாக்கோட்டை கிராம பஞ்சாயத்து டிஜிட்டல் தளம்')}</span>
+            <span>{t('hero_badge', 'பெரியகோட்டை கிராம பஞ்சாயத்து டிஜிட்டல் தளம்')}</span>
           </div>
 
           {/* Hero Main Heading */}
           <h1 className="text-2xl sm:text-4xl md:text-5xl font-black text-slate-950 tracking-tight leading-tight">
             {language === 'ta' ? (
               <>
-                பெரியாக்கோட்டை மக்களுக்கான அரசு சேவைகள் &{' '}
+                பெரியகோட்டை மக்களுக்கான அரசு சேவைகள் &{' '}
                 <span className="text-emerald-700 underline decoration-amber-400 decoration-wavy decoration-2">
                   விவசாய உதவிகள்
                 </span>
@@ -635,7 +635,7 @@ export default function HomePage() {
 
               <p className="text-xs sm:text-sm text-emerald-100/90 leading-relaxed">
                 {language === 'ta'
-                  ? 'பெரியாக்கோட்டை மற்றும் நால்ரோடு பகுதி விவசாயிகளுக்கு 100% சொட்டு நீர் பாசன மானியம், 70% சோலார் பம்புசெட் மானியம், PM-கிசான் e-KYC மற்றும் ஒட்டன்சத்திரம் மார்க்கெட் காய்கறி விலைகள்.'
+                  ? 'பெரியகோட்டை மற்றும் நால்ரோடு பகுதி விவசாயிகளுக்கு 100% சொட்டு நீர் பாசன மானியம், 70% சோலார் பம்புசெட் மானியம், PM-கிசான் e-KYC மற்றும் ஒட்டன்சத்திரம் மார்க்கெட் காய்கறி விலைகள்.'
                   : 'Discover 100% drip irrigation subsidy, 70% solar pump subsidy, PM-KISAN e-KYC support, and daily wholesale vegetable prices from Oddanchatram Gandhi Market.'}
               </p>
 
@@ -798,7 +798,7 @@ export default function HomePage() {
 
               <p className="text-xs sm:text-sm text-slate-600 leading-relaxed">
                 {language === 'ta'
-                  ? 'பெரியாக்கோட்டை, நால்ரோடு, தேவத்தூர் மற்றும் சுற்றுவட்டார கிராம மக்கள் இணையதள சிக்கல்கள் இல்லாமல் சான்றிதழ்கள், நில ஆவணங்கள், மகளிர் உரிமைத் தொகை மற்றும் விவசாய உதவிகளை எளிதில் பெற எங்கள் மையம் துணை நிற்கிறது. ஆவணங்களை கொண்டு வந்தால் உடனடியாக ஆன்லைனில் விண்ணப்பித்து தரப்படும்.'
+                  ? 'பெரியகோட்டை, நால்ரோடு, தேவத்தூர் மற்றும் சுற்றுவட்டார கிராம மக்கள் இணையதள சிக்கல்கள் இல்லாமல் சான்றிதழ்கள், நில ஆவணங்கள், மகளிர் உரிமைத் தொகை மற்றும் விவசாய உதவிகளை எளிதில் பெற எங்கள் மையம் துணை நிற்கிறது. ஆவணங்களை கொண்டு வந்தால் உடனடியாக ஆன்லைனில் விண்ணப்பித்து தரப்படும்.'
                   : 'Supporting citizens of Periyakottai and surrounding hamlets in navigating digital government portals, online certificate applications, land records, and welfare schemes without bureaucratic confusion.'}
               </p>
 
@@ -815,7 +815,7 @@ export default function HomePage() {
                     <span className="font-bold block text-slate-900 group-hover:text-emerald-700">
                       {language === 'ta' ? 'மைய முகவரி (Google மேப்):' : 'Location (Google Map):'}
                     </span>
-                    <span className="text-slate-600">நால்ரோடு சந்திப்பு, பெரியாக்கோட்டை - 624614 ↗</span>
+                    <span className="text-slate-600">நால்ரோடு சந்திப்பு, பெரியகோட்டை - 624614 ↗</span>
                   </div>
                 </a>
 
@@ -855,7 +855,7 @@ export default function HomePage() {
                 </a>
 
                 <a
-                  href="https://wa.me/919790382437?text=வணக்கம்%20முருகேசன்%20அவர்களே,%20பெரியாக்கோட்டை%20டிஜிட்டல்%20சேவை%20வழியாக%20தொடர்பு%20கொள்கிறேன்."
+                  href="https://wa.me/919790382437?text=வணக்கம்%20முருகேசன்%20அவர்களே,%20பெரியகோட்டை%20டிஜிட்டல்%20சேவை%20வழியாக%20தொடர்பு%20கொள்கிறேன்."
                   target="_blank"
                   rel="noopener noreferrer"
                   className="bg-green-600 hover:bg-green-700 text-white font-bold text-xs sm:text-sm px-5 py-3 rounded-xl shadow transition-all flex items-center gap-2"

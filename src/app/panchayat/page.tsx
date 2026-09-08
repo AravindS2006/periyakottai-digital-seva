@@ -74,7 +74,7 @@ export default function PanchayatPage() {
 
   const audioIntro =
     language === 'ta'
-      ? 'பெரியாக்கோட்டை கிராம ஊராட்சி பொதுமக்கள் குறைதீர்ப்பு மற்றும் டிஜிட்டல் கிராம சூப்பர் தளம். குடிநீர், தெருவிளக்கு, சாலை, கழிவுநீர் மற்றும் ரேஷன் பிரச்சனைகளை உடனடியாக பதிவு செய்து கண்காணிக்கலாம்.'
+      ? 'பெரியகோட்டை கிராம ஊராட்சி பொதுமக்கள் குறைதீர்ப்பு மற்றும் டிஜிட்டல் கிராம சூப்பர் தளம். குடிநீர், தெருவிளக்கு, சாலை, கழிவுநீர் மற்றும் ரேஷன் பிரச்சனைகளை உடனடியாக பதிவு செய்து கண்காணிக்கலாம்.'
       : 'Periyakottai Gram Panchayat Civic Super Portal. Report grievances, track tickets in real-time, access digital e-services, village notices, and emergency administration contacts.';
 
   // Initial Fetch & Visibility-based re-fetch (Zero polling, protected free limit)
@@ -216,7 +216,7 @@ export default function PanchayatPage() {
         body: JSON.stringify({
           citizenName: name.trim(),
           phoneNumber: cleanPhone,
-          village: 'பெரியாக்கோட்டை (Periyakottai)',
+          village: 'பெரியகோட்டை (Periyakottai)',
           location: fullLocation,
           category,
           priority,
@@ -374,7 +374,7 @@ export default function PanchayatPage() {
                 <p className="text-xs sm:text-sm font-black leading-snug break-words">
                   {platformSettings?.announcementBanner?.text?.[language] ||
                     (language === 'ta'
-                      ? '📢 பெரியாக்கோட்டை கிராம மக்களுக்கு: குடிநீர் மற்றும் தெருவிளக்கு பராமரிப்பு புகார்களை இந்த பக்கத்தில் உடனடியாக பதிவு செய்யலாம். நால்ரோடு மையம் வாயிலாக உடனடி தீர்வு காணப்படும்.'
+                      ? '📢 பெரியகோட்டை கிராம மக்களுக்கு: குடிநீர் மற்றும் தெருவிளக்கு பராமரிப்பு புகார்களை இந்த பக்கத்தில் உடனடியாக பதிவு செய்யலாம். நால்ரோடு மையம் வாயிலாக உடனடி தீர்வு காணப்படும்.'
                       : '📢 Periyakottai citizens: Report drinking water, streetlight, and civic issues directly below for official follow-up.')}
                 </p>
               </div>
@@ -385,7 +385,7 @@ export default function PanchayatPage() {
                 textToSpeak={
                   platformSettings?.announcementBanner?.text?.[language] ||
                   (language === 'ta'
-                    ? 'பெரியாக்கோட்டை கிராம ஊராட்சி குறைதீர்ப்பு பக்கம். பொதுமக்கள் தங்களின் குறைகளை இங்கே பதிவு செய்யலாம்.'
+                    ? 'பெரியகோட்டை கிராம ஊராட்சி குறைதீர்ப்பு பக்கம். பொதுமக்கள் தங்களின் குறைகளை இங்கே பதிவு செய்யலாம்.'
                     : 'Periyakottai Gram Panchayat citizen grievance portal.')
                 }
                 size="sm"
@@ -426,7 +426,7 @@ export default function PanchayatPage() {
 
             <p className="text-xs sm:text-sm text-emerald-100/90 max-w-2xl leading-relaxed">
               {language === 'ta'
-                ? 'பெரியாக்கோட்டை கிராம மக்களுக்கான அதிகாரப்பூர்வ டிஜிட்டல் சூப்பர் தளம். குடிநீர், தெருவிளக்கு குறைகள் பதிவு, நில ஆவணங்கள், ரேஷன் சேவைகள் மற்றும் அரசு நலத்திட்டங்கள் அனைத்தும் ஒரே இடத்தில்.'
+                ? 'பெரியகோட்டை கிராம மக்களுக்கான அதிகாரப்பூர்வ டிஜிட்டல் சூப்பர் தளம். குடிநீர், தெருவிளக்கு குறைகள் பதிவு, நில ஆவணங்கள், ரேஷன் சேவைகள் மற்றும் அரசு நலத்திட்டங்கள் அனைத்தும் ஒரே இடத்தில்.'
                 : 'Complete Civic Super Portal for Periyakottai residents: Grievance registration, land records, ration services, and emergency welfare directory.'}
             </p>
           </div>
@@ -805,7 +805,7 @@ export default function PanchayatPage() {
 
                       <a
                         href={`https://wa.me/919790382437?text=${encodeURIComponent(
-                          'வணக்கம் முருகேசன் கு அவர்களே, பெரியாக்கோட்டை கிராம ஊராட்சி குறைதீர்ப்பு தளம் வழியாக தொடர்பு கொள்கிறேன்.'
+                          'வணக்கம் முருகேசன் கு அவர்களே, பெரியகோட்டை கிராம ஊராட்சி குறைதீர்ப்பு தளம் வழியாக தொடர்பு கொள்கிறேன்.'
                         )}`}
                         target="_blank"
                         rel="noopener noreferrer"
@@ -1142,7 +1142,7 @@ export default function PanchayatPage() {
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <div>
                 <h3 className="text-base sm:text-lg font-black text-slate-950">
-                  {language === 'ta' ? 'பெரியாக்கோட்டை கிராம அறிவிப்புகள்' : 'Periyakottai Village Circulars'}
+                  {language === 'ta' ? 'பெரியகோட்டை கிராம அறிவிப்புகள்' : 'Periyakottai Village Circulars'}
                 </h3>
                 <p className="text-xs text-slate-500">
                   {language === 'ta'
@@ -1231,7 +1231,7 @@ export default function PanchayatPage() {
                     </div>
 
                     <div className="pt-2 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-400">
-                      <span>{n.source || 'பெரியாக்கோட்டை கிராம ஊராட்சி'}</span>
+                      <span>{n.source || 'பெரியகோட்டை கிராம ஊராட்சி'}</span>
                       <span className="font-mono font-medium">{n.date}</span>
                     </div>
                   </div>
@@ -1303,7 +1303,7 @@ export default function PanchayatPage() {
 
                     <a
                       href={`https://wa.me/919790382437?text=${encodeURIComponent(
-                        `வணக்கம் முருகேசன் கு அவர்களே, பெரியாக்கோட்டை இ-சேவை தளம் வாயிலாக "${srv.title.ta}" சேவை பெற உதவி தேவைப்படுகிறது.`
+                        `வணக்கம் முருகேசன் கு அவர்களே, பெரியகோட்டை இ-சேவை தளம் வாயிலாக "${srv.title.ta}" சேவை பெற உதவி தேவைப்படுகிறது.`
                       )}`}
                       target="_blank"
                       rel="noopener noreferrer"
@@ -1328,7 +1328,7 @@ export default function PanchayatPage() {
               </h3>
               <p className="text-xs text-slate-500">
                 {language === 'ta'
-                  ? 'ஒட்டன்சத்திரம் ஊராட்சி ஒன்றியம் & பெரியாக்கோட்டை கிராம அலுவலர்கள் எண்கள்'
+                  ? 'ஒட்டன்சத்திரம் ஊராட்சி ஒன்றியம் & பெரியகோட்டை கிராம அலுவலர்கள் எண்கள்'
                   : 'Direct contact numbers for civic, revenue, EB, and health administration.'}
               </p>
             </div>
