@@ -50,6 +50,11 @@ export function getGrievanceDepartment(category: string): { en: string; ta: stri
 function printHtmlInIframe(htmlContent: string, documentTitle?: string): void {
   if (typeof window === 'undefined') return;
 
+  const originalDocTitle = document.title;
+  if (documentTitle) {
+    document.title = documentTitle;
+  }
+
   let iframe = document.getElementById('pds-print-iframe') as HTMLIFrameElement;
   if (!iframe) {
     iframe = document.createElement('iframe');
@@ -78,10 +83,21 @@ function printHtmlInIframe(htmlContent: string, documentTitle?: string): void {
         iframe.contentWindow?.print();
       } catch {
         window.print();
+      } finally {
+        if (documentTitle) {
+          setTimeout(() => {
+            document.title = originalDocTitle;
+          }, 1500);
+        }
       }
-    }, 300);
+    }, 250);
   } else {
     window.print();
+    if (documentTitle) {
+      setTimeout(() => {
+        document.title = originalDocTitle;
+      }, 1500);
+    }
   }
 }
 

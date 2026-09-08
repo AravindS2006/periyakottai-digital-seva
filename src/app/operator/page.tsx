@@ -250,42 +250,46 @@ export default function OperatorPortalPage() {
     }
   };
 
-  /**
-   * SEND TO OFFICIAL:
-   * 1. Formats entire grievance as neat, detailed 1-page A4 PDF memo
-   * 2. Forwards to operator's WhatsApp (97903 82437) himself
-   * 3. Updates status to 'Forwarded to Official'
+      /**
+   * FORWARD TO OFFICIAL:
+   * Opens operator's WhatsApp (97903 82437) with complete formatted grievance details
+   * and updates status to 'Forwarded to Official'.
+   * (PDF printing is isolated to the dedicated 'PDF Memo' button so there is no browser conflict)
    */
   const handleSendGrievanceToOfficial = async (grv: GrievanceTicket) => {
     setUpdatingStatus(true);
     try {
-      // 1. Synchronously open WhatsApp to operator's WhatsApp number to avoid browser popup blockers
+      // 1. Forward directly to operator's WhatsApp (97903 82437)
       const whatsappUrl = generateOfficialForwardingWhatsAppUrl(grv);
-      window.open(whatsappUrl, '_blank');
+      const win = window.open(whatsappUrl, '_blank', 'noopener,noreferrer');
+      if (!win || win.closed || typeof win.closed === 'undefined') {
+        const a = document.createElement('a');
+        a.href = whatsappUrl;
+        a.target = '_blank';
+        a.rel = 'noopener noreferrer';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+      }
 
-      // 2. Generate neat, detailed official PDF / Print memo
-      setTimeout(() => {
-        printOfficialGrievancePdf(grv);
-      }, 150);
-
-      // 3. Update status in backend
+      // 2. Update status in backend
       await handleQuickGrievanceStatusChange(
         grv.id,
         'Forwarded to Official',
-        language !== 'ta'
-          ? 'Forwarded to department official for field inspection & action (Official Memo Generated).'
-          : 'மனு சம்பந்தப்பட்ட துறை அலுவலருக்கு கள ஆய்வு & நடவடிக்கைக்காக அனுப்பப்பட்டது (அதிகாரப்பூர்வ குறிப்பாணை தயார்).'
+        language === 'ta'
+          ? 'மனு சம்பந்தப்பட்ட துறை அலுவலருக்கு கள ஆய்வு & நடவடிக்கைக்காக வாட்ஸ்அப் மூலம் அனுப்பப்பட்டது.'
+          : 'Forwarded to department official via operator WhatsApp for field inspection & action.'
       );
 
       setSaveSuccessMsg(
         t(
-          '✅ Official PDF Memo generated & forwarded to Operator WhatsApp (97903 82437)!',
-          '✅ அதிகாரப்பூர்வ PDF குறிப்பாணை உருவாக்கப்பட்டு ஆபரேட்டர் வாட்ஸ்அப்பிற்கு (97903 82437) அனுப்பப்பட்டது!'
+          '✅ Grievance memo forwarded to Operator WhatsApp (97903 82437)!',
+          '✅ மனு விவரங்கள் ஆபரேட்டர் வாட்ஸ்அப்பிற்கு (97903 82437) அனுப்பப்பட்டது!'
         )
       );
       setTimeout(() => setSaveSuccessMsg(''), 5000);
     } catch (err) {
-      console.error('Error in sending grievance to official:', err);
+      console.error('Error in forwarding grievance to official:', err);
     } finally {
       setUpdatingStatus(false);
     }
@@ -1219,13 +1223,26 @@ export default function OperatorPortalPage() {
                               <PhoneCall className="w-3.5 h-3.5 text-slate-700" />
                             </a>
 
-                            {/* 7. Official PDF Memo Direct Button */}
+                            {/* 7. Enhanced Official PDF Memo Button (Named after Applicant) */}
                             <button
-                              onClick={() => printOfficialGrievancePdf(grv)}
-                              className="p-1.5 bg-slate-100 hover:bg-purple-100 text-purple-800 rounded-xl transition-colors cursor-pointer"
-                              title={t('Print Official Grievance Memo PDF', 'அதிகாரப்பூர்வ குறைதீர்ப்பு குறிப்பாணை PDF அச்சிடுக')}
+                              onClick={() => {
+                                printOfficialGrievancePdf(grv);
+                                setSaveSuccessMsg(
+                                  t(
+                                    `📄 Generating ${grv.citizenName}'s Grievance PDF memo...`,
+                                    `📄 ${grv.citizenName} அவர்களின் மனு PDF தயாராகிறது...`
+                                  )
+                                );
+                                setTimeout(() => setSaveSuccessMsg(''), 4000);
+                              }}
+                              className="px-2.5 py-1.5 bg-purple-50 hover:bg-purple-100 text-purple-900 border border-purple-200 font-bold rounded-xl text-xs flex items-center gap-1.5 cursor-pointer shadow-2xs transition-colors"
+                              title={t(
+                                `Print official memo PDF for ${grv.citizenName} (Filename: ${grv.citizenName}.pdf)`,
+                                `${grv.citizenName} அவர்களின் அதிகாரப்பூர்வ மனு PDF அச்சிடுக`
+                              )}
                             >
-                              <Printer className="w-3.5 h-3.5" />
+                              <Printer className="w-3.5 h-3.5 text-purple-700" />
+                              <span>{t('PDF Memo', 'PDF மனு')}</span>
                             </button>
                           </div>
                         </div>
