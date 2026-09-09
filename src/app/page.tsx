@@ -54,7 +54,7 @@ export default function HomePage() {
     VERIFIED_NEWS_DATA.filter((n) => n.featured || n.important).slice(0, 3)
   );
   const [platformSettings, setPlatformSettings] = useState<{
-    centreStatus?: 'open' | 'closed' | 'camp' | 'temp_closed';
+    centreStatus?: 'open' | 'closed' | 'break' | 'camp' | 'temp_closed';
     statusNote?: { ta: string; en: string };
     operatingHours?: { ta: string; en: string };
     primaryPhone?: string;
@@ -193,7 +193,7 @@ export default function HomePage() {
         en: 'How do I get help if I cannot use this website myself?'
       },
       a: {
-        ta: 'கவலை வேண்டாம்! திரையின் வலது கீழ் மூலையில் உள்ள தொலைபேசி பொத்தானை அழுத்தி நால்ரோடு மைய ஆபரேட்டர் முருகேசன் கு (9790382437) அவர்களை நேரடியாக அழைக்கலாம் அல்லது மையத்திற்கு நேரில் வரலாம்.',
+        ta: 'கவலை வேண்டாம்! திரையின் வலது கீழ் மூலையில் உள்ள தொலைபேசி பொத்தானை அழுத்தி நால்ரோடு மைய ஆபரேட்டர் முருகேசன் (9790382437) அவர்களை நேரடியாக அழைக்கலாம் அல்லது மையத்திற்கு நேரில் வரலாம்.',
         en: 'No worries! Click the green call button at bottom right to reach centre operator Murugesan K directly at 9790382437 or visit the centre in person.'
       }
     }
@@ -296,12 +296,10 @@ export default function HomePage() {
                   : 'Click to view full centre details, address & directions'
               }
               className={`group inline-flex flex-wrap items-center justify-center gap-2 sm:gap-3 px-4 py-2.5 sm:px-6 sm:py-3 rounded-2xl text-xs sm:text-sm font-black border-2 shadow-xs hover:shadow-md transition-all hover:scale-[1.02] cursor-pointer ${
-                platformSettings?.centreStatus === 'temp_closed'
-                  ? 'bg-orange-50 hover:bg-orange-100/90 border-orange-400 text-orange-950'
-                  : platformSettings?.centreStatus === 'camp'
-                  ? 'bg-amber-50 hover:bg-amber-100/90 border-amber-400 text-amber-950'
-                  : platformSettings?.centreStatus === 'closed'
+                platformSettings?.centreStatus === 'closed' || platformSettings?.centreStatus === 'camp'
                   ? 'bg-rose-50 hover:bg-rose-100/90 border-rose-400 text-rose-950'
+                  : platformSettings?.centreStatus === 'break' || platformSettings?.centreStatus === 'temp_closed'
+                  ? 'bg-amber-50 hover:bg-amber-100/90 border-amber-400 text-amber-950'
                   : 'bg-emerald-50 hover:bg-emerald-100/90 border-emerald-500 text-emerald-950'
               }`}
             >
@@ -309,23 +307,19 @@ export default function HomePage() {
               <span className="relative flex h-3 w-3 shrink-0">
                 <span
                   className={`animate-ping absolute inline-flex h-full w-full rounded-full opacity-75 ${
-                    platformSettings?.centreStatus === 'temp_closed'
-                      ? 'bg-orange-400'
-                      : platformSettings?.centreStatus === 'camp'
-                      ? 'bg-amber-400'
-                      : platformSettings?.centreStatus === 'closed'
+                    platformSettings?.centreStatus === 'closed' || platformSettings?.centreStatus === 'camp'
                       ? 'bg-rose-400'
+                      : platformSettings?.centreStatus === 'break' || platformSettings?.centreStatus === 'temp_closed'
+                      ? 'bg-amber-400'
                       : 'bg-emerald-400'
                   }`}
                 ></span>
                 <span
                   className={`relative inline-flex rounded-full h-3 w-3 ${
-                    platformSettings?.centreStatus === 'temp_closed'
-                      ? 'bg-orange-500'
-                      : platformSettings?.centreStatus === 'camp'
-                      ? 'bg-amber-500'
-                      : platformSettings?.centreStatus === 'closed'
+                    platformSettings?.centreStatus === 'closed' || platformSettings?.centreStatus === 'camp'
                       ? 'bg-rose-500'
+                      : platformSettings?.centreStatus === 'break' || platformSettings?.centreStatus === 'temp_closed'
+                      ? 'bg-amber-500'
                       : 'bg-emerald-500'
                   }`}
                 ></span>
@@ -333,21 +327,17 @@ export default function HomePage() {
 
               {/* Status Text */}
               <span className="whitespace-nowrap">
-                {platformSettings?.centreStatus === 'temp_closed'
+                {platformSettings?.centreStatus === 'closed' || platformSettings?.centreStatus === 'camp'
                   ? language === 'ta'
-                    ? '🟠 தற்காலிகமாக வெளியே சென்றுள்ளார் (Temporarily Away)'
-                    : '🟠 Temporarily Stepped Out'
-                  : platformSettings?.centreStatus === 'camp'
-                  ? language === 'ta'
-                    ? '🟡 கிராம கள முகாமில் உள்ளார் (In Field Camp)'
-                    : '🟡 In Village Field Camp'
-                  : platformSettings?.centreStatus === 'closed'
-                  ? language === 'ta'
-                    ? '🔴 மையம் மூடப்பட்டுள்ளது (Centre is Closed)'
+                    ? '🔴 விடுமுறை (Closed)'
                     : '🔴 Centre is Closed'
+                  : platformSettings?.centreStatus === 'break' || platformSettings?.centreStatus === 'temp_closed'
+                  ? language === 'ta'
+                    ? '🟡 இடைவேளை (Break)'
+                    : '🟡 Temporary Break'
                   : language === 'ta'
-                  ? '🟢 மையம் தற்போது திறந்துள்ளது (Centre is OPEN)'
-                  : '🟢 Centre is Currently OPEN'}
+                  ? '🟢 திறந்துள்ளது (Open)'
+                  : '🟢 Centre is OPEN'}
               </span>
 
               <span className="hidden sm:inline text-slate-400 select-none">|</span>
@@ -357,18 +347,14 @@ export default function HomePage() {
                 {(typeof platformSettings?.statusNote === 'string'
                   ? platformSettings.statusNote
                   : platformSettings?.statusNote?.[language]) ||
-                  (platformSettings?.centreStatus === 'temp_closed'
+                  (platformSettings?.centreStatus === 'closed' || platformSettings?.centreStatus === 'camp'
+                    ? language === 'ta'
+                      ? 'விடுமுறை | அவசர உதவிக்கு: 97903 82437'
+                      : 'Closed | Urgent queries: 97903 82437'
+                    : platformSettings?.centreStatus === 'break' || platformSettings?.centreStatus === 'temp_closed'
                     ? language === 'ta'
                       ? 'சிறிது நேரத்தில் திறக்கப்படும் | அழைக்க: 97903 82437'
-                      : 'Back shortly | Call 97903 82437'
-                    : platformSettings?.centreStatus === 'camp'
-                    ? language === 'ta'
-                      ? 'களப்பணி | அழைக்க: 97903 82437'
-                      : 'In field | Call: 97903 82437'
-                    : platformSettings?.centreStatus === 'closed'
-                    ? language === 'ta'
-                      ? 'விடுமுறை | நாளை காலை 9:30 மணிக்கு திறக்கப்படும்'
-                      : 'Closed | Resumes tomorrow 9:30 AM'
+                      : 'Resumes shortly | Call: 97903 82437'
                     : language === 'ta'
                     ? 'காலை 9:30 - மாலை 5:00'
                     : '9:30 AM - 5:00 PM')}
@@ -762,12 +748,12 @@ export default function HomePage() {
               <div className="flex items-center gap-4">
                 <img
                   src="/images/murugesan.jpg"
-                  alt="முருகேசன் கு - நால்ரோடு மக்கள் இ-சேவை மையம்"
+                  alt="முருகேசன் - நால்ரோடு மக்கள் இ-சேவை மையம்"
                   className="w-20 h-20 sm:w-24 sm:h-24 rounded-2xl object-cover border-2 border-emerald-500 shadow-md shrink-0"
                 />
                 <div>
                   <h2 className="text-2xl sm:text-3xl font-black text-slate-950">
-                    {language === 'ta' ? 'முருகேசன் கு' : 'Murugesan K'}
+                    {language === 'ta' ? 'முருகேசன்' : 'Murugesan K'}
                   </h2>
                   <p className="text-xs sm:text-sm font-bold text-emerald-800">
                     {language === 'ta'

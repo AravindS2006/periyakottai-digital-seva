@@ -14,6 +14,7 @@ const NO_CACHE_HEADERS = {
 
 export async function POST(request: Request) {
   try {
+    await db.syncFromCloud(true);
     const body = await request.json();
     const id = body.id || body.ticketId;
     const type = body.type || 'request';
@@ -36,6 +37,7 @@ export async function POST(request: Request) {
           { status: 404, headers: NO_CACHE_HEADERS }
         );
       }
+      await db.persistToCloud();
       return NextResponse.json({ success: true, ticket: updated }, { headers: NO_CACHE_HEADERS });
     } else if (type === 'grievance') {
       const updated = db.updateGrievanceStatus(id, status, note || `Status updated to ${status}`, author);
@@ -45,6 +47,7 @@ export async function POST(request: Request) {
           { status: 404, headers: NO_CACHE_HEADERS }
         );
       }
+      await db.persistToCloud();
       return NextResponse.json({ success: true, grievance: updated }, { headers: NO_CACHE_HEADERS });
     }
 

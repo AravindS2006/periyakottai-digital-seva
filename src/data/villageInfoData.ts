@@ -49,7 +49,7 @@ export const VILLAGE_INFO = {
   amenities: [
     {
       title: { ta: 'இ-சேவை & டிஜிட்டல் மையம்', en: 'e-Seva & CSC Centre' },
-      desc: { ta: 'நால்ரோடு மக்கள் இ-சேவை மையம் (முருகேசன் கு - 9790382437)', en: 'Nalroad Makkal e-Seva Centre (Murugesan K - 9790382437)' }
+      desc: { ta: 'நால்ரோடு மக்கள் இ-சேவை மையம் (முருகேசன் - 9790382437)', en: 'Nalroad Makkal e-Seva Centre (Murugesan K - 9790382437)' }
     },
     {
       title: { ta: 'ரேஷன் கடை (நியாயவிலைக் கடை)', en: 'Fair Price Ration Shop' },
@@ -113,7 +113,7 @@ export const VILLAGE_INFO = {
     },
     {
       role: { ta: 'மக்கள் இ-சேவை மையம் (CSC)', en: 'CSC e-Seva Centre' },
-      person: { ta: 'முருகேசன் கு (நால்ரோடு மையம்)', en: 'Murugesan K (Nalroad Centre)' },
+      person: { ta: 'முருகேசன் (நால்ரோடு மையம்)', en: 'Murugesan K (Nalroad Centre)' },
       phone: '9790382437',
       address: { ta: 'நால்ரோடு சந்திப்பு, பெரியகோட்டை - 624614', en: 'Nalroad Junction, Periyakottai - 624614' },
       badge: { ta: 'இ-சேவை ஆபரேட்டர்', en: 'Operator' }

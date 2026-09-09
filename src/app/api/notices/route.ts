@@ -6,6 +6,7 @@ export const dynamic = 'force-dynamic';
 
 export async function GET() {
   try {
+    await db.syncFromCloud();
     const notices = db.getNotices();
     return NextResponse.json({
       success: true,
@@ -22,6 +23,7 @@ export async function GET() {
 
 export async function POST(request: Request) {
   try {
+    await db.syncFromCloud(true);
     const body = await request.json();
 
     if (!body.title?.ta && !body.title?.en) {
@@ -48,6 +50,7 @@ export async function POST(request: Request) {
     };
 
     const created = db.addNotice(newNotice);
+    await db.persistToCloud();
 
     return NextResponse.json({
       success: true,
@@ -65,6 +68,7 @@ export async function POST(request: Request) {
 
 export async function DELETE(request: Request) {
   try {
+    await db.syncFromCloud(true);
     const { searchParams } = new URL(request.url);
     let id = searchParams.get('id');
 
@@ -93,6 +97,8 @@ export async function DELETE(request: Request) {
       );
     }
 
+    await db.persistToCloud();
+
     return NextResponse.json({
       success: true,
       message: 'அறிவிப்பு நீக்கப்பட்டது (Notice deleted)'
@@ -108,6 +114,7 @@ export async function DELETE(request: Request) {
 
 export async function PUT(request: Request) {
   try {
+    await db.syncFromCloud(true);
     const body = await request.json();
     const { id, ...updates } = body;
 
@@ -125,6 +132,8 @@ export async function PUT(request: Request) {
         { status: 404 }
       );
     }
+
+    await db.persistToCloud();
 
     return NextResponse.json({
       success: true,

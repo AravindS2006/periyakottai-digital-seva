@@ -17,41 +17,84 @@ export async function GET(
   { params }: { params: Promise<{ id: string }> }
 ) {
   try {
+    await db.syncFromCloud(true);
+
     const { id } = await params;
     const cleanId = decodeURIComponent(id).trim();
 
     if (!cleanId) {
-      return NextResponse.json({ error: 'ID is required' }, { status: 400, headers: NO_CACHE_HEADERS });
+      return NextResponse.json({ found: false, error: 'ID is required' }, { status: 400, headers: NO_CACHE_HEADERS });
     }
 
-    // 1. Try match as Request ID
-    const requestTicket = db.getRequestById(cleanId);
-    if (requestTicket) {
-      return NextResponse.json({ type: 'request', data: requestTicket }, { headers: NO_CACHE_HEADERS });
+    // 1. Try match as Grievance ID directly or with padding
+    let grievanceTicket = db.getGrievanceById(cleanId);
+    if (!grievanceTicket && /^\d+$/.test(cleanId)) {
+      grievanceTicket = db.getGrievanceById(`PDS-GRV-${cleanId.padStart(4, '0')}`);
     }
-
-    // 2. Try match as Grievance ID
-    const grievanceTicket = db.getGrievanceById(cleanId);
     if (grievanceTicket) {
-      return NextResponse.json({ type: 'grievance', data: grievanceTicket }, { headers: NO_CACHE_HEADERS });
+      return NextResponse.json(
+        {
+          found: true,
+          type: 'grievance',
+          data: grievanceTicket,
+          ticket: grievanceTicket,
+          grievances: [grievanceTicket],
+          requests: []
+        },
+        { headers: NO_CACHE_HEADERS }
+      );
+    }
+
+    // 2. Try match as Request ID directly or with padding
+    let requestTicket = db.getRequestById(cleanId);
+    if (!requestTicket && /^\d+$/.test(cleanId)) {
+      requestTicket = db.getRequestById(`PDS-REQ-${cleanId.padStart(4, '0')}`);
+    }
+    if (requestTicket) {
+      return NextResponse.json(
+        {
+          found: true,
+          type: 'request',
+          data: requestTicket,
+          ticket: requestTicket,
+          grievances: [],
+          requests: [requestTicket]
+        },
+        { headers: NO_CACHE_HEADERS }
+      );
     }
 
     // 3. Try match by Phone Number
     const cleanPhone = cleanId.replace(/\D/g, '');
     if (cleanPhone.length >= 10) {
-      const byPhone = db.getRequestsByPhone(cleanPhone);
-      if (byPhone.length > 0) {
-        return NextResponse.json({ type: 'request', data: byPhone[0] }, { headers: NO_CACHE_HEADERS });
-      }
       const byPhoneGrv = db.getGrievancesByPhone(cleanPhone);
-      if (byPhoneGrv.length > 0) {
-        return NextResponse.json({ type: 'grievance', data: byPhoneGrv[0] }, { headers: NO_CACHE_HEADERS });
+      const byPhoneReq = db.getRequestsByPhone(cleanPhone);
+
+      if (byPhoneGrv.length > 0 || byPhoneReq.length > 0) {
+        const primary = byPhoneGrv[0] || byPhoneReq[0];
+        return NextResponse.json(
+          {
+            found: true,
+            type: 'phone',
+            data: primary,
+            ticket: primary,
+            grievances: byPhoneGrv,
+            requests: byPhoneReq
+          },
+          { headers: NO_CACHE_HEADERS }
+        );
       }
     }
 
-    return NextResponse.json({ error: 'Ticket not found' }, { status: 404, headers: NO_CACHE_HEADERS });
+    return NextResponse.json(
+      { found: false, error: 'Ticket not found' },
+      { status: 404, headers: NO_CACHE_HEADERS }
+    );
   } catch (error) {
     console.error('Track API error:', error);
-    return NextResponse.json({ error: 'Server error' }, { status: 500, headers: NO_CACHE_HEADERS });
+    return NextResponse.json(
+      { found: false, error: 'Server error' },
+      { status: 500, headers: NO_CACHE_HEADERS }
+    );
   }
 }

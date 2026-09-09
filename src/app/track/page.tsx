@@ -47,6 +47,18 @@ function TrackContent() {
         setTicket(data.data);
       } else if (data.type === 'grievance') {
         setGrievance(data.data);
+      } else if (data.type === 'phone') {
+        if (data.grievances && data.grievances.length > 0) {
+          setGrievance(data.grievances[0]);
+        } else if (data.requests && data.requests.length > 0) {
+          setTicket(data.requests[0]);
+        } else if (data.data) {
+          if (data.data.category || data.data.location) {
+            setGrievance(data.data);
+          } else {
+            setTicket(data.data);
+          }
+        }
       }
     } catch {
       setError(language === 'ta' ? 'இணைப்பு பிழை. தயவுசெய்து மீண்டும் முயற்சிக்கவும்.' : 'Network error. Please try again.');
@@ -212,7 +224,7 @@ function TrackContent() {
                 {language === 'ta' ? 'கூடுதல் விவரங்கள் அறிய நால்ரோடு மையத்தை அழைக்கவும்:' : 'Have questions about your request? Call centre:'}
               </p>
               <p className="text-xs text-emerald-700 font-medium">
-                முருகேசன் கு (ஆபரேட்டர்) — 97903 82437
+                முருகேசன் (ஆபரேட்டர்) — 97903 82437
               </p>
             </div>
             <a

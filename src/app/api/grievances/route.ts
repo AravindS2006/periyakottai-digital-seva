@@ -34,6 +34,7 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
+    await db.syncFromCloud(true);
     const body = await request.json();
 
     if (!body.citizenName || !body.phoneNumber || !body.description) {
@@ -53,6 +54,8 @@ export async function POST(request: Request) {
       status: 'Received'
     });
 
+    await db.persistToCloud();
+
     return NextResponse.json(newGrievance, { status: 201, headers: NO_CACHE_HEADERS });
   } catch (error) {
     console.error('Error creating grievance:', error);
@@ -62,6 +65,7 @@ export async function POST(request: Request) {
 
 export async function PUT(request: Request) {
   try {
+    await db.syncFromCloud(true);
     const body = await request.json();
     const id = body.id || body.ticketId;
     const status = body.status as GrievanceTicket['status'];
@@ -82,6 +86,8 @@ export async function PUT(request: Request) {
         { status: 404, headers: NO_CACHE_HEADERS }
       );
     }
+
+    await db.persistToCloud();
 
     return NextResponse.json({ success: true, grievance: updated }, { headers: NO_CACHE_HEADERS });
   } catch (error) {

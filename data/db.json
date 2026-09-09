@@ -236,7 +236,7 @@
       "action": "UPDATE_GRIEVANCE_STATUS",
       "actor": "Admin",
       "targetId": "PDS-GRV-0001",
-      "details": "Grievance status changed to Forwarded to Official: ஒட்டன்சத்திரம் BDO அலுவலகம் மற்றும் ஊராட்சி குடிநீர் பராமரிப்பு பணியாளருக்கு அனுப்பப்பட்டுள்ளது. - முருகேசன் கு"
+      "details": "Grievance status changed to Forwarded to Official: ஒட்டன்சத்திரம் BDO அலுவலகம் மற்றும் ஊராட்சி குடிநீர் பராமரிப்பு பணியாளருக்கு அனுப்பப்பட்டுள்ளது. - முருகேசன்"
     },
     {
       "id": "log-1788874247408",
@@ -247,7 +247,7 @@
     }
   ],
   "settings": {
-    "centreStatus": "temp_closed",
+    "centreStatus": "open",
     "statusNote": {
       "ta": "மையம் வழக்கம்போல் இயங்குகிறது. அசல் ஆவணங்களுடன் வரவும்.",
       "en": "Centre is operating normally. Please carry original documents."
@@ -273,6 +273,6 @@
       },
       "type": "info"
     },
-    "lastUpdated": "2026-09-08T13:30:47.408Z"
+    "lastUpdated": "2026-09-09T12:26:18.477Z"
   }
 }

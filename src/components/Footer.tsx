@@ -85,7 +85,7 @@ export function Footer() {
               </p>
               <p className="flex items-center gap-2">
                 <Phone className="w-4 h-4 text-emerald-400 shrink-0" />
-                <span>+91 97903 82437 (முருகேசன் கு EFADGL0636)</span>
+                <span>+91 97903 82437 (முருகேசன் EFADGL0636)</span>
               </p>
               <p className="flex items-center gap-2">
                 <Mail className="w-4 h-4 text-emerald-400 shrink-0" />
@@ -341,7 +341,7 @@ export function Footer() {
           </p>
           <p>
             {language === 'ta'
-              ? 'இந்த இணையதளம் பெரியகோட்டை கிராம மக்கள் அரசு திட்டங்கள் மற்றும் சான்றிதழ் விவரங்களை எளிதில் அறிந்துகொள்ளவும், நால்ரோடு மக்கள் இ-சேவை மையத்தின் (முருகேசன் கு) உதவியைப் பெறவும் உருவாக்கப்பட்ட குடிமக்கள் வழிகாட்டி தளம் ஆகும். இது தமிழ்நாடு அரசோ அல்லது மத்திய அரசோ நேரடியாக நடத்தும் தளம் அல்ல. அரசு சான்றிதழ்கள், மானியங்கள் மற்றும் திட்டங்களுக்கான இறுதி ஒப்புதல் மற்றும் தகுதி நிர்ணயம் சம்பந்தப்பட்ட அரசு அலுவலர்களின் ஆய்வுக்கு உட்பட்டது.'
+              ? 'இந்த இணையதளம் பெரியகோட்டை கிராம மக்கள் அரசு திட்டங்கள் மற்றும் சான்றிதழ் விவரங்களை எளிதில் அறிந்துகொள்ளவும், நால்ரோடு மக்கள் இ-சேவை மையத்தின் (முருகேசன்) உதவியைப் பெறவும் உருவாக்கப்பட்ட குடிமக்கள் வழிகாட்டி தளம் ஆகும். இது தமிழ்நாடு அரசோ அல்லது மத்திய அரசோ நேரடியாக நடத்தும் தளம் அல்ல. அரசு சான்றிதழ்கள், மானியங்கள் மற்றும் திட்டங்களுக்கான இறுதி ஒப்புதல் மற்றும் தகுதி நிர்ணயம் சம்பந்தப்பட்ட அரசு அலுவலர்களின் ஆய்வுக்கு உட்பட்டது.'
               : 'This platform is an independent civic information and CSC assistance gateway operated in association with Nalroad Makkal e-Seva Centre (Murugesan K) for Periyakottai village. It is not an official government authority. Final approval and eligibility for all government certificates and welfare schemes remain subject to verification by the respective government departments.'}
           </p>
         </div>

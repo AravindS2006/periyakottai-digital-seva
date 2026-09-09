@@ -268,7 +268,7 @@ export default function AssistantPage() {
           </span>
           <span className="text-slate-600">
             {language === 'ta'
-              ? 'நால்ரோடு இ-சேவை மைய ஆபரேட்டர் முருகேசன் கு - 9790382437'
+              ? 'நால்ரோடு இ-சேவை மைய ஆபரேட்டர் முருகேசன் - 9790382437'
               : 'Murugesan K, Nalroad Makkal e-Seva Centre - 9790382437'}
           </span>
         </div>

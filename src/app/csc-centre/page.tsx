@@ -75,7 +75,7 @@ export default function CSCCentrePage() {
 
   const audioIntro =
     language === 'ta'
-      ? 'நால்ரோடு மக்கள் இ-சேவை மையம், பெரியகோட்டை. ஆபரேட்டர் முருகேசன் கு. செல்போன்: 97903 82437. பட்டா, சான்றிதழ்கள், குடும்ப அட்டை மற்றும் அனைத்து அரசு ஆன்லைன் சேவைகளும் அரசு நிர்ணயித்த கட்டணத்தில் செய்து தரப்படும்.'
+      ? 'நால்ரோடு மக்கள் இ-சேவை மையம், பெரியகோட்டை. ஆபரேட்டர் முருகேசன். செல்போன்: 97903 82437. பட்டா, சான்றிதழ்கள், குடும்ப அட்டை மற்றும் அனைத்து அரசு ஆன்லைன் சேவைகளும் அரசு நிர்ணயித்த கட்டணத்தில் செய்து தரப்படும்.'
       : 'Nalroad Makkal e-Seva Centre, Periyakottai. Operated by Murugesan K. Phone: 9790382437. All government certificates, patta transfer, and Aadhaar services assisted at transparent rates.';
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -145,22 +145,18 @@ export default function CSCCentrePage() {
             </span>
             <span
               className={`text-xs font-black px-3 py-0.5 rounded-full border whitespace-nowrap ${
-                centreStatus === 'open'
-                  ? 'bg-emerald-500/20 text-emerald-200 border-emerald-400'
-                  : centreStatus === 'temp_closed'
-                  ? 'bg-orange-500/20 text-orange-200 border-orange-400'
-                  : centreStatus === 'camp'
+                centreStatus === 'closed' || centreStatus === 'camp'
+                  ? 'bg-rose-500/20 text-rose-200 border-rose-400'
+                  : centreStatus === 'break' || centreStatus === 'temp_closed'
                   ? 'bg-amber-500/20 text-amber-200 border-amber-400'
-                  : 'bg-rose-500/20 text-rose-200 border-rose-400'
+                  : 'bg-emerald-500/20 text-emerald-200 border-emerald-400'
               }`}
             >
-              {centreStatus === 'open'
-                ? '🟢 திறந்துள்ளது (Open)'
-                : centreStatus === 'temp_closed'
-                ? '🟠 வெளியே சென்றுள்ளார் (Away)'
-                : centreStatus === 'camp'
-                ? '🟡 கள முகாம் (Field Camp)'
-                : '🔴 மூடப்பட்டுள்ளது (Closed)'}
+              {centreStatus === 'closed' || centreStatus === 'camp'
+                ? '🔴 மூடப்பட்டுள்ளது (Closed)'
+                : centreStatus === 'break' || centreStatus === 'temp_closed'
+                ? '🟡 இடைவேளை (Break)'
+                : '🟢 திறந்துள்ளது (Open)'}
             </span>
             {statusNote && (
               <span className="text-xs font-semibold bg-emerald-950/80 text-amber-200 border border-emerald-700/60 px-3 py-0.5 rounded-full">
@@ -177,7 +173,7 @@ export default function CSCCentrePage() {
           <div className="relative shrink-0">
             <img
               src="/images/murugesan.jpg"
-              alt="முருகேசன் கு - நால்ரோடு மக்கள் இ-சேவை மையம்"
+              alt="முருகேசன் - நால்ரோடு மக்கள் இ-சேவை மையம்"
               className="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl object-cover border-4 border-amber-400 shadow-xl"
             />
           </div>
@@ -188,8 +184,8 @@ export default function CSCCentrePage() {
             </h1>
             <p className="text-sm sm:text-base text-emerald-200 font-bold">
               {language === 'ta'
-                ? 'மைய நிறுவனர் & ஆபரேட்டர்: முருகேசன் குப்புசாமி (முருகேசன் கு)'
-                : 'Founder & Centre Operator: Murugesan Kuppusamy (Murugesan K)'}
+                ? 'மைய நிறுவனர் & ஆபரேட்டர்: முருகேசன்'
+                : 'Founder & Centre Operator: Murugesan K'}
             </p>
             <p className="text-xs sm:text-sm text-emerald-100/90 max-w-3xl leading-relaxed">
               {language === 'ta'
@@ -348,7 +344,7 @@ export default function CSCCentrePage() {
               </h2>
               <p className="text-xs sm:text-sm text-slate-600 mt-1">
                 {language === 'ta'
-                  ? 'விவரங்களை பதிவு செய்தால், தேவையான ஆவணங்களை முன்கூட்டியே சரிபார்த்து முருகேசன் கு உங்களை தொடர்புகொள்வார்.'
+                  ? 'விவரங்களை பதிவு செய்தால், தேவையான ஆவணங்களை முன்கூட்டியே சரிபார்த்து முருகேசன் உங்களை தொடர்புகொள்வார்.'
                   : 'Submit your request and Murugesan K will review your documents before your visit.'}
               </p>
             </div>
@@ -366,7 +362,7 @@ export default function CSCCentrePage() {
 
                 <p className="text-xs sm:text-sm text-slate-600">
                   {language === 'ta'
-                    ? 'உங்கள் விண்ணப்பம் நால்ரோடு மையத்திற்கு வந்துள்ளது. முருகேசன் கு விரைவில் அழைப்பார்.'
+                    ? 'உங்கள் விண்ணப்பம் நால்ரோடு மையத்திற்கு வந்துள்ளது. முருகேசன் விரைவில் அழைப்பார்.'
                     : 'Your appointment is confirmed. Murugesan K will call you shortly.'}
                 </p>
 
@@ -524,7 +520,7 @@ export default function CSCCentrePage() {
                     </span>
                     <span>
                       {language === 'ta'
-                        ? 'மையத்திற்கு வர இயலாவிட்டால் இதைத் தேர்ந்தெடுக்கவும். முருகேசன் கு இல்லம் தேடி வருவார்.'
+                        ? 'மையத்திற்கு வர இயலாவிட்டால் இதைத் தேர்ந்தெடுக்கவும். முருகேசன் இல்லம் தேடி வருவார்.'
                         : 'Select if you cannot travel to the centre due to physical difficulties.'}
                     </span>
                   </label>

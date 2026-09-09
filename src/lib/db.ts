@@ -249,11 +249,17 @@ function saveDatabase(data: DatabaseSchema): boolean {
   return true;
 }
 
+let lastCloudSyncTime = 0;
+const CLOUD_SYNC_MIN_INTERVAL_MS = 2000;
+
 export const db = {
   // Sync from Cloud KV on initial load or cold start if configured
-  syncFromCloud: async (): Promise<boolean> => {
+  syncFromCloud: async (force = false): Promise<boolean> => {
     if (!KV_REST_API_URL || !KV_REST_API_TOKEN) return false;
-    if (memoryCache && memoryCache.settings) return true;
+    const now = Date.now();
+    if (!force && memoryCache && now - lastCloudSyncTime < CLOUD_SYNC_MIN_INTERVAL_MS) {
+      return true;
+    }
     try {
       const res = await fetch(`${KV_REST_API_URL}/get/${KV_STORAGE_KEY}`, {
         headers: { Authorization: `Bearer ${KV_REST_API_TOKEN}` },
@@ -264,11 +270,56 @@ export const db = {
         if (json?.result) {
           const raw = json.result;
           const parsed = typeof raw === 'string' ? JSON.parse(raw) : raw;
-          if (parsed && parsed.settings) {
-            memoryCache = parsed;
+          if (parsed && typeof parsed === 'object') {
+            const current = memoryCache || ensureDatabase();
+
+            // Merge requests by ID (keep cloud, add any local not in cloud)
+            const cloudRequests: RequestTicket[] = Array.isArray(parsed.requests) ? parsed.requests : [];
+            const reqMap = new Map<string, RequestTicket>();
+            for (const r of cloudRequests) reqMap.set(r.id, r);
+            for (const r of current.requests) {
+              if (!reqMap.has(r.id)) reqMap.set(r.id, r);
+            }
+
+            // Merge grievances by ID (keep cloud, add any local not in cloud)
+            const cloudGrievances: GrievanceTicket[] = Array.isArray(parsed.grievances) ? parsed.grievances : [];
+            const grvMap = new Map<string, GrievanceTicket>();
+            for (const g of cloudGrievances) grvMap.set(g.id, g);
+            for (const g of current.grievances) {
+              if (!grvMap.has(g.id)) grvMap.set(g.id, g);
+            }
+
+            // Merge notices by ID
+            const cloudNotices: VillageNotice[] = Array.isArray(parsed.notices) ? parsed.notices : [];
+            const noticeMap = new Map<string, VillageNotice>();
+            for (const n of cloudNotices) noticeMap.set(n.id, n);
+            for (const n of current.notices) {
+              if (!noticeMap.has(n.id)) noticeMap.set(n.id, n);
+            }
+
+            // Settings: take cloud settings if available, else current
+            const mergedSettings = parsed.settings || current.settings || DEFAULT_SETTINGS;
+
+            // Audit logs
+            const cloudLogs = Array.isArray(parsed.auditLogs) ? parsed.auditLogs : [];
+            const logMap = new Map<string, any>();
+            for (const l of cloudLogs) logMap.set(l.id, l);
+            for (const l of current.auditLogs) {
+              if (!logMap.has(l.id)) logMap.set(l.id, l);
+            }
+
+            memoryCache = {
+              requests: Array.from(reqMap.values()),
+              grievances: Array.from(grvMap.values()),
+              notices: Array.from(noticeMap.values()),
+              settings: mergedSettings,
+              auditLogs: Array.from(logMap.values())
+            };
+            lastCloudSyncTime = now;
+
             try {
               if (!fs.existsSync(DB_DIR)) fs.mkdirSync(DB_DIR, { recursive: true });
-              fs.writeFileSync(DB_FILE, JSON.stringify(parsed, null, 2), 'utf-8');
+              fs.writeFileSync(DB_FILE, JSON.stringify(memoryCache, null, 2), 'utf-8');
               if (fs.existsSync(DB_FILE)) lastLoadedMtime = fs.statSync(DB_FILE).mtimeMs;
             } catch {}
             return true;
@@ -276,9 +327,29 @@ export const db = {
         }
       }
     } catch (err) {
-      console.warn('Vercel KV initial load notice:', err);
+      console.warn('Upstash KV cloud sync notice:', err);
     }
     return false;
+  },
+
+  persistToCloud: async (): Promise<boolean> => {
+    if (!KV_REST_API_URL || !KV_REST_API_TOKEN) return false;
+    const data = memoryCache || ensureDatabase();
+    try {
+      const res = await fetch(`${KV_REST_API_URL}/set/${KV_STORAGE_KEY}`, {
+        method: 'POST',
+        headers: {
+          Authorization: `Bearer ${KV_REST_API_TOKEN}`,
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(data),
+        cache: 'no-store'
+      });
+      return res.ok;
+    } catch (err) {
+      console.error('persistToCloud error:', err);
+      return false;
+    }
   },
 
   // Requests

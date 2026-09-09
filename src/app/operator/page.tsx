@@ -353,11 +353,26 @@ export default function OperatorPortalPage() {
   };
 
   // Centre Status Quick Change
-  const handleQuickCentreStatusChange = async (newStatus: 'open' | 'closed' | 'camp' | 'temp_closed') => {
+  const handleQuickCentreStatusChange = async (newStatus: 'open' | 'closed' | 'break') => {
     if (!settings) return;
+    const defaultNotes = {
+      open: {
+        ta: 'மையம் வழக்கம்போல் இயங்குகிறது. அசல் ஆவணங்களுடன் வரவும்.',
+        en: 'Centre is operating normally. Please carry original documents.'
+      },
+      break: {
+        ta: 'மதிய உணவு / தற்காலிக இடைவேளை. சிறிது நேரத்தில் திறக்கப்படும்.',
+        en: 'Temporary Break. Resuming shortly.'
+      },
+      closed: {
+        ta: 'இன்று மையம் விடுமுறை. அவசர உதவிக்கு 97903 82437 அழைக்கவும்.',
+        en: 'Centre is closed today. For urgent queries call 97903 82437.'
+      }
+    };
     const updatedSettings: PlatformSettings = {
       ...settings,
       centreStatus: newStatus,
+      statusNote: defaultNotes[newStatus] || settings.statusNote,
       lastUpdated: new Date().toISOString()
     };
     setSettings(updatedSettings);
@@ -470,22 +485,43 @@ export default function OperatorPortalPage() {
     }
   };
 
-  // Helper: WhatsApp URL for Citizen Grievance Update
+  // Helper: WhatsApp URL for Citizen Grievance Update (Always Tamil for rural citizens)
   const generateGrievanceWhatsAppUrl = (grv: GrievanceTicket) => {
+    let statusTa = 'பெறப்பட்டது';
+    if (grv.status === 'Forwarded to Official') statusTa = 'அலுவலருக்கு அனுப்பப்பட்டது';
+    else if (grv.status === 'Action Pending') statusTa = 'நடவடிக்கை நிலுவையில் உள்ளது';
+    else if (grv.status === 'Resolved') statusTa = 'தீர்வு காணப்பட்டது';
+    else if (grv.status === 'Closed') statusTa = 'முடிக்கப்பட்டது';
+
     const text = encodeURIComponent(
-      language !== 'ta'
-        ? `Greetings ${grv.citizenName},\n\nUpdate from Four Roads Makkal e-Seva Centre (Murugesan K, CSC EFADGL0636):\n\n📋 Grievance ID: ${grv.id}\n📁 Category: ${grv.category}\n🚦 Status: *${grv.status}*\n📍 Hamlet: ${grv.location || grv.village}\n\nFor assistance, contact Four Roads e-Seva at 97903 82437.\n\nPeriyakottai Digital Seva`
-        : `வணக்கம் ${grv.citizenName} அவர்களே,\n\nநால்ரோடு மக்கள் இ-சேவை மையத்திலிருந்து (முருகேசன் கு EFADGL0636) இந்த செய்தி அனுப்பப்படுகிறது.\n\nதங்கள் குறைதீர்ப்பு மனு விவரம்:\n📋 மனு எண்: ${grv.id}\n📁 பிரிவு: ${grv.category}\n🚦 தற்போதைய நிலை: *${grv.status}*\n📍 இடம்: ${grv.location || grv.village}\n\nகூடுதல் விவரங்களை அறிய நால்ரோடு மையத்தை 97903 82437 என்ற எண்ணில் தொடர்பு கொள்ளலாம்.\n\nபெரியகோட்டை டிஜிட்டல் சேவை`
+      `வணக்கம் ${grv.citizenName} அவர்களே,\n\n` +
+      `நால்ரோடு மக்கள் இ-சேவை மையம் (முருகேசன் - EFADGL0636) சார்பாக தங்கள் கிராம குறைதீர்ப்பு மனு குறித்த விவரம்:\n\n` +
+      `📋 மனு எண்: ${grv.id}\n` +
+      `📁 பிரிவு: ${grv.category}\n` +
+      `🚦 தற்போதைய நிலை: *${statusTa}* (${grv.status})\n` +
+      `📍 கிராமம் / பகுதி: ${grv.location || grv.village}\n\n` +
+      `தங்கள் மனு மீது உரிய நடவடிக்கை எடுக்கப்பட்டு வருகிறது. கூடுதல் விவரங்களை அறிய நால்ரோடு மையத்தை 97903 82437 என்ற எண்ணில் தொடர்பு கொள்ளலாம்.\n\n` +
+      `நன்றி!\nபெரியகோட்டை டிஜிட்டல் சேவை`
     );
     return `https://wa.me/91${grv.phoneNumber.replace(/\D/g, '')}?text=${text}`;
   };
 
-  // Helper: WhatsApp URL for Citizen Request Update
+  // Helper: WhatsApp URL for Citizen Request Update (Always Tamil)
   const generateRequestWhatsAppUrl = (ticket: RequestTicket) => {
+    let statusTa = 'பதிவு செய்யப்பட்டது';
+    if (ticket.status === 'In Progress') statusTa = 'செயல்பாட்டில் உள்ளது';
+    else if (ticket.status === 'Ready for Citizen') statusTa = 'சான்றிதழ்/ஆவணம் தயார்';
+    else if (ticket.status === 'Completed') statusTa = 'முடிக்கப்பட்டது';
+    else if (ticket.status === 'Cancelled') statusTa = 'ரத்து செய்யப்பட்டது';
+
     const text = encodeURIComponent(
-      language !== 'ta'
-        ? `Greetings ${ticket.citizenName},\n\nUpdate from Four Roads Makkal e-Seva Centre (Murugesan K, CSC EFADGL0636):\n\n📋 Request ID: ${ticket.id}\n📄 Service: ${ticket.serviceName}\n🚦 Status: *${ticket.status}*\n\nContact: 97903 82437`
-        : `வணக்கம் ${ticket.citizenName} அவர்களே,\n\nநால்ரோடு மக்கள் இ-சேவை மையத்திலிருந்து (முருகேசன் கு EFADGL0636):\n\nவிண்ணப்ப விவரம்:\n📋 மனு எண்: ${ticket.id}\n📄 சேவை: ${ticket.serviceName}\n🚦 தற்போதைய நிலை: *${ticket.status}*\n\nதொடர்புக்கு: 97903 82437`
+      `வணக்கம் ${ticket.citizenName} அவர்களே,\n\n` +
+      `நால்ரோடு மக்கள் இ-சேவை மையம் (முருகேசன் - EFADGL0636):\n\n` +
+      `விண்ணப்ப விவரம்:\n` +
+      `📋 மனு எண்: ${ticket.id}\n` +
+      `📄 சேவை: ${ticket.serviceName}\n` +
+      `🚦 தற்போதைய நிலை: *${statusTa}* (${ticket.status})\n\n` +
+      `தொடர்புக்கு: 97903 82437`
     );
     return `https://wa.me/91${ticket.phoneNumber.replace(/\D/g, '')}?text=${text}`;
   };
@@ -632,7 +668,7 @@ export default function OperatorPortalPage() {
             <div className="min-w-0 flex-1">
               <div className="flex items-center gap-2 flex-wrap">
                 <span className="font-extrabold text-xs sm:text-sm text-slate-900 leading-tight">
-                  {language !== 'ta' ? 'Murugesan K' : 'முருகேசன் கு'}
+                  {language !== 'ta' ? 'Murugesan K' : 'முருகேசன்'}
                 </span>
                 <span className="bg-amber-400 text-slate-950 text-[10px] font-black px-1.5 py-0.2 rounded">
                   EFADGL0636
@@ -644,14 +680,19 @@ export default function OperatorPortalPage() {
               <div className="flex items-center gap-2 text-[10px] text-slate-500 mt-0.5">
                 <span>{t('Centre Status:', 'மைய நிலை:')}</span>
                 <select
-                  value={settings?.centreStatus || 'open'}
+                  value={
+                    settings?.centreStatus === 'closed' || settings?.centreStatus === 'camp'
+                      ? 'closed'
+                      : settings?.centreStatus === 'break' || settings?.centreStatus === 'temp_closed'
+                      ? 'break'
+                      : 'open'
+                  }
                   onChange={(e) => handleQuickCentreStatusChange(e.target.value as any)}
                   className="bg-slate-50 border border-slate-200 rounded px-1.5 py-0.5 font-bold text-slate-800 cursor-pointer text-[10px]"
                   disabled={savingSettings}
                 >
                   <option value="open">🟢 {t('Open', 'திறந்துள்ளது (Open)')}</option>
-                  <option value="camp">🔵 {t('Special Camp', 'முகாமில் (Field Camp)')}</option>
-                  <option value="temp_closed">🟡 {t('Temp Break', 'இடைவேளை (Break)')}</option>
+                  <option value="break">🟡 {t('Break', 'இடைவேளை (Break)')}</option>
                   <option value="closed">🔴 {t('Closed', 'விடுமுறை (Closed)')}</option>
                 </select>
                 {saveSuccessMsg && (
@@ -1458,31 +1499,37 @@ export default function OperatorPortalPage() {
                   )}
                 </div>
 
-                <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
-                  {(['open', 'camp', 'temp_closed', 'closed'] as const).map((st) => (
-                    <button
-                      key={st}
-                      onClick={() => handleQuickCentreStatusChange(st)}
-                      className={`p-3 rounded-xl border text-left font-bold text-xs transition-all cursor-pointer ${
-                        settings?.centreStatus === st
-                          ? 'border-emerald-600 bg-emerald-50 text-emerald-900 ring-2 ring-emerald-500/20'
-                          : 'border-slate-200 bg-white hover:bg-slate-100 text-slate-700'
-                      }`}
-                    >
-                      <div className="text-sm">
-                        {st === 'open' && '🟢'}
-                        {st === 'camp' && '🔵'}
-                        {st === 'temp_closed' && '🟡'}
-                        {st === 'closed' && '🔴'}
-                      </div>
-                      <div className="mt-1 font-black">
-                        {st === 'open' && t('Open for Service', 'திறந்துள்ளது')}
-                        {st === 'camp' && t('Field Camp', 'கிராம முகாமில்')}
-                        {st === 'temp_closed' && t('Temporary Break', 'இடைவேளை')}
-                        {st === 'closed' && t('Closed', 'விடுமுறை')}
-                      </div>
-                    </button>
-                  ))}
+                <div className="grid grid-cols-3 gap-2">
+                  {(['open', 'break', 'closed'] as const).map((st) => {
+                    const currentStatus =
+                      settings?.centreStatus === 'closed' || settings?.centreStatus === 'camp'
+                        ? 'closed'
+                        : settings?.centreStatus === 'break' || settings?.centreStatus === 'temp_closed'
+                        ? 'break'
+                        : 'open';
+                    return (
+                      <button
+                        key={st}
+                        onClick={() => handleQuickCentreStatusChange(st)}
+                        className={`p-3 rounded-xl border text-left font-bold text-xs transition-all cursor-pointer ${
+                          currentStatus === st
+                            ? 'border-emerald-600 bg-emerald-50 text-emerald-900 ring-2 ring-emerald-500/20'
+                            : 'border-slate-200 bg-white hover:bg-slate-100 text-slate-700'
+                        }`}
+                      >
+                        <div className="text-sm">
+                          {st === 'open' && '🟢'}
+                          {st === 'break' && '🟡'}
+                          {st === 'closed' && '🔴'}
+                        </div>
+                        <div className="mt-1 font-black">
+                          {st === 'open' && t('Open for Service', 'திறந்துள்ளது')}
+                          {st === 'break' && t('Temporary Break', 'இடைவேளை')}
+                          {st === 'closed' && t('Closed', 'விடுமுறை')}
+                        </div>
+                      </button>
+                    );
+                  })}
                 </div>
               </div>
 

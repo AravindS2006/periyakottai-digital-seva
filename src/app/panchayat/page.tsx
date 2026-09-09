@@ -32,6 +32,7 @@ import {
   Sparkles,
   ExternalLink,
   Edit3,
+  FilePlus,
   BookOpen,
   Waves,
   Bug,
@@ -367,21 +368,23 @@ export default function PanchayatPage() {
         return;
       }
 
-      if (data.type === 'phone' && Array.isArray(data.grievances)) {
-        if (data.grievances.length === 0) {
-          setTrackError(
-            language === 'ta'
-              ? 'இந்த செல்போன் எண்ணில் குறைதீர்ப்பு மனுக்கள் எதுவும் இல்லை.'
-              : 'No grievances found under this mobile number.'
-          );
-        } else {
-          setTrackedTickets(data.grievances);
-          setSelectedTrackedTicket(data.grievances[0]);
-        }
-      } else if (data.ticket) {
+      if (Array.isArray(data.grievances) && data.grievances.length > 0) {
+        setTrackedTickets(data.grievances);
+        setSelectedTrackedTicket(data.grievances[0]);
+      } else if (data.ticket && (data.ticket.category || data.ticket.location || data.type === 'grievance')) {
         const grv = data.ticket as GrievanceTicket;
         setTrackedTickets([grv]);
         setSelectedTrackedTicket(grv);
+      } else if (data.data && (data.data.category || data.data.location || data.type === 'grievance')) {
+        const grv = data.data as GrievanceTicket;
+        setTrackedTickets([grv]);
+        setSelectedTrackedTicket(grv);
+      } else {
+        setTrackError(
+          language === 'ta'
+            ? 'இந்த செல்போன் எண்ணில் குறைதீர்ப்பு மனுக்கள் எதுவும் இல்லை.'
+            : 'No grievances found under this mobile number or ticket ID.'
+        );
       }
     } catch {
       setTrackError(
@@ -443,19 +446,19 @@ export default function PanchayatPage() {
           >
             <span
               className={`w-2 h-2 rounded-full animate-pulse ${
-                platformSettings?.centreStatus === 'open'
-                  ? 'bg-emerald-400 shadow-[0_0_8px_#34d399]'
-                  : platformSettings?.centreStatus === 'camp'
-                  ? 'bg-blue-400 shadow-[0_0_8px_#60a5fa]'
-                  : 'bg-amber-400 shadow-[0_0_8px_#fbbf24]'
+                platformSettings?.centreStatus === 'closed' || platformSettings?.centreStatus === 'camp'
+                  ? 'bg-rose-400 shadow-[0_0_8px_#f43f5e]'
+                  : platformSettings?.centreStatus === 'break' || platformSettings?.centreStatus === 'temp_closed'
+                  ? 'bg-amber-400 shadow-[0_0_8px_#fbbf24]'
+                  : 'bg-emerald-400 shadow-[0_0_8px_#34d399]'
               }`}
             />
             <span>
-              {platformSettings?.centreStatus === 'open'
-                ? (language === 'ta' ? 'நால்ரோடு மையம்: இயங்குகிறது' : 'Nalroad Centre: Open')
-                : platformSettings?.centreStatus === 'camp'
-                ? (language === 'ta' ? 'கள முகாமில் உள்ளது' : 'Field Camp')
-                : (language === 'ta' ? 'விடுமுறை / இடைவேளை' : 'Break / Holiday')}
+              {platformSettings?.centreStatus === 'closed' || platformSettings?.centreStatus === 'camp'
+                ? (language === 'ta' ? 'நால்ரோடு மையம்: விடுமுறை' : 'Nalroad Centre: Closed')
+                : platformSettings?.centreStatus === 'break' || platformSettings?.centreStatus === 'temp_closed'
+                ? (language === 'ta' ? 'நால்ரோடு மையம்: இடைவேளை' : 'Nalroad Centre: Break')
+                : (language === 'ta' ? 'நால்ரோடு மையம்: இயங்குகிறது' : 'Nalroad Centre: Open')}
             </span>
             <MapPin className="w-3.5 h-3.5 text-amber-300 ml-0.5" />
           </a>
@@ -470,21 +473,21 @@ export default function PanchayatPage() {
           <div className="flex items-center gap-2">
             <button
               onClick={() => setActivePortalMode('report')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-black transition-all cursor-pointer ${
+              className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl font-black text-xs transition-all shadow-xs cursor-pointer ${
                 activePortalMode === 'report'
-                  ? 'bg-slate-950 text-amber-300 shadow-md scale-102'
+                  ? 'bg-slate-950 text-amber-300 border border-slate-800'
                   : 'bg-white/80 hover:bg-white text-slate-900'
               }`}
             >
-              <Edit3 className="w-4 h-4" />
-              <span>{language === 'ta' ? '1. புதிய மனு அளிக்க (Report Issue)' : '1. Report Grievance'}</span>
+              <FilePlus className="w-4 h-4" />
+              <span>{language === 'ta' ? '1. புதிய மனு பதிவு (Register)' : '1. Register Grievance'}</span>
             </button>
 
             <button
               onClick={() => setActivePortalMode('track')}
-              className={`flex items-center gap-2 px-4 py-2 rounded-xl text-xs sm:text-sm font-black transition-all cursor-pointer ${
+              className={`flex items-center gap-1.5 px-3.5 py-1.5 rounded-xl font-black text-xs transition-all shadow-xs cursor-pointer ${
                 activePortalMode === 'track'
-                  ? 'bg-emerald-900 text-white shadow-md scale-102'
+                  ? 'bg-slate-950 text-amber-300 border border-slate-800'
                   : 'bg-white/80 hover:bg-white text-slate-900'
               }`}
             >
@@ -496,7 +499,7 @@ export default function PanchayatPage() {
           <div className="hidden sm:flex items-center gap-1.5 text-slate-950 text-xs font-bold px-2">
             <span>ஆபரேட்டர் நேரடி உதவி:</span>
             <a href="tel:9790382437" className="underline font-black text-slate-950 hover:text-emerald-950">
-              முருகேசன் கு (97903 82437)
+              முருகேசன் (97903 82437)
             </a>
           </div>
         </div>
@@ -568,7 +571,7 @@ export default function PanchayatPage() {
 
                   <a
                     href={`https://wa.me/919790382437?text=${encodeURIComponent(
-                      `வணக்கம் முருகேசன் கு அவர்களே,\nஎன் பெயர்: ${createdGrievance.citizenName}\nமனு எண்: ${createdGrievance.id}\nபிரிவு: ${createdGrievance.category}\nஇடம்: ${createdGrievance.location}\nவிவரம்: ${createdGrievance.description}`
+                      `வணக்கம் முருகேசன் அவர்களே,\nஎன் பெயர்: ${createdGrievance.citizenName}\nமனு எண்: ${createdGrievance.id}\nபிரிவு: ${createdGrievance.category}\nஇடம்: ${createdGrievance.location}\nவிவரம்: ${createdGrievance.description}`
                     )}`}
                     target="_blank"
                     rel="noopener noreferrer"
@@ -789,12 +792,12 @@ export default function PanchayatPage() {
                     <div className="flex items-center gap-2.5">
                       <img
                         src="/images/murugesan.jpg"
-                        alt="முருகேசன் கு"
+                        alt="முருகேசன்"
                         className="w-10 h-10 rounded-full object-cover ring-2 ring-amber-400 shrink-0"
                       />
                       <div className="min-w-0 flex-1">
                         <div className="flex items-center gap-1.5 flex-wrap">
-                          <h3 className="font-black text-xs sm:text-sm text-white truncate">முருகேசன் கு</h3>
+                          <h3 className="font-black text-xs sm:text-sm text-white truncate">முருகேசன்</h3>
                           <span className="text-[9px] bg-amber-400 text-slate-950 font-black px-1.5 py-0.2 rounded">
                             EFADGL0636
                           </span>
@@ -822,7 +825,7 @@ export default function PanchayatPage() {
 
                       <a
                         href={`https://wa.me/919790382437?text=${encodeURIComponent(
-                          'வணக்கம் முருகேசன் கு அவர்களே, பெரியகோட்டை கிராம ஊராட்சி குறைதீர்ப்பு தளம் வழியாக தொடர்பு கொள்கிறேன்.'
+                          'வணக்கம் முருகேசன் அவர்களே, பெரியகோட்டை கிராம ஊராட்சி குறைதீர்ப்பு தளம் வழியாக தொடர்பு கொள்கிறேன்.'
                         )}`}
                         target="_blank"
                         rel="noopener noreferrer"
@@ -1381,7 +1384,7 @@ export default function PanchayatPage() {
 
                     <a
                       href={`https://wa.me/919790382437?text=${encodeURIComponent(
-                        `வணக்கம் முருகேசன் கு அவர்களே, பெரியகோட்டை இ-சேவை தளம் வாயிலாக "${srv.title.ta}" சேவை பெற உதவி தேவைப்படுகிறது.`
+                        `வணக்கம் முருகேசன் அவர்களே, பெரியகோட்டை இ-சேவை தளம் வாயிலாக "${srv.title.ta}" சேவை பெற உதவி தேவைப்படுகிறது.`
                       )}`}
                       target="_blank"
                       rel="noopener noreferrer"

@@ -35,6 +35,7 @@ export async function GET() {
 
 export async function PUT(request: Request) {
   try {
+    await db.syncFromCloud(true);
     const body = await request.json();
     const { settings, actor } = body;
 
@@ -46,6 +47,7 @@ export async function PUT(request: Request) {
     }
 
     const updated = db.updateSettings(settings as Partial<PlatformSettings>, actor || 'Murugesan K');
+    await db.persistToCloud();
 
     return NextResponse.json(
       {

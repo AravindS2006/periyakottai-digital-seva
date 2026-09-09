@@ -33,6 +33,7 @@ export async function GET(request: Request) {
 
 export async function POST(request: Request) {
   try {
+    await db.syncFromCloud(true);
     const body = await request.json();
 
     if (!body.citizenName || !body.phoneNumber) {
@@ -51,8 +52,10 @@ export async function POST(request: Request) {
       description: body.description || '',
       priority: body.priority || 'Normal',
       status: 'Submitted',
-      assignedTo: 'முருகேசன் கு (Murugesan K)'
+      assignedTo: 'முருகேசன் (Murugesan K)'
     });
+
+    await db.persistToCloud();
 
     return NextResponse.json(newTicket, { status: 201, headers: NO_CACHE_HEADERS });
   } catch (error) {

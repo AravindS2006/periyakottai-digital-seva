@@ -29,7 +29,7 @@ export function DocumentChecklist({ serviceTitle, documents }: DocumentChecklist
   const handleShareWhatsApp = () => {
     const text = `*${serviceTitle} - தேவையான ஆவணங்கள்:*\n` +
       documents.map((doc, idx) => `${checkedItems[idx] ? '✅' : '☐'} ${doc}`).join('\n') +
-      `\n\nநால்ரோடு மக்கள் இ-சேவை மையம் (முருகேசன் கு: 9790382437)`;
+      `\n\nநால்ரோடு மக்கள் இ-சேவை மையம் (முருகேசன்: 9790382437)`;
     window.open(`https://wa.me/?text=${encodeURIComponent(text)}`, '_blank');
   };
 

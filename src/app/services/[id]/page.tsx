@@ -201,7 +201,7 @@ export default function ServiceDetailPage() {
               </h3>
               <p className="text-xs text-emerald-100/90 leading-relaxed">
                 {language === 'ta'
-                  ? 'ஆவணங்களை தயார் செய்து மையத்திற்கு கொண்டு வாருங்கள் அல்லது உதவி கோரிக்கையை இங்கேயே பதிவு செய்யுங்கள். ஆபரேட்டர் முருகேசன் கு உங்களை வழிநடத்துவார்.'
+                  ? 'ஆவணங்களை தயார் செய்து மையத்திற்கு கொண்டு வாருங்கள் அல்லது உதவி கோரிக்கையை இங்கேயே பதிவு செய்யுங்கள். ஆபரேட்டர் முருகேசன் உங்களை வழிநடத்துவார்.'
                   : 'Bring your documents to Nalroad centre or book assistance online. Operator Murugesan K will guide you.'}
               </p>
             </div>
@@ -209,7 +209,7 @@ export default function ServiceDetailPage() {
             {/* Operator Details */}
             <div className="p-3.5 bg-emerald-900/80 rounded-2xl border border-emerald-700 text-xs space-y-1 text-emerald-100">
               <p className="font-bold text-white text-sm">
-                முருகேசன் கு (Murugesan K)
+                முருகேசன் (Murugesan K)
               </p>
               <p>நால்ரோடு மக்கள் இ-சேவை மையம்</p>
               <p className="text-emerald-300">பெரியகோட்டை (624614)</p>

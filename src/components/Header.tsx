@@ -544,12 +544,12 @@ export function Header() {
                 <div className="flex items-center gap-2.5">
                   <img
                     src="/images/murugesan.jpg"
-                    alt="முருகேசன் கு"
+                    alt="முருகேசன்"
                     className="w-10 h-10 rounded-xl object-cover border-2 border-amber-400 shadow shrink-0"
                   />
                   <div className="min-w-0">
                     <div className="flex items-center gap-1.5">
-                      <span className="font-extrabold text-xs text-white">முருகேசன் கு</span>
+                      <span className="font-extrabold text-xs text-white">முருகேசன்</span>
                       <span className="text-[9px] bg-amber-400 text-slate-950 font-black px-1.5 py-0.2 rounded">
                         EFADGL0636
                       </span>

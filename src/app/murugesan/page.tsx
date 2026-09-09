@@ -82,7 +82,7 @@ export default function MurugesanProfilePage() {
             {language === 'ta' ? 'இ-சேவை மையம்' : 'e-Seva Centre'}
           </Link>
           <ChevronRight className="w-3.5 h-3.5" />
-          <span className="text-slate-900 font-bold">முருகேசன் கு (Murugesan K)</span>
+          <span className="text-slate-900 font-bold">முருகேசன் (Murugesan K)</span>
         </nav>
 
         {/* Hero Profile Card */}
@@ -93,7 +93,7 @@ export default function MurugesanProfilePage() {
               <div className="w-36 h-36 sm:w-44 sm:h-44 rounded-3xl overflow-hidden border-4 border-emerald-600 shadow-xl bg-slate-100">
                 <img
                   src="/images/murugesan.jpg"
-                  alt="முருகேசன் கு - நால்ரோடு மக்கள் இ-சேவை மையம்"
+                  alt="முருகேசன் - நால்ரோடு மக்கள் இ-சேவை மையம்"
                   className="w-full h-full object-cover"
                 />
               </div>
@@ -115,7 +115,7 @@ export default function MurugesanProfilePage() {
               </div>
 
               <h1 className="text-3xl sm:text-4xl font-black text-slate-950 tracking-tight">
-                {language === 'ta' ? 'முருகேசன் கு' : 'Murugesan K'}
+                {language === 'ta' ? 'முருகேசன்' : 'Murugesan K'}
               </h1>
 
               <p className="text-sm sm:text-base font-bold text-emerald-800">

@@ -347,7 +347,7 @@ export default function FarmerHubPage() {
             </h2>
             <p className="text-xs sm:text-sm text-emerald-100 leading-relaxed">
               {language === 'ta'
-                ? 'உரம் & யூரியா தட்டுப்பாடு, பயிர் இழப்பு நிவாரண விண்ணப்பம், பாசன வாய்க்கால் தூர்வாருதல், இலவச மின்சாரம் அல்லது PM-கிசான் தவணை சிக்கல்கள் உள்ளதா? உடனடியாக இணையதளத்தில் மனு பதிவு செய்யுங்கள். முருகேசன் கு (இ-சேவை) உரிய அதிகாரிகளுடன் ஒருங்கிணைத்து தீர்வு காண்பார்.'
+                ? 'உரம் & யூரியா தட்டுப்பாடு, பயிர் இழப்பு நிவாரண விண்ணப்பம், பாசன வாய்க்கால் தூர்வாருதல், இலவச மின்சாரம் அல்லது PM-கிசான் தவணை சிக்கல்கள் உள்ளதா? உடனடியாக இணையதளத்தில் மனு பதிவு செய்யுங்கள். முருகேசன் (இ-சேவை) உரிய அதிகாரிகளுடன் ஒருங்கிணைத்து தீர்வு காண்பார்.'
                 : 'Facing fertilizer shortages, crop loss claims, irrigation canal blockage, agri power outage, or PM-KISAN issues? Register your grievance directly for prompt official follow-up.'}
             </p>
           </div>
@@ -464,7 +464,7 @@ export default function FarmerHubPage() {
             <span className="text-emerald-300 font-bold block">
               {language === 'ta' ? 'நால்ரோடு மக்கள் இ-சேவை மையம்' : 'Nalroad e-Seva Centre'}
             </span>
-            <span className="text-white font-medium">முருகேசன் கு (பெரியகோட்டை)</span>
+            <span className="text-white font-medium">முருகேசன் (பெரியகோட்டை)</span>
             <a href="tel:9790382437" className="block text-amber-300 font-bold text-sm pt-1">
               97903 82437
             </a>

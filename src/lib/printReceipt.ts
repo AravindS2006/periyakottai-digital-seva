@@ -351,7 +351,7 @@ export function printAcknowledgmentReceipt(ticket: ReceiptData): void {
             </div>
             <div class="header-right">
               <span class="badge">EFADGL0636</span>
-              <p class="operator-info">ஆபரேட்டர்: முருகேசன் கு</p>
+              <p class="operator-info">ஆபரேட்டர்: முருகேசன்</p>
               <p class="operator-info">அழைக்க: 97903 82437</p>
             </div>
           </div>
@@ -413,7 +413,7 @@ export function printAcknowledgmentReceipt(ticket: ReceiptData): void {
             <div class="sig-box">
               <div class="sig-script">Murugesan K</div>
               <p class="sig-title">ஆபரேட்டர் கையொப்பம்</p>
-              <p class="sig-sub">முருகேசன் குப்புசாமி (97903 82437)</p>
+              <p class="sig-sub">முருகேசன் (97903 82437)</p>
             </div>
           </div>
 
@@ -750,7 +750,7 @@ export function printOfficialGrievancePdf(grv: GrievanceTicket): void {
             </div>
             <div class="header-right">
               <span class="badge">EFADGL0636 • CSC</span>
-              <p class="operator-info">ஆபரேட்டர்: முருகேசன் கு</p>
+              <p class="operator-info">ஆபரேட்டர்: முருகேசன்</p>
               <p class="operator-info">அழைக்க: 97903 82437</p>
             </div>
           </div>
@@ -827,7 +827,7 @@ export function printOfficialGrievancePdf(grv: GrievanceTicket): void {
             <div>
               <div class="stamp-box">[ மைய முத்திரை & ஒப்புதல் ]</div>
               <p style="font-size: 9px; color: #475569; margin-top: 3px;">நால்ரோடு மக்கள் இ-சேவை மையம்</p>
-              <p style="font-size: 8.5px; color: #64748b;">முருகேசன் கு (EFADGL0636)</p>
+              <p style="font-size: 8.5px; color: #64748b;">முருகேசன் (EFADGL0636)</p>
             </div>
             <div>
               <div class="stamp-box" style="border-style: solid; border-color: #cbd5e1;">[ துறை அதிகாரி முத்திரை ]</div>
@@ -883,7 +883,7 @@ export function generateOfficialForwardingWhatsAppUrl(grv: GrievanceTicket): str
 
 ━━━━━━━━━━━━━━━━━━━━━━━━━━
 📌 *அனுப்புநர் (Forwarded By):*
-முருகேசன் கு (Murugesan K)
+முருகேசன் (Murugesan K)
 நால்ரோடு மக்கள் இ-சேவை மையம் (CSC ID: EFADGL0636)
 தொலைபேசி: 97903 82437
 
