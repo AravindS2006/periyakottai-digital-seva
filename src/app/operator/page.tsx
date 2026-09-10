@@ -744,10 +744,10 @@ export default function OperatorPortalPage() {
               {t('Operator Management Console', 'நால்ரோடு மக்கள் இ-சேவை மையம்')}
             </h1>
             <p className="text-xs text-slate-600 font-medium">
-              {t('Four Roads Makkal e-Seva Centre • Periyakottai (624614)', 'ஆபரேட்டர் மேலாண்மை போர்டல் • பெரியகோட்டை')}
+              {t('Four Roads Makkal e-Seva Centre • Periyakottai', 'ஆபரேட்டர் மேலாண்மை போர்டல் • பெரியகோட்டை')}
             </p>
             <div className="inline-flex items-center gap-1.5 bg-amber-100 text-amber-900 px-2.5 py-1 rounded-full text-xs font-bold mt-1">
-              <span>CSC ID: EFADGL0636 • Murugesan K</span>
+              <span>CSC ID: EFADGL0636 • Murugesan</span>
             </div>
           </div>
 
@@ -765,7 +765,7 @@ export default function OperatorPortalPage() {
               </label>
               <input
                 type="password"
-                maxLength={6}
+                maxLength={10}
                 value={pinInput}
                 onChange={(e) => setPinInput(e.target.value)}
                 placeholder="••••••"
@@ -773,7 +773,7 @@ export default function OperatorPortalPage() {
                 autoFocus
               />
               <p className="text-[11px] text-slate-500 mt-1 text-center">
-                {t('Authorized CSC Operator Access Only (Default PIN: 624614)', 'அங்கீகரிக்கப்பட்ட இ-சேவை மைய ஆபரேட்டர் மட்டுமே அணுக முடியும்')}
+                {t('Authorized CSC Operator Access Only', 'அங்கீகரிக்கப்பட்ட இ-சேவை மைய ஆபரேட்டர் மட்டுமே அணுக முடியும்')}
               </p>
             </div>
 
