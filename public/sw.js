@@ -1,28 +1,41 @@
-const CACHE_NAME = 'periyakottai-seva-v3';
-const OFFLINE_URLS = [
-  '/',
-  '/contacts',
-  '/csc-centre',
-  '/farmer-hub',
-  '/services',
-  '/schemes',
-  '/manifest.json',
-  '/favicon.ico',
-  '/favicon.png',
-  '/icon-192.png',
-  '/images/logo.png',
-  '/images/logo.jpg',
-  '/images/murugesan.jpg'
-];
+// Disable Service Worker completely on localhost / development
+if (self.location.hostname === 'localhost' || self.location.hostname === '127.0.0.1') {
+  self.addEventListener('install', () => {
+    self.skipWaiting();
+  });
+  self.addEventListener('activate', (event) => {
+    event.waitUntil(
+      caches.keys()
+        .then((cacheNames) => Promise.all(cacheNames.map((name) => caches.delete(name))))
+        .then(() => self.registration.unregister())
+    );
+  });
+} else {
+  const CACHE_NAME = 'periyakottai-seva-v4';
+  const OFFLINE_URLS = [
+    '/',
+    '/contacts',
+    '/csc-centre',
+    '/farmer-hub',
+    '/services',
+    '/schemes',
+    '/manifest.json',
+    '/favicon.ico',
+    '/favicon.png',
+    '/icon-192.png',
+    '/images/logo.png',
+    '/images/logo.jpg',
+    '/images/murugesan.jpg'
+  ];
 
-self.addEventListener('install', (event) => {
-  event.waitUntil(
-    caches.open(CACHE_NAME).then((cache) => {
-      return cache.addAll(OFFLINE_URLS);
-    })
-  );
-  self.skipWaiting();
-});
+  self.addEventListener('install', (event) => {
+    event.waitUntil(
+      caches.open(CACHE_NAME).then((cache) => {
+        return cache.addAll(OFFLINE_URLS);
+      })
+    );
+    self.skipWaiting();
+  });
 
 self.addEventListener('activate', (event) => {
   event.waitUntil(
@@ -72,3 +85,4 @@ self.addEventListener('fetch', (event) => {
       })
   );
 });
+}

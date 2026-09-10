@@ -93,16 +93,34 @@ export default function RootLayout({
           <FloatingHelpButton />
         </I18nProvider>
 
-        {/* Service worker registration script */}
+        {/* Service worker registration & localhost cleanup script */}
         <script
           dangerouslySetInnerHTML={{
             __html: `
               if ('serviceWorker' in navigator) {
-                window.addEventListener('load', function() {
-                  navigator.serviceWorker.register('/sw.js').catch(function(err) {
-                    console.log('ServiceWorker registration failed: ', err);
+                var isLocal = window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1';
+                if (isLocal) {
+                  // On localhost: unregister any lingering service workers and clear cache storage
+                  navigator.serviceWorker.getRegistrations().then(function(registrations) {
+                    for (var i = 0; i < registrations.length; i++) {
+                      registrations[i].unregister();
+                    }
                   });
-                });
+                  if ('caches' in window) {
+                    caches.keys().then(function(names) {
+                      for (var j = 0; j < names.length; j++) {
+                        caches.delete(names[j]);
+                      }
+                    });
+                  }
+                } else {
+                  // In production: register PWA service worker
+                  window.addEventListener('load', function() {
+                    navigator.serviceWorker.register('/sw.js').catch(function(err) {
+                      console.log('ServiceWorker registration failed: ', err);
+                    });
+                  });
+                }
               }
             `,
           }}
