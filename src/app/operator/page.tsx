@@ -59,7 +59,9 @@ import {
   HelpCircle,
   Send,
   Globe,
-  Share2
+  Share2,
+  MessageSquare,
+  Copy
 } from 'lucide-react';
 
 export default function OperatorPortalPage() {
@@ -125,6 +127,16 @@ export default function OperatorPortalPage() {
   const [selectedStatus, setSelectedStatus] = useState<string>('In Progress');
   const [statusNote, setStatusNote] = useState('');
   const [updatingStatus, setUpdatingStatus] = useState(false);
+
+  // Citizen SMS Composer & Preview Modal
+  const [smsModalData, setSmsModalData] = useState<{
+    id: string;
+    citizenName: string;
+    phoneNumber: string;
+    type: 'grievance' | 'request';
+    initialText: string;
+  } | null>(null);
+  const [smsCustomText, setSmsCustomText] = useState<string>('');
 
   // Walk-in Citizen Booking Modal
   const [walkinModalOpen, setWalkinModalOpen] = useState(false);
@@ -524,6 +536,142 @@ export default function OperatorPortalPage() {
       `தொடர்புக்கு: 97903 82437`
     );
     return `https://wa.me/91${ticket.phoneNumber.replace(/\D/g, '')}?text=${text}`;
+  };
+
+  // Helper: Format Grievance Category in Tamil
+  const formatGrievanceCategoryTa = (category: string) => {
+    const c = (category || '').toLowerCase();
+    if (c.includes('water') || c.includes('குடிநீர்')) return 'குடிநீர் வசதி';
+    if (c.includes('light') || c.includes('மின்விளக்கு') || c.includes('தெருவிளக்கு')) return 'தெருவிளக்கு பராமரிப்பு';
+    if (c.includes('drainage') || c.includes('சாக்கடை') || c.includes('கழிவுநீர்')) return 'சாக்கடை & சுகாதாரப் பிரிவு';
+    if (c.includes('road') || c.includes('சாலை')) return 'சாலை & நடைபாதை';
+    if (c.includes('garbage') || c.includes('குப்பை')) return 'திடக்கழிவு மேலாண்மை';
+    if (c.includes('health') || c.includes('சுகாதாரம்') || c.includes('fogging')) return 'பொது சுகாதாரம் & கொசு மருந்து';
+    if (c.includes('ration') || c.includes('pds') || c.includes('ரேஷன்')) return 'ரேஷன் கடை சேவை';
+    if (c.includes('agri') || c.includes('விவசாயம்')) return 'விவசாயம் & பாசனம்';
+    if (c.includes('revenue') || c.includes('patta') || c.includes('பட்டா')) return 'வருவாய்த்துறை & பட்டா';
+    if (c.includes('school') || c.includes('பள்ளி')) return 'பள்ளி & அங்கன்வாடி';
+    if (c.includes('animal') || c.includes('dog') || c.includes('கால்நடை')) return 'கால்நடைகள் & தெருநாய்கள்';
+    return category || 'பொது குறை';
+  };
+
+  // Helper: Grievance Status in Tamil
+  const getGrievanceStatusTa = (status: string) => {
+    if (status === 'Forwarded to Official') return 'அலுவலருக்கு அனுப்பப்பட்டது';
+    if (status === 'Action Pending') return 'நடவடிக்கை நிலுவையில் உள்ளது';
+    if (status === 'Resolved') return 'தீர்வு காணப்பட்டது';
+    if (status === 'Closed') return 'முடிக்கப்பட்டது';
+    return 'பெறப்பட்டது';
+  };
+
+  // Helper: Generate SMS text for Citizen Grievance Update (Always Tamil)
+  const generateGrievanceSmsText = (grv: GrievanceTicket) => {
+    const statusTa = getGrievanceStatusTa(grv.status);
+    const catTa = formatGrievanceCategoryTa(grv.category);
+    const locationStr = grv.location ? `${grv.location}` : grv.village;
+    const latestNote = grv.timeline && grv.timeline.length > 0
+      ? grv.timeline[grv.timeline.length - 1].note
+      : null;
+
+    let text =
+      `வணக்கம் ${grv.citizenName} அவர்களே,\n` +
+      `நால்ரோடு மக்கள் இ-சேவை மையம் (முருகேசன் - EFADGL0636):\n` +
+      `மனு எண்: ${grv.id}\n` +
+      `பிரிவு: ${catTa}\n` +
+      `நிலை: ${statusTa} (${grv.status})\n` +
+      `இடம்: ${locationStr}\n`;
+
+    if (latestNote && !latestNote.includes('இணையதளத்தில் பதிவு')) {
+      text += `குறிப்பு: ${latestNote}\n`;
+    }
+
+    text +=
+      `தங்கள் குறை மீது உரிய நடவடிக்கை எடுக்கப்பட்டு வருகிறது.\n` +
+      `தொடர்புக்கு: 97903 82437\n` +
+      `பெரியகோட்டை டிஜிட்டல் சேவை`;
+
+    return text;
+  };
+
+  // Helper: SMS URL for Citizen Grievance Update (Cross-platform RFC 5724)
+  const generateGrievanceSmsUrl = (grv: GrievanceTicket) => {
+    const cleanPhone = grv.phoneNumber.replace(/\D/g, '');
+    const formattedPhone = cleanPhone.length === 10 ? `+91${cleanPhone}` : cleanPhone;
+    const isIOS = typeof navigator !== 'undefined' && /iPad|iPhone|iPod/.test(navigator.userAgent);
+    const separator = isIOS ? '&' : '?';
+    const text = generateGrievanceSmsText(grv);
+    return `sms:${formattedPhone}${separator}body=${encodeURIComponent(text)}`;
+  };
+
+  // Helper: 1-Click Grievance SMS Click Handler
+  const handleGrievanceSmsClick = (grv: GrievanceTicket) => {
+    const text = generateGrievanceSmsText(grv);
+    if (typeof navigator !== 'undefined' && navigator.clipboard) {
+      navigator.clipboard.writeText(text).catch(() => {});
+    }
+    setSaveSuccessMsg(
+      t(
+        `📱 SMS app launched for ${grv.citizenName}! Text copied to clipboard.`,
+        `📱 ${grv.citizenName} அவர்களுக்கு SMS செயலி திறக்கப்பட்டது! குறுஞ்செய்தி நகலெடுக்கப்பட்டது.`
+      )
+    );
+    setTimeout(() => setSaveSuccessMsg(''), 4500);
+  };
+
+  // Helper: Generate SMS text for Citizen Service Request Update
+  const generateRequestSmsText = (ticket: RequestTicket) => {
+    let statusTa = 'பதிவு செய்யப்பட்டது';
+    if (ticket.status === 'In Progress') statusTa = 'செயல்பாட்டில் உள்ளது';
+    else if (ticket.status === 'Ready for Citizen') statusTa = 'சான்றிதழ்/ஆவணம் தயார்';
+    else if (ticket.status === 'Completed') statusTa = 'முடிக்கப்பட்டது';
+    else if (ticket.status === 'Cancelled') statusTa = 'ரத்து செய்யப்பட்டது';
+
+    const latestNote = ticket.notes && ticket.notes.length > 0
+      ? ticket.notes[ticket.notes.length - 1].message
+      : null;
+
+    let text =
+      `வணக்கம் ${ticket.citizenName} அவர்களே,\n` +
+      `நால்ரோடு மக்கள் இ-சேவை மையம் (முருகேசன் - EFADGL0636):\n` +
+      `மனு எண்: ${ticket.id}\n` +
+      `சேவை: ${ticket.serviceName}\n` +
+      `நிலை: ${statusTa} (${ticket.status})\n`;
+
+    if (latestNote) {
+      text += `குறிப்பு: ${latestNote}\n`;
+    }
+
+    text +=
+      `விவரங்களுக்கு நால்ரோடு மையத்தை அணுகவும்.\n` +
+      `தொடர்புக்கு: 97903 82437\n` +
+      `பெரியகோட்டை டிஜிட்டல் சேவை`;
+
+    return text;
+  };
+
+  // Helper: SMS URL for Citizen Request Update
+  const generateRequestSmsUrl = (ticket: RequestTicket) => {
+    const cleanPhone = ticket.phoneNumber.replace(/\D/g, '');
+    const formattedPhone = cleanPhone.length === 10 ? `+91${cleanPhone}` : cleanPhone;
+    const isIOS = typeof navigator !== 'undefined' && /iPad|iPhone|iPod/.test(navigator.userAgent);
+    const separator = isIOS ? '&' : '?';
+    const text = generateRequestSmsText(ticket);
+    return `sms:${formattedPhone}${separator}body=${encodeURIComponent(text)}`;
+  };
+
+  // Helper: 1-Click Request SMS Click Handler
+  const handleRequestSmsClick = (ticket: RequestTicket) => {
+    const text = generateRequestSmsText(ticket);
+    if (typeof navigator !== 'undefined' && navigator.clipboard) {
+      navigator.clipboard.writeText(text).catch(() => {});
+    }
+    setSaveSuccessMsg(
+      t(
+        `📱 SMS app launched for ${ticket.citizenName}! Text copied to clipboard.`,
+        `📱 ${ticket.citizenName} அவர்களுக்கு SMS செயலி திறக்கப்பட்டது! குறுஞ்செய்தி நகலெடுக்கப்பட்டது.`
+      )
+    );
+    setTimeout(() => setSaveSuccessMsg(''), 4500);
   };
 
   // Filter Grievances
@@ -1255,7 +1403,38 @@ export default function OperatorPortalPage() {
                               <span>WhatsApp</span>
                             </a>
 
-                            {/* 6. Call Citizen */}
+                            {/* 6. SMS Citizen 1-Click & Customizer */}
+                            <div className="inline-flex items-center rounded-xl overflow-hidden shadow-2xs border border-sky-600 bg-sky-600">
+                              <a
+                                href={generateGrievanceSmsUrl(grv)}
+                                onClick={() => handleGrievanceSmsClick(grv)}
+                                className="px-2.5 py-1.5 hover:bg-sky-700 text-white font-bold text-xs flex items-center gap-1 transition-colors cursor-pointer"
+                                title={t('Send SMS update directly to citizen', 'குடிமகனுக்கு நேரடியாக SMS குறுஞ்செய்தி அனுப்ப')}
+                              >
+                                <MessageSquare className="w-3.5 h-3.5" />
+                                <span>SMS</span>
+                              </a>
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const text = generateGrievanceSmsText(grv);
+                                  setSmsModalData({
+                                    id: grv.id,
+                                    citizenName: grv.citizenName,
+                                    phoneNumber: grv.phoneNumber,
+                                    type: 'grievance',
+                                    initialText: text
+                                  });
+                                  setSmsCustomText(text);
+                                }}
+                                className="px-1.5 py-1.5 hover:bg-sky-700 text-sky-100 hover:text-white border-l border-sky-500/60 transition-colors cursor-pointer"
+                                title={t('Preview / Customize SMS message', 'SMS குறுஞ்செய்தியை சரிபார்க்க / மாற்ற')}
+                              >
+                                <Sliders className="w-3 h-3" />
+                              </button>
+                            </div>
+
+                            {/* 7. Call Citizen */}
                             <a
                               href={`tel:${grv.phoneNumber}`}
                               className="p-1.5 bg-slate-100 hover:bg-slate-200 text-slate-800 rounded-xl transition-colors"
@@ -1452,6 +1631,37 @@ export default function OperatorPortalPage() {
                           <MessageCircle className="w-3.5 h-3.5" />
                           <span>WhatsApp</span>
                         </a>
+
+                        {/* SMS Citizen 1-Click & Customizer */}
+                        <div className="inline-flex items-center rounded-xl overflow-hidden shadow-2xs border border-sky-600 bg-sky-600">
+                          <a
+                            href={generateRequestSmsUrl(ticket)}
+                            onClick={() => handleRequestSmsClick(ticket)}
+                            className="px-2.5 py-1.5 hover:bg-sky-700 text-white font-bold text-xs flex items-center gap-1 transition-colors cursor-pointer"
+                            title={t('Send SMS update directly to citizen', 'குடிமகனுக்கு நேரடியாக SMS குறுஞ்செய்தி அனுப்ப')}
+                          >
+                            <MessageSquare className="w-3.5 h-3.5" />
+                            <span>SMS</span>
+                          </a>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const text = generateRequestSmsText(ticket);
+                              setSmsModalData({
+                                id: ticket.id,
+                                citizenName: ticket.citizenName,
+                                phoneNumber: ticket.phoneNumber,
+                                type: 'request',
+                                initialText: text
+                              });
+                              setSmsCustomText(text);
+                            }}
+                            className="px-1.5 py-1.5 hover:bg-sky-700 text-sky-100 hover:text-white border-l border-sky-500/60 transition-colors cursor-pointer"
+                            title={t('Preview / Customize SMS message', 'SMS குறுஞ்செய்தியை சரிபார்க்க / மாற்ற')}
+                          >
+                            <Sliders className="w-3 h-3" />
+                          </button>
+                        </div>
 
                         {/* Call */}
                         <a
@@ -1777,21 +1987,79 @@ export default function OperatorPortalPage() {
                 />
               </div>
 
-              <div className="flex items-center justify-end gap-2 pt-2 border-t">
-                <button
-                  type="button"
-                  onClick={() => setStatusModalTicket(null)}
-                  className="px-4 py-2 rounded-xl bg-slate-100 text-slate-700 font-bold"
-                >
-                  {t('Cancel', 'ரத்து')}
-                </button>
-                <button
-                  type="submit"
-                  disabled={updatingStatus}
-                  className="px-4 py-2 rounded-xl bg-purple-900 text-white font-bold hover:bg-purple-950"
-                >
-                  {updatingStatus ? t('Saving...', 'சேமிக்கப்படுகிறது...') : t('Save Remark & Update', 'சேமித்து நிலையை மாற்று')}
-                </button>
+              <div className="flex flex-wrap items-center justify-between gap-2 pt-2 border-t">
+                {/* Notify Citizen Quick Links */}
+                <div className="flex items-center gap-1.5">
+                  <span className="text-[11px] font-bold text-slate-500 mr-1 hidden sm:inline">
+                    {t('Notify:', 'அறிவிக்க:')}
+                  </span>
+                  <a
+                    href={`https://wa.me/91${statusModalTicket.phoneNumber.replace(/\D/g, '')}?text=${encodeURIComponent(
+                      `வணக்கம் ${statusModalTicket.citizenName} அவர்களே,\n\n` +
+                      `நால்ரோடு மக்கள் இ-சேவை மையம் (முருகேசன் - EFADGL0636):\n` +
+                      `மனு எண்: ${statusModalTicket.id}\n` +
+                      `நிலை: ${selectedStatus}\n` +
+                      (statusNote.trim() ? `குறிப்பு: ${statusNote.trim()}\n` : '') +
+                      `தொடர்புக்கு: 97903 82437`
+                    )}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-2.5 py-1.5 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl text-xs flex items-center gap-1 cursor-pointer shadow-2xs"
+                    title={t('Notify Citizen via WhatsApp', 'வாட்ஸ்அப் மூலம் தெரிவிக்க')}
+                  >
+                    <MessageCircle className="w-3.5 h-3.5" />
+                    <span>WhatsApp</span>
+                  </a>
+
+                  <a
+                    href={`sms:+91${statusModalTicket.phoneNumber.replace(/\D/g, '')}${
+                      typeof navigator !== 'undefined' && /iPad|iPhone|iPod/.test(navigator.userAgent) ? '&' : '?'
+                    }body=${encodeURIComponent(
+                      `வணக்கம் ${statusModalTicket.citizenName},\n` +
+                      `நால்ரோடு இ-சேவை (முருகேசன்):\n` +
+                      `மனு எண்: ${statusModalTicket.id}\n` +
+                      `நிலை: ${selectedStatus}\n` +
+                      (statusNote.trim() ? `குறிப்பு: ${statusNote.trim()}\n` : '') +
+                      `தொடர்புக்கு: 9790382437`
+                    )}`}
+                    onClick={() => {
+                      const text =
+                        `வணக்கம் ${statusModalTicket.citizenName},\n` +
+                        `நால்ரோடு இ-சேவை (முருகேசன்):\n` +
+                        `மனு எண்: ${statusModalTicket.id}\n` +
+                        `நிலை: ${selectedStatus}\n` +
+                        (statusNote.trim() ? `குறிப்பு: ${statusNote.trim()}\n` : '') +
+                        `தொடர்புக்கு: 9790382437`;
+                      if (typeof navigator !== 'undefined' && navigator.clipboard) {
+                        navigator.clipboard.writeText(text).catch(() => {});
+                      }
+                      setSaveSuccessMsg(t('📱 SMS app launched & note copied!', '📱 SMS செயலி திறக்கப்பட்டது!'));
+                      setTimeout(() => setSaveSuccessMsg(''), 4000);
+                    }}
+                    className="px-2.5 py-1.5 bg-sky-600 hover:bg-sky-700 text-white font-bold rounded-xl text-xs flex items-center gap-1 cursor-pointer shadow-2xs"
+                    title={t('Notify Citizen via SMS', 'SMS மூலம் தெரிவிக்க')}
+                  >
+                    <MessageSquare className="w-3.5 h-3.5" />
+                    <span>SMS</span>
+                  </a>
+                </div>
+
+                <div className="flex items-center gap-2 ml-auto">
+                  <button
+                    type="button"
+                    onClick={() => setStatusModalTicket(null)}
+                    className="px-3.5 py-2 rounded-xl bg-slate-100 text-slate-700 font-bold cursor-pointer"
+                  >
+                    {t('Cancel', 'ரத்து')}
+                  </button>
+                  <button
+                    type="submit"
+                    disabled={updatingStatus}
+                    className="px-4 py-2 rounded-xl bg-purple-900 text-white font-bold hover:bg-purple-950 cursor-pointer"
+                  >
+                    {updatingStatus ? t('Saving...', 'சேமிக்கப்படுகிறது...') : t('Save Remark & Update', 'சேமித்து நிலையை மாற்று')}
+                  </button>
+                </div>
               </div>
             </form>
           </div>
@@ -1917,6 +2185,123 @@ export default function OperatorPortalPage() {
               </div>
             </form>
           </div>
+        </div>
+      )}
+
+      {/* CITIZEN SMS COMPOSER / PREVIEW MODAL */}
+      {smsModalData && (
+        <div className="fixed inset-0 bg-black/60 z-50 flex items-center justify-center p-4">
+          <div className="bg-white rounded-3xl p-6 max-w-lg w-full space-y-4 shadow-2xl animate-in fade-in zoom-in-95">
+            <div className="flex items-center justify-between border-b pb-3">
+              <div className="flex items-center gap-2.5">
+                <div className="p-2 bg-sky-100 text-sky-700 rounded-xl">
+                  <MessageSquare className="w-4 h-4" />
+                </div>
+                <div>
+                  <h3 className="font-black text-sm text-slate-900">
+                    {t('Send SMS to Citizen', 'குடிமகனுக்கு SMS அனுப்புக')}
+                  </h3>
+                  <p className="text-[11px] text-slate-500">
+                    {smsModalData.citizenName} (+91 {smsModalData.phoneNumber}) • <span className="font-mono">{smsModalData.id}</span>
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => setSmsModalData(null)}
+                className="text-slate-400 hover:text-slate-700 p-1 cursor-pointer"
+              >
+                <X className="w-4 h-4" />
+              </button>
+            </div>
+
+            <div className="space-y-2 text-xs">
+              <div className="flex items-center justify-between text-slate-600 font-bold">
+                <span>{t('SMS Message Content (Tamil):', 'SMS செய்தி விவரம் (தமிழ்):')}</span>
+                <span className="text-[11px] text-slate-400 font-normal">
+                  {smsCustomText.length} {t('chars', 'எழுத்துகள்')}
+                </span>
+              </div>
+              <textarea
+                rows={7}
+                value={smsCustomText}
+                onChange={(e) => setSmsCustomText(e.target.value)}
+                className="w-full px-3 py-2.5 rounded-xl border border-slate-300 focus:border-sky-500 font-sans text-xs leading-relaxed outline-none"
+              />
+              <p className="text-[11px] text-slate-500 italic">
+                {t(
+                  '💡 You can customize the SMS above. "Launch SMS App" triggers your device messaging app directly with this text.',
+                  '💡 நீங்கள் விரும்பினால் செய்தியை மாற்றலாம். "SMS செயலியை திற" என்பதை அழுத்தினால் உங்கள் போனின் SMS செயலி திறக்கும்.'
+                )}
+              </p>
+            </div>
+
+            <div className="flex flex-wrap items-center justify-between gap-2 pt-3 border-t">
+              <button
+                type="button"
+                onClick={() => {
+                  if (navigator.clipboard) {
+                    navigator.clipboard.writeText(smsCustomText);
+                    setSaveSuccessMsg(t('📋 SMS text copied to clipboard!', '📋 SMS செய்தி நகலெடுக்கப்பட்டது!'));
+                    setTimeout(() => setSaveSuccessMsg(''), 4000);
+                  }
+                }}
+                className="px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs flex items-center gap-1.5 cursor-pointer transition-colors"
+              >
+                <Copy className="w-3.5 h-3.5 text-slate-600" />
+                <span>{t('Copy Text', 'நகலெடு')}</span>
+              </button>
+
+              <div className="flex items-center gap-2">
+                <a
+                  href="https://messages.google.com/web"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="px-3 py-2 rounded-xl bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs flex items-center gap-1 cursor-pointer transition-colors hidden sm:flex"
+                  title={t('Open Google Messages on Desktop Web', 'டெஸ்க்டாப் கூகுள் மெசேஜ் வலைத்தளம் திறக்க')}
+                >
+                  <ExternalLink className="w-3.5 h-3.5 text-slate-600" />
+                  <span>Web SMS</span>
+                </a>
+
+                <a
+                  href={`sms:+91${smsModalData.phoneNumber.replace(/\D/g, '')}${
+                    typeof navigator !== 'undefined' && /iPad|iPhone|iPod/.test(navigator.userAgent) ? '&' : '?'
+                  }body=${encodeURIComponent(smsCustomText)}`}
+                  onClick={() => {
+                    if (navigator.clipboard) {
+                      navigator.clipboard.writeText(smsCustomText);
+                    }
+                    setSaveSuccessMsg(
+                      t(
+                        `📱 SMS app opened for ${smsModalData.citizenName}!`,
+                        `📱 ${smsModalData.citizenName} அவர்களுக்கு SMS செயலி திறக்கப்பட்டது!`
+                      )
+                    );
+                    setTimeout(() => setSaveSuccessMsg(''), 4000);
+                    setSmsModalData(null);
+                  }}
+                  className="px-4 py-2 rounded-xl bg-sky-600 hover:bg-sky-700 text-white font-bold text-xs flex items-center gap-1.5 cursor-pointer transition-colors shadow-xs"
+                >
+                  <Send className="w-3.5 h-3.5" />
+                  <span>{t('Launch SMS App', 'SMS செயலியை திற')}</span>
+                </a>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* FLOATING SUCCESS NOTIFICATION TOAST */}
+      {saveSuccessMsg && (
+        <div className="fixed bottom-6 right-6 z-50 bg-slate-900/95 backdrop-blur-xs text-white px-4 py-3 rounded-2xl shadow-2xl border border-slate-700 text-xs font-bold flex items-center gap-2.5 animate-in slide-in-from-bottom-5">
+          <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0" />
+          <span>{saveSuccessMsg}</span>
+          <button
+            onClick={() => setSaveSuccessMsg('')}
+            className="text-slate-400 hover:text-white ml-2 p-0.5 cursor-pointer"
+          >
+            <X className="w-3.5 h-3.5" />
+          </button>
         </div>
       )}
     </div>
